@@ -10,18 +10,25 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^7.0",
-    "gregwar/image": "2.*",
-    "guzzlehttp/guzzle": "^6.0",
-    "php-amqplib/php-amqplib": ">=2.6.1",
+    "php": ">=7.0",
     "webravolab/cdn": "dev-master",
     "webpatser/laravel-uuid": "^3.0",
-    "psr/log": "1.1"
+    "psr/log": "1.1",
     "google/cloud-logging": "^1.14",
-  },,
+    "php-amqplib/php-amqplib": ">=2.6.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8 || ^5.0 || ^6.5",
+    "orchestra/testbench": "~3.0",
+    "orchestra/database": "~3.0",
+    "illuminate/support": "~5.2",
+    "illuminate/console": "~5.2",
+    "illuminate/filesystem": "~5.2"
+  },
   "autoload": {
     "classmap": [
-      "src"
+      "src",
+      "tests"
     ],
     "psr-4": {
       "Webravo\\Application\\":"src/Application/",
