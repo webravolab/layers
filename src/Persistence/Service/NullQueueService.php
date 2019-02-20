@@ -84,6 +84,11 @@ class NullQueueService implements QueueServiceInterface {
         $this->createQueue($queueName);
     }
 
+    public function unsubscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null)
+    {
+        // TODO: Implement unsubscribeQueue() method.
+    }
+
     public function publishMessage($message, $queueName = null, $bindingKey = null, array $header = []): ?string
     {
         if (empty($this->channelName) && empty($this->defaultStrategy)) {
@@ -152,6 +157,16 @@ class NullQueueService implements QueueServiceInterface {
         // $this->queueStore->AcknowledgeJobByGuid($guid);
     }
 
+    public function messageNotAcknowledge($message)
+    {
+        // TODO: Implement messageNotAcknowledge() method.
+    }
+
+    public function delete()
+    {
+        // TODO: Implement delete() method.
+    }
+
     public function close()
     {
         foreach($this->queues as $queueName => $bool) {
@@ -159,4 +174,5 @@ class NullQueueService implements QueueServiceInterface {
             // $this->queueStore->deleteQueue($queueName);
         }
     }
+
 }

@@ -15,7 +15,6 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
     protected function getPackageAlias($app)
     {
         return [];
-        // return ['Webravo\Infrastructure\Service\ConfigurationServiceInterface','Webravo\Infrastructure\Library\Configuration'];
     }
     
     protected function getEnvironmentSetUp($app)
@@ -39,40 +38,18 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
 
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
-        // exec('rm -rf '.__DIR__.'/temp/*');
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        // exec('rm -rf '.__DIR__.'/temp/*');
-
         $this->consoleOutput = '';
     }
 
     public function createTempFiles($files = [])
     {
-        /*
-        foreach ($files as $dir => $dirFiles) {
-            mkdir(__DIR__.'/temp/'.$dir);
-
-            foreach ($dirFiles as $file => $content) {
-                if (is_array($content)) {
-                    mkdir(__DIR__.'/temp/'.$dir.'/'.$file);
-
-                    foreach ($content as $subDir => $subContent) {
-                        mkdir(__DIR__.'/temp/vendor/'.$file.'/'.$subDir);
-                        foreach ($subContent as $subFile => $subsubContent) {
-                            file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'/'.$subDir.'/'.$subFile.'.php', $subsubContent);
-                        }
-                    }
-                } else {
-                    file_put_contents(__DIR__.'/temp/'.$dir.'/'.$file.'.php', $content);
-                }
-            }
-        }
-        */
+        // Nothing to do
     }
 
     public function resolveApplicationConsoleKernel($app)
