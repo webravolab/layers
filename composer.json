@@ -1,0 +1,36 @@
+{
+  "name": "webravolab/layers",
+  "description": "PHP abstraction layers",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Paolo Nardini - Webravo",
+      "email": "paolo.nardini@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.0",
+    "gregwar/image": "2.*",
+    "guzzlehttp/guzzle": "^6.0",
+    "php-amqplib/php-amqplib": ">=2.6.1",
+    "webravolab/cdn": "dev-master",
+    "webpatser/laravel-uuid": "^3.0",
+    "psr/log": "1.1"
+    "google/cloud-logging": "^1.14",
+  },,
+  "autoload": {
+    "classmap": [
+      "src"
+    ],
+    "psr-4": {
+      "Webravo\\Application\\":"src/Application/",
+      "Webravo\\Infrastructure\\":"src/Infrastructure/",
+      "Webravo\\Persistence\\":"src/Persistence/",
+      "Webravo\\Common\\":"src/Common/"
+    }
+  },
+  "config": {
+    "preferred-install": "dist"
+  }
+}
