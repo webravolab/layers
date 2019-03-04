@@ -14,6 +14,7 @@
     "webravolab/cdn": "dev-master",
     "webpatser/laravel-uuid": "^3.0",
     "psr/log": "1.1",
+    "google/apiclient": "^2.2",
     "google/cloud-logging": "^1.14",
     "php-amqplib/php-amqplib": ">=2.6.1"
   },
