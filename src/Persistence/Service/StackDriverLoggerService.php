@@ -67,7 +67,9 @@ class StackDriverLoggerService extends AbstractProcessingHandler implements Logg
             $this->options['severity'] = $record['level'];
         }
         // Update timestamp
-        if (preg_match("/^\[.*\]: \[([0-9]{4}-(0[1-9]|1[0-2])-([0-9]{2}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}))\].*$/", $record['formatted'], $a_matches)) {
+        if (preg_match("/^\[.*\]: \[([0-9]{4}-(0[1-9]|1[0-2])-([0-9]{2}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}))\].*$/", $record['formatted'], $a_matches)
+            || preg_match("/^.*\[([0-9]{4}-(0[1-9]|1[0-2])-([0-9]{2}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}))\].*$/", $record['formatted'], $a_matches))
+        {
             if (is_array($a_matches) && isset($a_matches[1])) {
                 // Get timestamp from message if written in ISO format
                 $log_date = \DateTime::createFromFormat("Y-m-d H:i:s", $a_matches[1]);
