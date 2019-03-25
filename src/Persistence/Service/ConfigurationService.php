@@ -42,17 +42,23 @@ class ConfigurationService implements ConfigurationServiceInterface
 
     private function getSettingsOverride($key, $class = null, $default = null): ?string
     {
-        if (empty($this->settings_db_connection)) {
-            // Settings database connection not defined 
+        try {
+            if (empty($this->settings_db_connection)) {
+                // Settings database connection not defined
+                return null;
+            }
+            if (!is_null($class)) {
+                $key = $class . '.' . $key;
+            }
+            $results = DB::connection($this->settings_db_connection)
+                ->select("select * from settings where `key` = '" . $key . "'");
+            if ($results && count($results) == 1) {
+                return $results[0]->value;
+            }
+        }
+        catch (\Exception $e) {
+            // Ignore any settings overide error
             return null;
-        }
-        if (!is_null($class)) {
-            $key = $class . '.' . $key;
-        }
-        $results = DB::connection($this->settings_db_connection)
-            ->select("select * from settings where `key` = '" . $key . "'");
-        if ($results && count($results) == 1) {
-            return $results[0]->value;
         }
         return null;
     }
