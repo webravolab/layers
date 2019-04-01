@@ -49,7 +49,7 @@ class StackDriverLoggerService extends AbstractProcessingHandler implements Logg
                 'project_id' => $googleProjectId,
                 'logName' => $logName,
             ],
-            'timestamp' => (new \DateTime())->format(\DateTime::RFC3339),
+            'timestamp' => (new \DateTime())->format(\DateTime::RFC3339_EXTENDED),
         ];
 
         $this->options = $this->array_merge_recursive_distinct($this->options, $options);
@@ -73,12 +73,12 @@ class StackDriverLoggerService extends AbstractProcessingHandler implements Logg
             if (is_array($a_matches) && isset($a_matches[1])) {
                 // Get timestamp from message if written in ISO format
                 $log_date = \DateTime::createFromFormat("Y-m-d H:i:s", $a_matches[1]);
-                $this->options['timestamp'] = $log_date->format(\DateTime::RFC3339);
+                $this->options['timestamp'] = $log_date->format(\DateTime::RFC3339_EXTENDED);
                 $record['formatted'] = str_replace(' ' ,' ', str_replace('[' . $a_matches[1] . ']','', $record['formatted']));
             }
         }
         else {
-            $this->options['timestamp'] = (new \DateTime())->format(\DateTime::RFC3339);
+            $this->options['timestamp'] = (new \DateTime())->format(\DateTime::RFC3339_EXTENDED);
         }
         // Check for any exception to log
         if (isset($this->options['labels']['exception'])) {
