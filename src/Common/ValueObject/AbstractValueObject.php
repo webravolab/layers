@@ -8,7 +8,7 @@ abstract class AbstractValueObject
     /**
      * @var string/object
      */
-    private $value;
+    protected $value;
 
     /**
      * Return the object as a string
@@ -47,15 +47,6 @@ abstract class AbstractValueObject
     }
 
     /**
-     * Set the new value
-     * @param $value
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-    }
-
-    /**
      * Check if object value is equal to another object
      * @param AbstractValueObject $object
      * @return bool
@@ -68,7 +59,7 @@ abstract class AbstractValueObject
     /**
      * Validate value
      * @param $value
-     * @return mixed
+     * @return boolean
      */
     abstract function isSatisfiedBy($value);
 }
