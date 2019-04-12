@@ -22,10 +22,12 @@ class DataStoreTest extends TestCase
 
         $faker = Factory::create();
         $name = $faker->name();
+        $fk = $faker->numberBetween(1000,100000);
 
         $a = new TestEntity();
         $entity_name = get_class($a);
         $a->setName($name);
+        $a->setForeignKey($fk);
 
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
 
@@ -58,8 +60,10 @@ class DataStoreTest extends TestCase
 
         for($x=0; $x<100; $x++) {
             $name = $faker->name();
+            $fk = $faker->numberBetween(1000,100000);
             $a = new TestEntity();
             $a->setName($name);
+            $a->setForeignKey($fk);
             $dtOne->persist($a);
         }
 
