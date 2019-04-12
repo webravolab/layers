@@ -24,6 +24,7 @@
         <env name="DB_DATABASE" value="TEST_DB"/>
         <env name="SETTINGS_DRIVER" value="array"/>
         <env name="SETTINGS_DB_CONNECTION" value="testbench"/>
-
+        <env name="GOOGLE_PROJECT_ID" value="**ENTER-PROJECT-HERE**"/>
+        <env name="GOOGLE_APPLICATION_CREDENTIALS" value="**ENTER-FILEPATH-HERE**"/>
     </php>
 </phpunit>
