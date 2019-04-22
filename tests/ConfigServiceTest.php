@@ -55,6 +55,15 @@ class ConfigServiceTest extends TestCase
 
             $results = DB::connection($db_connection)->select("select * from settings");
 
+            // Set a class
+
+            $service->setKey('MY-CLASS.ONE','111');
+            $service->setKey('MY-CLASS-TWO','222');
+
+            $a_class = $service->getClass('MY-CLASS');
+
+
+
         }
     }
 }

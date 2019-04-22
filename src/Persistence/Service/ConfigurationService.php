@@ -30,6 +30,10 @@ class ConfigurationService implements ConfigurationServiceInterface
 
     public function getClass($class = null, $default = null): ?array
     {
+        $override = $this->getClassOverride($class);
+        if (!is_null($override)) {
+            return $override;
+        }
         /**
          * Laravel specific config and ENV accessors
          */
@@ -112,6 +116,35 @@ class ConfigurationService implements ConfigurationServiceInterface
             if ($results && count($results) == 1) {
                 return $results[0]->value;
             }
+        }
+        catch (\Exception $e) {
+            // Ignore any settings overide error
+            return null;
+        }
+        return null;
+    }
+
+    private function getClassOverride($class): ?array
+    {
+        try {
+            if (empty($this->settings_db_connection)) {
+                // Settings database connection not defined
+                return null;
+            }
+            if (is_null($class)) {
+                return null;
+            }
+            $class = $class . '%';
+            $results = DB::connection($this->settings_db_connection)
+                ->select("select * from settings where `key` like ?", [$class]);
+            if ($results && count($results) > 0) {
+                $a_results = [];
+                foreach($results as $obj) {
+                    $a_results[$obj->key] = $obj->value;
+                }
+                return $a_results;
+            }
+            return null;
         }
         catch (\Exception $e) {
             // Ignore any settings overide error
