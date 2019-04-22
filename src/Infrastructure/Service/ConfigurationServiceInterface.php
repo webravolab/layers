@@ -10,5 +10,8 @@ interface ConfigurationServiceInterface
 
     public function getPublicPath($filename = ''): string;
 
+    public function setKey($key, $value, $class = null): void;
+
+    public function deleteKey($key, $class = null): void;
 }
 

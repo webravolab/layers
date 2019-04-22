@@ -40,6 +40,63 @@ class ConfigurationService implements ConfigurationServiceInterface
         return public_path($filename);
     }
 
+    /**
+     * Create or Replace a key in settings
+     * @param $key
+     * @param $value
+     * @param null $class
+     */
+    public function setKey($key, $value, $class = null): void
+    {
+        try {
+            if (empty($this->settings_db_connection)) {
+                // Settings database connection not defined
+                return;
+            }
+            if (!is_null($class)) {
+                $key = $class . '.' . $key;
+            }
+            $results = DB::connection($this->settings_db_connection)
+                ->select("select * from settings where `key` = ?", [$key]);
+            if ($results && count($results) == 1) {
+                $results = DB::connection($this->settings_db_connection)
+                    ->update("update settings set value = ? where `key` = ?", [$value, $key]);
+            }
+            else {
+                $results = DB::connection($this->settings_db_connection)
+                    ->insert("insert into settings(`key`, value) values (? , ?)", [$key, $value]);
+            }
+        }
+        catch (\Exception $e) {
+            // Ignore any error
+            return;
+        }
+    }
+
+    /**
+     * Delete a key from settings
+     * @param $key
+     * @param null $class
+     */
+    public function deleteKey($key, $class = null): void
+    {
+        try {
+            if (empty($this->settings_db_connection)) {
+                // Settings database connection not defined
+                return;
+            }
+            if (!is_null($class)) {
+                $key = $class . '.' . $key;
+            }
+            $results = DB::connection($this->settings_db_connection)
+                ->delete("delete from settings where `key` = ?", [$key]);
+        }
+        catch (\Exception $e) {
+            // Ignore any error
+            return;
+        }
+    }
+
     private function getSettingsOverride($key, $class = null, $default = null): ?string
     {
         try {
@@ -51,7 +108,7 @@ class ConfigurationService implements ConfigurationServiceInterface
                 $key = $class . '.' . $key;
             }
             $results = DB::connection($this->settings_db_connection)
-                ->select("select * from settings where `key` = '" . $key . "'");
+                ->select("select * from settings where `key` = ?", [$key]);
             if ($results && count($results) == 1) {
                 return $results[0]->value;
             }
@@ -62,4 +119,6 @@ class ConfigurationService implements ConfigurationServiceInterface
         }
         return null;
     }
+
+
 }
