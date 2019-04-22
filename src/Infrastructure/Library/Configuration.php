@@ -34,4 +34,12 @@ class Configuration
     public static function getPublicPath($filename = ''): string {
         return static::instance()->getPublicPath($filename);
     }
+
+    public static function set($key, $class = null, $value): void {
+        static::instance()->setKey($key, $value, $class);
+    }
+
+    public static function delete($key, $class = null): void {
+        static::instance()->deleteKey($key, $class);
+    }
 }
