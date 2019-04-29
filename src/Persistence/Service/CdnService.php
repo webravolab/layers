@@ -233,6 +233,136 @@ class CdnService implements CdnServiceInterface {
         return $this->deleteImageFromCdn($url);
     }
 
+    /**
+     * Download an object from Cloud Storage and save it as a local file.
+     *
+     * @param string $url the name of your Google Cloud object.
+     * @param string $destination the local destination to save the encrypted object.
+     * @param string $bucketName the name of your Google Cloud bucket (empty for default bucket).
+     *
+     * @return bool
+     */
+    public function downloadImageFromCdn(string $url, string $destination, string $bucket_name = null): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][downloadImageFromCdn] Google Cloud Storage configuration missing'));
+        }
+
+        if (empty($bucket_name)) {
+            if (isset($this->google_config['bucket'])) {
+                $bucket_name = $this->google_config['bucket'];
+            }
+        }
+
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            $object = $storage->objects->get( $bucket_name, $url);
+            $uri = $object->getMediaLink();
+            $http = $this->google_client->authorize();
+            $response = $http->get($uri);
+            if ($response->getStatusCode() != 200) {
+                throw(new \Exception('[CdnService][downloadImageFromCdn] Download failed ' . $response->getStatusCode()));
+            }
+            file_put_contents($destination, $response->getBody());
+            return true;
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                // Image not found ...
+                return false;
+            }
+            throw(new \Exception('[CdnService][downloadImageFromCdn] Error downloading image ' . $url . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+    }
+
+    /**
+     * Check whether a bucket exists in current project
+     * @param string $bucket_name
+     * @return bool
+     */
+    public function checkBucketExists(string $bucket_name): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][checkBucketExists] Google Cloud Storage configuration missing'));
+        }
+
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            $bucket = $storage->buckets->get($bucket_name);
+            return true;
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404 || $e->getCode() == 403) {
+                // Bucket not found ...
+                return false;
+            }
+            throw(new \Exception('[CdnService][checkBucketExists] Error checking bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+    }
+
+    /**
+     * Create a new bucket in current project
+     * @param string $bucket_name
+     * @return bool
+     */
+    public function createBucket(string $bucket_name): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][createBucket] Google Cloud Storage configuration missing'));
+        }
+        try {
+            $project_id = @$this->google_config['project_id'];
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            // Create new bucket object
+            $bucket = new \Google_Service_Storage_Bucket();
+            $bucket->setName($bucket_name);
+            // $bucket->setLocation('EUROPE-WEST2');
+            $storage->buckets->insert($project_id, $bucket);
+            return true;
+        } catch (\Exception $e) {
+            throw(new \Exception('[CdnService][createBucket] Error creating bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+    }
+
+    /**
+     * Delete a bucket from current project
+     * @param string $bucket_name
+     * @param bool $force               true to delete all content from bucket before deleting
+     * @return bool
+     */
+    public function deleteBucket(string $bucket_name, bool $force = false): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][deleteBucket] Google Cloud Storage configuration missing'));
+        }
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            // Get bucket object
+            $bucket = $storage->buckets->get($bucket_name);
+
+            $objects = $storage->objects->listObjects($bucket_name);
+
+            foreach ($objects["items"] as $object)
+            {
+                if ($force == true) {
+                    $result = $storage->objects->delete($bucket_name, $object->getName());
+                    if ($result->getStatusCode() != 204) {
+                        // Can't delete
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+            $storage->buckets->delete($bucket_name);
+            return true;
+        } catch (\Exception $e) {
+            throw(new \Exception('[CdnService][deleteBucket] Error deleting bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+    }
 
     /**
      * @param $file_name

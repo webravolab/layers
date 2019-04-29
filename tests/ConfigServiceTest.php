@@ -22,7 +22,6 @@ class ConfigServiceTest extends TestCase
         // Check settings config override
         self::assertNull(Configuration::get('TEST_OVERRIDE_BAD'));
 
-
         // To let this test pass ... set SETTINGS_DB_CONNECTION environment variable
         $db_connection = $service->getKey('SETTINGS_DB_CONNECTION');
         if (!empty($db_connection)) {
@@ -37,7 +36,6 @@ class ConfigServiceTest extends TestCase
             self::assertArrayHasKey(0, $results);
             */
             self::assertEquals('9999', Configuration::get('TEST_OVERRIDE_GOOD'));
-
 
             $results = DB::connection($db_connection)->select("select * from settings");
 

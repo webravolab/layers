@@ -30,6 +30,27 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+
+        $credentials_file = __DIR__ . '/google-credentials.json';
+        if (file_exists($credentials_file)) {
+            // Read from credentials file
+            $credentials = json_decode(file_get_contents($credentials_file));
+
+            // Google Storage configuration
+            $app['config']->set('google.service', [
+                'enable' => true,
+                'file' => 'google-credentials.json'
+            ]);
+            $app['config']->set('google.project_id', $credentials->project_id);
+            $app['config']->set('google.scopes', [\Google_Service_Storage::DEVSTORAGE_FULL_CONTROL]);
+            $app['config']->set('google.access_type', 'online');
+            $app['config']->set('google.approval_prompt', 'auto');
+            $app['config']->set('google.prompt', 'select_account');
+            $app['config']->set('google.bucket', 'test-bucket');
+            $app['config']->set('google.image_cache_ttl', 86400);
+            $app['config']->set('google.gzip', false);
+            $app['config']->set('google.application_name', 'test-application');
+        }
     }
 
     public function setUp()
