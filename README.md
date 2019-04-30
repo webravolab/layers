@@ -51,7 +51,9 @@ Just replace the DB connection from *testbench* to whatever is your database nam
 ## Testing
 
 PhpUnit test suite is available. It creates a memory based SqLite database instance to create the required tables and perform tests.
-It uses the package ```orchestra/testbench``` to simulate a full Laravel environment. 
+It uses the package ```orchestra/testbench``` to simulate a full Laravel environment.
+
+To test CdnService with Google Cloud Storage you must copy your service account json file to /tests folder (google-credentials.json).   
 
 ### Usage
 
