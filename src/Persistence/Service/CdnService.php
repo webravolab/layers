@@ -276,6 +276,40 @@ class CdnService implements CdnServiceInterface {
     }
 
     /**
+     * Check whether an object exists in the bucket
+     * @param string $url
+     * @param string|null $bucket_name
+     * @return bool
+     */
+    public function checkImageExists(string $url, string $bucket_name = null): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][checkObjectExists] Google Cloud Storage configuration missing'));
+        }
+
+        if (empty($bucket_name)) {
+            if (isset($this->google_config['bucket'])) {
+                $bucket_name = $this->google_config['bucket'];
+            }
+        }
+
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            $object = $storage->objects->get( $bucket_name, $url);
+            return true;
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                // Image not found ...
+                return false;
+            }
+            throw(new \Exception('[CdnService][checkObjectExists] Error checking image ' . $url . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+
+    }
+
+
+    /**
      * Check whether a bucket exists in current project
      * @param string $bucket_name
      * @return bool

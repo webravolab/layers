@@ -2,6 +2,10 @@
 
 ## Changes Log
 
+### Ver. 1.0.43
+
+* Added function checkImageExists() to CdnService
+
 ### Ver. 1.0.42
 
 * Added new functions to CdnService to interact with Google Storage Buckets

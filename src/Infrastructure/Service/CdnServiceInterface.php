@@ -46,6 +46,14 @@ interface CdnServiceInterface
     public function downloadImageFromCdn(string $url, string $destination, string $bucket_name = null): bool;
 
     /**
+     * Check whether an object exists in the bucket
+     * @param string $url
+     * @param string|null $bucket_name
+     * @return bool
+     */
+    public function checkImageExists(string $url, string $bucket_name = null): bool;
+
+    /**
      * Check whether a bucket exists in current project
      * @param string $bucket_name
      * @return bool
