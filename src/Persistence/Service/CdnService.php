@@ -17,14 +17,20 @@ class CdnService implements CdnServiceInterface {
     private $google_client;
     private $google_config;
 
-    public function __construct()
+    public function __construct($options = [])
     {
         $this->google_config = Configuration::getClass('google');
         if (!is_array($this->google_config) || count($this->google_config) == 0) {
-            // Google Service not configured
-            $this->google_client = null;
-            return;
+            if ($options == []) {
+                // Google Service not configured and no custom options passed
+                $this->google_client = null;
+                return;
+            }
         }
+        // Merge custom options to config
+        $this->google_config = $this->array_merge_recursive_distinct($this->google_config, $options);
+
+        // Initialize Google Rest Client
         $this->google_client = new Google_Client($this->google_config);
         $this->google_client->useApplicationDefaultCredentials();
         $this->google_client->setScopes([\Google_Service_Storage::DEVSTORAGE_FULL_CONTROL]);
@@ -426,4 +432,25 @@ class CdnService implements CdnServiceInterface {
             return null;
         }
     }
+
+
+    /**
+     * Merge options arrays recursively
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+    protected function array_merge_recursive_distinct(array &$array1, array &$array2)
+    {
+        $merged = $array1;
+        foreach ($array2 as $key => &$value) {
+            if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+                $merged[$key] = $this->array_merge_recursive_distinct($merged[$key], $value);
+            } else {
+                $merged[$key] = $value;
+            }
+        }
+        return $merged;
+    }
+
 }

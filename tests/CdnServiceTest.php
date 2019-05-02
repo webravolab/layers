@@ -7,7 +7,11 @@ class CdnServiceTest extends TestCase
     {
         $config_service = (new Webravo\Infrastructure\Library\Configuration())::instance();
 
-        $cdn_service = new \Webravo\Persistence\Service\CdnService();
+        $options = [
+            'gzip' => false
+        ];
+
+        $cdn_service = new \Webravo\Persistence\Service\CdnService($options);
 
         $image = __DIR__ . '/assets/bsn.png';
 

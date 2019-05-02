@@ -48,7 +48,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
             $app['config']->set('google.prompt', 'select_account');
             $app['config']->set('google.bucket', 'test-bucket');
             $app['config']->set('google.image_cache_ttl', 86400);
-            $app['config']->set('google.gzip', false);
+            $app['config']->set('google.gzip', true);
             $app['config']->set('google.application_name', 'test-application');
         }
     }

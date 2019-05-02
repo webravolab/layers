@@ -2,6 +2,10 @@
 
 ## Changes Log
 
+### Ver. 1.0.44
+
+* Allow passing override options array to CdnService constructor
+
 ### Ver. 1.0.43
 
 * Added function checkImageExists() to CdnService
