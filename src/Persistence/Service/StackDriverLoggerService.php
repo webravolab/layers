@@ -100,6 +100,12 @@ class StackDriverLoggerService extends AbstractProcessingHandler implements Logg
     {
         $level = Logger::getLevelName($severity);
         if (count($context) > 0) {
+            foreach($context as $key => $value) {
+                if (is_array($value)) {
+                    // Flatten any sub-array value because labels must be plain strings - 2019-05-07 <PN>
+                    $context[$key] = serialize($value);
+                }
+            }
             $this->options = array_replace($this->options, [
                 'labels' => $context
             ]);
