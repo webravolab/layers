@@ -19,3 +19,4 @@ yarn-error.log
 .env
 .phpunit.result.cache
 /app/screenshots
+/tests/google-credentials.json
