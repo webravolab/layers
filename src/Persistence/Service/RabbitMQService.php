@@ -29,8 +29,9 @@ class RabbitMQService implements QueueServiceInterface
         $port = Configuration::get('port', 'rabbitmq', '5672');
         $user = Configuration::get('user', 'rabbitmq', 'guest');
         $password = Configuration::get('password', 'rabbitmq', 'guest');
+        $virtual_host = Configuration::get('virtual_host', 'rabbitmq', '/');
 
-        $this->connection = new AMQPStreamConnection($host, $port, $user, $password);
+        $this->connection = new AMQPStreamConnection($host, $port, $user, $password, $virtual_host);
 
         $this->channel = $this->connection->channel();
         $this->channel->basic_qos(null, 1, null);

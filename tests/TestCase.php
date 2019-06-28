@@ -50,6 +50,12 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
             $app['config']->set('google.image_cache_ttl', 86400);
             $app['config']->set('google.gzip', true);
             $app['config']->set('google.application_name', 'test-application');
+
+            $app['config']->set('rabbitmq.host', '35.246.112.111');
+            $app['config']->set('rabbitmq.port', '5672');
+            $app['config']->set('rabbitmq.user', 'webravo-develop');
+            $app['config']->set('rabbitmq.password', 'pTe5MYH!4@8E');
+            $app['config']->set('rabbitmq.virtual_host', 'develop');
         }
     }
 
