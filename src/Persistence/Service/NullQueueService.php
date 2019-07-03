@@ -134,7 +134,7 @@ class NullQueueService implements QueueServiceInterface {
         }
     }
 
-    public function getSingleMessage($queueName) {
+    public function getSingleMessage($queueName = null) {
 
         if (!empty($queueName)) {
             $this->defaultQueue = $queueName;
