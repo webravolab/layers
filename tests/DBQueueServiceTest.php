@@ -31,7 +31,7 @@ class DBQueueServiceTest extends TestCase
 
     public function testFanoutBindingDBQueueService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
@@ -85,7 +85,7 @@ class DBQueueServiceTest extends TestCase
 
     public function testDBQueueServiceRoundRobin() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService = new DBQueueService($jobQueueService);
@@ -129,7 +129,7 @@ class DBQueueServiceTest extends TestCase
 
     public function testTopicDBQueueService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
@@ -193,7 +193,7 @@ class DBQueueServiceTest extends TestCase
 
     public function testDirectDBQueueService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
@@ -239,7 +239,7 @@ class DBQueueServiceTest extends TestCase
 
     public function testFanoutDBQueueService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);

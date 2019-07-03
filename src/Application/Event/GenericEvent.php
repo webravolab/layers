@@ -22,7 +22,7 @@ abstract class GenericEvent implements EventInterface {
             $this->occurred_at = $occurred_at;
         }
         else {
-            $this->occurred_at = new DateTime(now());
+            $this->occurred_at = new DateTime();
         }
         $this->type = $type;
     }

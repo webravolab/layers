@@ -49,7 +49,7 @@ class JobDataTable extends AbstractDataTable {
     public function persist($payload) {
 
         if (empty($this->created_at)) {
-            $this->created_at = new DateTime(now());
+            $this->created_at = new DateTime();
         }
         if (empty($this->status)) {
             $this->status = 'QUEUED';

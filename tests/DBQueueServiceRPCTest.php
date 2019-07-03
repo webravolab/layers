@@ -6,7 +6,7 @@ class DBQueueServiceRPCTestTest extends TestCase
 {
     public function testDBQueueServiceRPC() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $jobQueueService = new EloquentJobStore();
         $publisherService = new DBQueueService($jobQueueService);

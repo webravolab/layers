@@ -6,7 +6,7 @@ class RabbitMQServiceRPCTestTest extends TestCase
 {
     public function testRabbitMQServiceRPC() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
 

@@ -44,15 +44,15 @@ class EloquentJobStore implements JobQueueInterface {
                 'status' => 'ACTIVE',
                 'guid' => $this->guidService->Generate()->getValue(),
                 'routing_key' => $routing_key,
-                'created_at' => new DateTime(now()),
-                'last_run_at' => new DateTime(now())
+                'created_at' => new DateTime(),
+                'last_run_at' => new DateTime()
             ]
         );
         $o_queue->status = 'ACTIVE';
         $o_queue->channel = $channelName;
         $o_queue->strategy = $strategy;
         $o_queue->routing_key = $routing_key;
-        $o_queue->last_run_at = new DateTime(now());
+        $o_queue->last_run_at = new DateTime();
         $o_queue->save();
 
         return $this->getQueuedJobsNumber($queueName);
@@ -203,7 +203,7 @@ class EloquentJobStore implements JobQueueInterface {
                 ->orderBy('created_at')
                 ->orderBy('id')
                 ->firstOrFail()
-                ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime(now())]);
+                ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime()]);
         }
         catch (ModelNotFoundException $e) {
             return null;
@@ -279,7 +279,7 @@ class EloquentJobStore implements JobQueueInterface {
             }
             $this->last_cleanup_by_queue[$queueNameWithPrefix] = time();    // save last cleanup time x queue
 
-            $today = new Datetime(now());
+            $today = new Datetime();
             $one_day_date = $today->sub(new DateInterval('P1D'))->format('Y-m-d H:i:s');
             $seven_days_date = $today->sub(new DateInterval('P7D'))->format('Y-m-d H:i:s');
 

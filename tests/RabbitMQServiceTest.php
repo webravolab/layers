@@ -30,7 +30,7 @@ class RabbitMQTest extends TestCase
 
     public function testFanoutBindingRabbitMQService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('fanout', 'fanout-bind-exchange');
@@ -88,7 +88,7 @@ class RabbitMQTest extends TestCase
 
     public function testFanout2RabbitMQService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('fanout', 'fanoutB-exchange');
@@ -113,7 +113,7 @@ class RabbitMQTest extends TestCase
 
     public function testRabbitMQServiceRoundRobin() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
 
@@ -157,7 +157,7 @@ class RabbitMQTest extends TestCase
 
     public function testTopicRabbitMQService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('topic', 'topic-exchange');
@@ -217,7 +217,7 @@ class RabbitMQTest extends TestCase
     
     public function testDirectRabbitMQService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('direct', 'direct-exchange');
@@ -261,7 +261,7 @@ class RabbitMQTest extends TestCase
 
     public function testFanout1RabbitMQService() {
 
-        $execution_id = (new Datetime(now()))->format('H:i:s');
+        $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('fanout', 'fanout-exchange');
