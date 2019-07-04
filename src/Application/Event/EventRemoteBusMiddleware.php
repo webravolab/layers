@@ -10,7 +10,7 @@ class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
     private $next;
     private $queueService;
 
-    public function __construct(EventBusMiddlewareInterface $next ,  ?QueueServiceInterface $queueService) {
+    public function __construct(?EventBusMiddlewareInterface $next,  ?QueueServiceInterface $queueService) {
         $this->next = $next;
         $this->queueService = $queueService;
         if ($this->queueService) {
@@ -35,7 +35,9 @@ class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
             $payload = $event->getSerializedPayload();
             $this->queueService->publishMessage($payload);
         }
-        // Dispatch to the next middleware on stack
-        $this->next->dispatch($event);
+        if (!is_null($this->next)) {
+            // Dispatch to the next middleware on stack
+            $this->next->dispatch($event);
+        }
     }
 }
