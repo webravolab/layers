@@ -9,9 +9,6 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Persistence\Eloquent\DataTable\JobDataTable;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
-// Eloquent Models and libraries
-use App\Jobs;
-use App\JobsQueue;
 use DB;
 use Datetime;
 use DateInterval;
@@ -23,18 +20,29 @@ class EloquentJobStore implements JobQueueInterface {
     private $loggerService;
     private $prefix;
     private $last_cleanup_by_queue = [];
+    // Eloquent models names to use
+    private $jobsQueueModel;
+    private $jobsModel;
 
-    public function __construct()
+    public function __construct($jobsQueueModel = 'App\JobsQueue', $jobsModel = 'App\Jobs')
     {
         $this->guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
         $this->loggerService = DependencyBuilder::resolve('Psr\Log\LoggerInterface');
         $this->prefix = Configuration::get('QUEUE_PREFIX', null, 'no-prefix');
+        // Inject optional Eloquent models names to use
+        if (class_exists($jobsQueueModel) && class_exists($jobsModel)) {
+            $this->jobsQueueModel = $jobsQueueModel;
+            $this->jobsModel = $jobsModel;
+        }
+        else {
+            throw new \Exception('[EloquenJobStore] Invalid queue models: '  . $jobsQueueModel . ' / ' . $jobsModel);
+        }
     }
 
     public function createQueue(string $queueName, string $channelName = '', string $strategy = '', string $routing_key = ''): int
     {
         $prefixedQueueName = $queueName . '-' . $this->prefix;
-        $o_queue = JobsQueue::firstOrNew(
+        $o_queue = $this->jobsQueueModel::firstOrNew(
             [
                 'queue_name' => $prefixedQueueName
             ],
@@ -61,7 +69,7 @@ class EloquentJobStore implements JobQueueInterface {
     public function bindQueue(string $queueName, string $channel = null)
     {
         $prefixedQueueName = $queueName . '-' . $this->prefix;
-        JobsQueue::where('queue_name', $prefixedQueueName)
+        $this->jobsQueueModel::where('queue_name', $prefixedQueueName)
             ->where('channel',$channel)
             ->where('status', '<>', 'DELETED')
             ->update([
@@ -72,7 +80,7 @@ class EloquentJobStore implements JobQueueInterface {
     public function unbindQueue(string $queueName, string $channel = null)
     {
         $prefixedQueueName = $queueName . '-' . $this->prefix;
-        JobsQueue::where('queue_name', $prefixedQueueName)
+        $this->jobsQueueModel::where('queue_name', $prefixedQueueName)
             ->where('channel',$channel)
             ->where('status', 'BIND')
             ->update([
@@ -85,12 +93,12 @@ class EloquentJobStore implements JobQueueInterface {
         $hydrator = new JobHydrator();
 
         // Check whether the channel is an exchange or a queue
-        $c_queues = JobsQueue::where('channel', $channel)
+        $c_queues = $this->jobsQueueModel::where('channel', $channel)
             ->where('status', 'BIND')
             ->get();
         if ($c_queues->count() == 0) {
             $queueName = $channel . '-' . $this->prefix;
-            $c_queues = JobsQueue::where('queue_name', $queueName)
+            $c_queues = $this->jobsQueueModel::where('queue_name', $queueName)
                 ->whereIn('status', ['ACTIVE','BIND'])
                 ->get();
             if ($c_queues && $c_queues->count() == 1) {
@@ -102,7 +110,7 @@ class EloquentJobStore implements JobQueueInterface {
                     $job->setHeader($header);
                     $job->persist($payload);
                     // Update total # of messages sent to this queue
-                    JobsQueue::where('queue_name', $queueName)->update(['messages_total' => DB::raw('messages_total +1')]);
+                    $this->jobsQueueModel::where('queue_name', $queueName)->update(['messages_total' => DB::raw('messages_total +1')]);
                     // Clean old ACK + NACK messages
                     $this->cleanup($queueName);
                 }
@@ -111,7 +119,7 @@ class EloquentJobStore implements JobQueueInterface {
                 }
             }
             else {
-                throw new \Exception('Invalid Channel/Queue: ' . $channel);
+                throw new \Exception('[EloquentJobStore][Append] Invalid Channel/Queue: ' . $channel);
             }
         }
         else {
@@ -154,7 +162,7 @@ class EloquentJobStore implements JobQueueInterface {
                 }
                 if ($is_delivered) {
                     // Update total # of messages sent to this queue
-                    JobsQueue::where('id', $o_queue->id)->update(['messages_total' => DB::raw('messages_total +1')]);
+                    $this->jobsQueueModel::where('id', $o_queue->id)->update(['messages_total' => DB::raw('messages_total +1')]);
                     // Clean old ACK + NACK messages
                     $this->cleanup($queueName);
                 }
@@ -165,7 +173,7 @@ class EloquentJobStore implements JobQueueInterface {
     public function getQueuedJobsNumber($channel): int
     {
         $channel = $channel . '-' . $this->prefix;
-        $n_jobs = Jobs::where('channel',$channel)
+        $n_jobs = $this->jobsModel::where('channel',$channel)
             ->where('status','QUEUED')
             ->where('delivered_token', null)
             ->count();
@@ -174,7 +182,7 @@ class EloquentJobStore implements JobQueueInterface {
 
     public function AllQueuedJobs($channel): array
     {
-        $c_jobs = Jobs::where('channel',$channel)
+        $c_jobs = $this->jobsModel::where('channel',$channel)
             ->where('status','QUEUED')
             ->where('delivered_token', null)
             ->orderBy('created_at')
@@ -197,7 +205,7 @@ class EloquentJobStore implements JobQueueInterface {
         $channel = $channel . '-' . $this->prefix;
 
         try {
-            $result = Jobs::where('channel', $channel)
+            $result = $this->jobsModel::where('channel', $channel)
                 ->where('status', 'QUEUED')
                 ->where('delivered_token', null)
                 ->orderBy('created_at')
@@ -213,7 +221,7 @@ class EloquentJobStore implements JobQueueInterface {
             return null;
         }
 
-        $o_job = Jobs::where('channel',$channel)
+        $o_job = $this->jobsModel::where('channel',$channel)
             ->where('status','DELIVERED')
             ->where('delivered_token', $guid)
             ->first();
@@ -231,14 +239,14 @@ class EloquentJobStore implements JobQueueInterface {
 
     public function AcknowledgeJobByGuid($guid)
     {
-        Jobs::where('guid',$guid)
+        $this->jobsModel::where('guid',$guid)
             ->first()
             ->update(['status' => 'ACK']);
     }
 
     public function NotAcknowledgeJobByGuid($guid)
     {
-        Jobs::where('guid',$guid)
+        $this->jobsModel::where('guid',$guid)
             ->first()
             ->update(['status' => 'NACK']);
     }
@@ -249,14 +257,14 @@ class EloquentJobStore implements JobQueueInterface {
 
         if ($purge) {
             // Set alla QUEUED messages as NACK
-            Jobs::where('channel', $queueName)
+            $this->jobsModel::where('channel', $queueName)
                 ->where('status', 'QUEUED')
                 ->update([
                     'status' => 'NACK'
                 ]);
         }
         // Set Queue as DELETED
-        JobsQueue::where('queue_name', $queueName)
+        $this->jobsQueueModel::where('queue_name', $queueName)
             ->where('status', '<>', 'DELETED')
             ->update([
                 'status' => 'DELETED'
@@ -283,14 +291,14 @@ class EloquentJobStore implements JobQueueInterface {
             $one_day_date = $today->sub(new DateInterval('P1D'))->format('Y-m-d H:i:s');
             $seven_days_date = $today->sub(new DateInterval('P7D'))->format('Y-m-d H:i:s');
 
-            $ack_deleted = Jobs::where('channel', $queueNameWithPrefix)
+            $ack_deleted = $this->jobsModel::where('channel', $queueNameWithPrefix)
                 ->where('status', 'ACK')
                 ->where('delivered_at', '<', $one_day_date)
                 ->delete();
 
             $this->loggerService->debug('[EloquentJobStore][cleanup]: queue ' . $queueNameWithPrefix . ' - deleted ' . $ack_deleted . " ACK messages before " . $one_day_date);
 
-            $nack_deleted = Jobs::where('channel', $queueNameWithPrefix)
+            $nack_deleted = $this->jobsModel::where('channel', $queueNameWithPrefix)
                 ->where('status', 'NACK')
                 ->where('delivered_at', '<', $seven_days_date)
                 ->delete();

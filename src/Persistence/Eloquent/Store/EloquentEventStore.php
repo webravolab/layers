@@ -10,6 +10,11 @@ use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 use App\Events;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 
+/**
+ * The "Event Store" is a simply event bucket sink to log all events
+ * It is NOT used for event dispatching or process
+ */
+
 class EloquentEventStore implements EventStoreInterface {
 
     public function Append(DomainEventInterface $domainEvent)

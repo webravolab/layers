@@ -4,6 +4,12 @@ namespace Webravo\Infrastructure\Repository;
 
 use Webravo\Persistence\Eloquent\DataTable\JobDataTable;
 
+/**
+ * JobQueue is a generic Queue to be used for both Events / Commands
+ *
+ * Interface JobQueueInterface
+ * @package Webravo\Infrastructure\Repository
+ */
 interface JobQueueInterface {
 
     public function createQueue(string $queueName, string $channelName = '', string $strategy = '', string $routing_key = ''): int;

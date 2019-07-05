@@ -19,8 +19,4 @@ interface HydratorInterface {
      */
     public function Map(array $a_values): array;
     
-
-    // TODO - to be deleted
-    // public function Extract($object);
-
 }
