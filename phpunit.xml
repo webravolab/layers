@@ -24,6 +24,8 @@
         <env name="DB_DATABASE" value="TEST_DB"/>
         <env name="SETTINGS_DRIVER" value="array"/>
         <env name="SETTINGS_DB_CONNECTION" value="testbench"/>
-
+        <env name="JOBS_QUEUE_ELOQUENT_MODEL" value="App\JobsQueue"/>
+        <env name="JOBS_ELOQUENT_MODEL" value="App\Jobs"/>
+        <env name="EVENTS_ELOQUENT_MODEL" value="App\Events"/>
     </php>
 </phpunit>

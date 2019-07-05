@@ -1,4 +1,5 @@
 <?php
+
 use Webravo\Persistence\Service\DBQueueService;
 use Webravo\Persistence\Eloquent\Store\EloquentJobStore;
 

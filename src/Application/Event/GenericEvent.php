@@ -61,11 +61,11 @@ abstract class GenericEvent implements EventInterface {
     {
         if (isset($data['type'])) {
             $eventName = $data['type'];
-            if (strpos($eventName, 'Project\\Domain\\Event\\') === false) {
-                $eventClassName = 'Project\\Domain\\Event\\' . $eventName;
+            if (strpos($eventName, '\\') === false && strpos($eventName, 'Project\\Domain\\Event\\') === false) {
+                $eventName = 'Project\\Domain\\Event\\' . $eventName;
             }
             try {
-                $class = new \ReflectionClass($eventClassName);
+                $class = new \ReflectionClass($eventName);
                 $eventInstance = $class->newInstance();
                 $eventInstance->fromArray($data);
                 return $eventInstance;

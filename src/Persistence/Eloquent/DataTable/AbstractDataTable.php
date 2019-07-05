@@ -22,7 +22,7 @@ abstract class AbstractDataTable {
         return $this->guid;
     }
 
-    abstract function getByGuid($guid);
+    abstract static function getByGuid($guid);
 
     abstract function persist($object);
 

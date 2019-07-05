@@ -24,18 +24,16 @@ class EloquentJobStore implements JobQueueInterface {
     private $jobsQueueModel;
     private $jobsModel;
 
-    public function __construct($jobsQueueModel = 'App\JobsQueue', $jobsModel = 'App\Jobs')
+    public function __construct()
     {
         $this->guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
         $this->loggerService = DependencyBuilder::resolve('Psr\Log\LoggerInterface');
         $this->prefix = Configuration::get('QUEUE_PREFIX', null, 'no-prefix');
-        // Inject optional Eloquent models names to use
-        if (class_exists($jobsQueueModel) && class_exists($jobsModel)) {
-            $this->jobsQueueModel = $jobsQueueModel;
-            $this->jobsModel = $jobsModel;
-        }
-        else {
-            throw new \Exception('[EloquenJobStore] Invalid queue models: '  . $jobsQueueModel . ' / ' . $jobsModel);
+        // Inject Eloquent models names to use (overridable by configuration)
+        $this->jobsQueueModel = Configuration::get('JOBS_QUEUE_ELOQUENT_MODEL', null, 'App\JobsQueue');
+        $this->jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
+        if (!class_exists($this->jobsQueueModel) || !class_exists($this->jobsModel)) {
+            throw new \Exception('[EloquenJobStore] Invalid queue models: '  . $this->jobsQueueModel . ' / ' . $this->jobsModel);
         }
     }
 

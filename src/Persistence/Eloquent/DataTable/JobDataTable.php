@@ -1,10 +1,12 @@
 <?php
 namespace Webravo\Persistence\Eloquent\DataTable;
 
+use Webravo\Infrastructure\Library\Configuration;
+use Webravo\Infrastructure\Library\DependencyBuilder;
+use Webravo\Infrastructure\Repository\HydratorInterface;
 use Webravo\Persistence\Repository\AbstractDataTable;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
-use App\Jobs;
 use \DateTime;
 
 class JobDataTable extends AbstractDataTable {
@@ -20,6 +22,23 @@ class JobDataTable extends AbstractDataTable {
     protected $delivered_token;
     protected $payload;
     protected $header;
+
+    // Eloquent models names to use
+    private $jobsModel;
+
+    public function __construct(HydratorInterface $hydrator)
+    {
+        parent::__construct($hydrator);
+        // Inject Eloquent models names to use (overridable by configuration)
+        $jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
+        $this->jobsModel = empty($job) ? null : $jobsModel;
+        if ($this->jobsModel) {
+            if (!class_exists($this->jobsModel)) {
+                throw new \Exception('[JobDataTable] Invalid job model: ' . $this->jobsModel);
+                $this->jobsModel = null;
+            }
+        }
+    }
 
     public static function buildFromArray(array $data): JobDataTable
     {
@@ -40,27 +59,28 @@ class JobDataTable extends AbstractDataTable {
         return $job;
     }
 
-    public function getByGuid($guid)
+    public static function getByGuid($guid)
     {
         // TODO: Implement getByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
     public function persist($payload) {
+        if ($this->jobsModel) {
+            if (empty($this->created_at)) {
+                $this->created_at = new DateTime();
+            }
+            if (empty($this->status)) {
+                $this->status = 'QUEUED';
+            }
+            $this->setPayload($payload);
 
-        if (empty($this->created_at)) {
-            $this->created_at = new DateTime();
+            // Build array data
+            $data = $this->hydrator->Extract($this);
+
+            // Create Eloquent Job
+            $o_command = $this->jobsModel::create($data);
         }
-        if (empty($this->status)) {
-            $this->status = 'QUEUED';
-        }
-        $this->setPayload($payload);
-
-        // Build array data
-        $data = $this->hydrator->Extract($this);
-
-        // Create Eloquent Job
-        $o_command = Jobs::create($data);
     }
 
     public function setName($name) {
