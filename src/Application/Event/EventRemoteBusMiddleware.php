@@ -5,9 +5,14 @@ use Webravo\Application\Event\EventInterface;
 use Webravo\Infrastructure\Service\QueueServiceInterface;
 use Webravo\Infrastructure\Library\Configuration;
 
+/**
+ * Class EventRemoteBusMiddleware
+ * use the "Decorator Pattern" to add a Event Remote Dispatch capabilities to Event Bus chain
+ * @package Webravo\Application\Event
+ */
 class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
 
-    private $next;
+    private $next;              // The next level in the Event Bus Chain
     private $queueService;
 
     public function __construct(?EventBusMiddlewareInterface $next,  ?QueueServiceInterface $queueService) {

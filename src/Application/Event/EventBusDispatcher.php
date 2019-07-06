@@ -7,6 +7,11 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 use ReflectionClass;
 
 
+/**
+ * Class EventBusDispatcher
+ * Local Event Dispatcher - the lower dispatcher in the Event Bus Middleware chain
+ * @package Webravo\Application\Event
+ */
 class EventBusDispatcher implements EventBusMiddlewareInterface
 {
     private $handlers = [];
@@ -20,9 +25,15 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
         return static::$instance;
     }
 
+    /**
+     * Register an handler to subscribe an event
+     * @param $handler
+     * @throws \ReflectionException
+     */
     public function subscribe($handler):void {
         $reflect = new ReflectionClass($handler);
         if($reflect->implementsInterface('Webravo\Application\Event\EventHandlerInterface')) {
+            // The event to listen is discovered through the function listenTo() inside the handler
             $event_name = call_user_func(array($handler, 'listenTo'));
             if (isset($this->handlers[$event_name])) {
                 foreach($this->handlers[$event_name] as $subscribed_handler) {
@@ -36,6 +47,10 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
         }
     }
 
+    /**
+     * Dispatch an event to all registered handlers
+     * @param EventInterface $event
+     */
     public function dispatch(EventInterface $event):void  {
         $event_class = get_class($event);
         if (isset($this->handlers[$event_class])) {

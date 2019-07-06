@@ -6,6 +6,11 @@ use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class EventBusFactory
+ * Create a basic Event Bus including 3 middlewares, a Queue, a Logger and a Local Dispatcher
+ * @package Webravo\Application\Event
+ */
 class EventBusFactory {
 
     private static $instance = null;
