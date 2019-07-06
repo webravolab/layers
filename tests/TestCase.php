@@ -88,6 +88,8 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         $app->singleton('Illuminate\Contracts\Console\Kernel', Kernel::class);
 
         $app->singleton('Webravo\Infrastructure\Service\GuidServiceInterface', 'Webravo\Infrastructure\Service\GuidService');
+
+        $app->singleton('Webravo\Infrastructure\Service\DataStoreServiceInterface', 'Webravo\Persistence\Service\DataStoreService');
     }
 
     public function artisan($command, $parameters = [])

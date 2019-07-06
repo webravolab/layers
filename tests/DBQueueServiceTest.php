@@ -7,21 +7,6 @@ use Webravo\Persistence\Eloquent\Store\EloquentEventStore;
 class DBQueueServiceTest extends TestCase
 {
 
-    public function testEventStore()
-    {
-        $eventStore = new EloquentEventStore();
-
-        $event = new \tests\events\TestEvent();
-        $event->setPayload('test value');
-        $guid = $event->getGuid();
-
-        $eventStore->Append($event);
-
-        $retrieved_event = $eventStore->getByGuid($guid);
-
-        $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
-    }
-
     public function testDBQueueServiceSendReceive()
     {
 

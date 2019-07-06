@@ -4,9 +4,14 @@ namespace Webravo\Application\Event;
 use Webravo\Common\Contracts\DomainEventInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class EventLoggerBusMiddleware
+ * use the "Decorator Pattern" to add a Event Logging capabilities to Event Bus chain
+ * @package Webravo\Application\Event
+ */
 class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
 
-    private $next;
+    private $next;              // The next level in the Event Bus Chain
     private $loggerService;
 
     public function __construct(EventBusMiddlewareInterface $next,  LoggerInterface $loggerService = null) {

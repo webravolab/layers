@@ -38,7 +38,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
             'guid' => $this->getGuid(),
             'type' => $this->getType(),
             'occurred_at' => $this->getOccurredAt()->format('Y-m-d H:i:s.u'),
-            'payload' => $this->getPayload(),
+            'payload' => $this->getSerializedPayload(),
         ];
         return $data;
     }
