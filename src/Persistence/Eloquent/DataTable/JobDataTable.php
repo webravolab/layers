@@ -31,7 +31,7 @@ class JobDataTable extends AbstractDataTable {
         parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
         $jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
-        $this->jobsModel = empty($job) ? null : $jobsModel;
+        $this->jobsModel = empty($jobsModel) ? null : $jobsModel;
         if ($this->jobsModel) {
             if (!class_exists($this->jobsModel)) {
                 throw new \Exception('[JobDataTable] Invalid job model: ' . $this->jobsModel);
