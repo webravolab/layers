@@ -1,7 +1,10 @@
 <?php
+
+use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Persistence\Eloquent\Store\EloquentEventStore;
 use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Application\Event\EventStoreBusMiddleware;
+use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
 
 class EventBusTest extends TestCase
 {
@@ -20,6 +23,28 @@ class EventBusTest extends TestCase
 
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
     }
+
+    public function testDataStoreEventStore()
+    {
+
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        if (!file_exists($googleConfigFile)) {
+            return ;
+        }
+
+        $eventStore = new DataStoreEventStore();
+
+        $event = new \tests\events\TestEvent();
+        $event->setPayload('test value');
+        $guid = $event->getGuid();
+
+        $eventStore->Append($event);
+
+        $retrieved_event = $eventStore->getByGuid($guid);
+
+        $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
+    }
+
 
     public function testEventBus()
     {
