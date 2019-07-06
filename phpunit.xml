@@ -27,5 +27,7 @@
         <env name="JOBS_QUEUE_ELOQUENT_MODEL" value="App\JobsQueue"/>
         <env name="JOBS_ELOQUENT_MODEL" value="App\Jobs"/>
         <env name="EVENTS_ELOQUENT_MODEL" value="App\Events"/>
+        <env name="GOOGLE_PROJECT_ID" value="**ENTER-PROJECT-HERE**"/>
+        <env name="GOOGLE_APPLICATION_CREDENTIALS" value="**ENTER-FILEPATH-HERE**"/>
     </php>
 </phpunit>
