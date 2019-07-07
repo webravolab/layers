@@ -90,6 +90,9 @@ class EventBusTest extends TestCase
         $retrieved_event = $eventStore->getByGuid($guid);
 
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
+
+        $this->assertEquals($event->getOccurredAt(), $retrieved_event->getOccurredAt());
+
     }
 
 }

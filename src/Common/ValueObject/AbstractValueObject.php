@@ -6,22 +6,7 @@ use Webravo\Common\Exception\ValueObjectException;
 abstract class AbstractValueObject
 {
     /**
-     * @var string/object
-     */
-    protected $value;
-
-    /**
-     * Return the object as a string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return (string) $this->value;
-    }
-
-    /**
-     * Create a new ValueObject
+     * Create a new immutable ValueObject
      *
      * @param $value
      * @return void
@@ -36,6 +21,22 @@ abstract class AbstractValueObject
             throw(new ValueObjectException('Invalid value ' . $value . ' for object ' . $class));
         }
     }
+
+    /**
+     * @var string/object
+     */
+    protected $value;
+
+    /**
+     * Return the object as a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->value;
+    }
+
 
     /**
      * Return the current value

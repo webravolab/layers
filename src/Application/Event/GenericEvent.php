@@ -2,29 +2,45 @@
 namespace Webravo\Application\Event;
 
 use Webravo\Application\Exception\EventException;
+use Webravo\Common\ValueObject\DateTimeObject;
 use Webravo\Infrastructure\Service\GuidServiceInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use DateTime;
+use DateTimeInterface;
 
 abstract class GenericEvent implements EventInterface {
 
+    /**
+     * @var GuidServiceInterface
+     */
     private $guidService;
+
+    /**
+     * @var string
+     */
     private $guid;
+
+    /**
+     * @var Webravo\Common\ValueObject\DateTimeObject;
+     */
     private $occurred_at;
+
+    /**
+     * @var string
+     */
     private $type;
 
     public function __construct($type, ?DateTime $occurred_at = null) {
 
+        $this->type = $type;
         $this->guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
-
         $this->guid = $this->guidService->generate()->getValue();
         if (!is_null($occurred_at)) {
-            $this->occurred_at = $occurred_at;
+            $this->setOccurredAt($occurred_at);
         }
         else {
-            $this->occurred_at = new DateTime();
+            $this->setOccurredAt(new DateTime());
         }
-        $this->type = $type;
     }
 
     public function setGuid($guid) {
@@ -35,12 +51,12 @@ abstract class GenericEvent implements EventInterface {
         return $this->guid;
     }
 
-    public function getOccurredAt(): ?DateTime {
-        return $this->occurred_at;
+    public function getOccurredAt(): ?DateTimeInterface {
+        return $this->occurred_at->getValue();
     }
 
-    public function setOccurredAt(DateTime $occurred_at) {
-        $this->occurred_at = $occurred_at;
+    public function setOccurredAt($occurred_at) {
+        $this->occurred_at = new DateTimeObject($occurred_at);
     }
 
     public function setType($type) {

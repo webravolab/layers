@@ -10,13 +10,20 @@ abstract class AbstractEntity implements EntityInterface
 {
     protected $guid;
 
-    public function __construct() {
+    public function __construct()
+    {
         $guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
         $this->guid = $guidService->generate()->getValue();
     }
 
-    public function getGuid() {
+    public function getGuid()
+    {
         return $this->guid;
+    }
+
+    protected function setGuid($guid)
+    {
+        $this->guid = $guid;
     }
 
     abstract public function toArray(): array;

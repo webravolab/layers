@@ -37,7 +37,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         $data = [
             'guid' => $this->getGuid(),
             'type' => $this->getType(),
-            'occurred_at' => $this->getOccurredAt()->format('Y-m-d H:i:s.u'),
+            'occurred_at' => $this->getOccurredAt(),
             'payload' => $this->getSerializedPayload(),
         ];
         return $data;
@@ -52,7 +52,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
             $this->setType($data['type']);
         }
         if (isset($data['occurred_at'])) {
-            $this->setOccurredAt(new DateTime($data['occurred_at']));
+            $this->setOccurredAt($data['occurred_at']);
         }
         if (isset($data['payload'])) {
            $payload = json_decode($data['payload']);

@@ -4,6 +4,7 @@ namespace Webravo\Persistence\Datastore\DataTable;
 use Webravo\Persistence\Repository\AbstractDataStoreTable;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 
+use DateTimeInterface;
 
 class EventDataStoreTable extends AbstractDataStoreTable {
 
@@ -24,23 +25,28 @@ class EventDataStoreTable extends AbstractDataStoreTable {
         $this->type = $type;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function setOccurredAt($occurred_at) {
+    public function setOccurredAt(DateTimeInterface $occurred_at)
+    {
         $this->occurred_at = $occurred_at;
     }
 
-    public function getOccurred_at() {
+    public function getOccurred_at():DateTimeInterface
+    {
         return $this->occurred_at;
     }
 
-    public function setPayload($payload) {
+    public function setPayload($payload)
+    {
         $this->payload = $payload;
     }
 
-    public function getPayload() {
+    public function getPayload()
+    {
         return $this->payload;
     }
 
