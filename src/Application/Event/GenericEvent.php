@@ -90,6 +90,7 @@ abstract class GenericEvent implements EventInterface {
                 throw new EventException('Event ' . $eventName . ' not found', 103);
             }
         }
+        throw new EventException('[GenericEvent][buildFromArray] Event has not a valid type: ' . serialize($data), 104);
     }
 
     public function getSerializedPayload(): string
