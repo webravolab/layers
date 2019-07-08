@@ -15,7 +15,7 @@ class EventStoreBusMiddleware implements EventBusMiddlewareInterface {
     private $next;              // The next level in the Event Bus Chain
     private $eventStore;
 
-    public function __construct(EventBusMiddlewareInterface $next, EventStoreInterface $store) {
+    public function __construct(?EventBusMiddlewareInterface $next, EventStoreInterface $store) {
         $this->next = $next;
         $this->eventStore = $store;
     }
@@ -34,8 +34,9 @@ class EventStoreBusMiddleware implements EventBusMiddlewareInterface {
             // Persist event in the Event Store
             $this->eventStore->Append($event);
         }
-
-        $this->next->dispatch($event);
-
+        if (!is_null($this->next)) {
+            // Dispatch to the next middleware on stack
+            $this->next->dispatch($event);
+        }
     }
 }
