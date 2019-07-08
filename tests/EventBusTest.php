@@ -13,7 +13,7 @@ class EventBusTest extends TestCase
     {
         $eventStore = new EloquentEventStore();
 
-        $event = new \tests\events\TestEvent();
+        $event = new \tests\Events\TestEvent();
         $event->setPayload('test value');
         $guid = $event->getGuid();
 
@@ -26,15 +26,12 @@ class EventBusTest extends TestCase
 
     public function testDataStoreEventStore()
     {
-
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
-        if (!file_exists($googleConfigFile)) {
-            return ;
-        }
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
         $eventStore = new DataStoreEventStore();
 
-        $event = new \tests\events\TestEvent();
+        $event = new \tests\Events\TestEvent();
         $event->setPayload('test value');
         $guid = $event->getGuid();
 
@@ -54,7 +51,7 @@ class EventBusTest extends TestCase
         // Instantiate an Event Store using DB as underlying storage
         $eventBus = new EventStoreBusMiddleware($eventLocalDispatcher, $eventStore);
 
-        $event = new \tests\events\TestEvent();
+        $event = new \tests\Events\TestEvent();
         $event->setPayload('test value');
         $guid = $event->getGuid();
 
@@ -74,7 +71,7 @@ class EventBusTest extends TestCase
         // Instantiate an Event Store using Google Data Store as underlying storage
         $eventBus = new EventStoreBusMiddleware($eventLocalDispatcher, $eventStore);
 
-        $event = new \tests\events\TestEvent();
+        $event = new \tests\Events\TestEvent();
 
         $payload = new stdClass();
         $payload->value = 'this is a test value';

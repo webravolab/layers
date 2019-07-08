@@ -59,7 +59,37 @@ class DataStoreEventEntity extends AbstractEntity
         if (isset($a_values['guid'])) { $this->setGuid($a_values['guid']); }
         if (isset($a_values['type'])) { $this->setType($a_values['type']); }
         if (isset($a_values['occurred_at'])) { $this->setOccurredAt($a_values['occurred_at']); }
-        if (isset($a_values['payload'])) { $this->setPayload($a_values['payload']);}
+        if (isset($a_values['payload'])) {
+            $payload = json_decode($a_values['payload']);
+            if ($payload === null) {
+                $this->setPayload($a_values['payload']);
+            }
+            else {
+                $this->setPayload($payload);
+            }
+        }
+    }
+
+    /**
+     * Custom replacement of toArray() to return serialized version of payload
+     * @return array
+     */
+    public function toSerializedArray(): array {
+        return [
+            'guid' => $this->getGuid(),
+            'type' => $this->getType(),
+            'occurred_at' => $this->getOccurredAt(),
+            'payload' => $this->getSerializedPayload(),
+        ];
+    }
+
+    /**
+     * Custom function to return a Json serialized version of Payload
+     * @return string
+     */
+    public function getSerializedPayload(): string
+    {
+        return json_encode($this->getPayload());
     }
 
 }

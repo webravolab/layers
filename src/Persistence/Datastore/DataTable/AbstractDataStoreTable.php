@@ -2,6 +2,7 @@
 
 namespace Webravo\Persistence\Repository;
 
+use Webravo\Infrastructure\Repository\StorableInterface;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Repository\HydratorInterface;
@@ -10,7 +11,7 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 
 use ReflectionClass;
 
-abstract class AbstractDataStoreTable {
+abstract class AbstractDataStoreTable implements StorableInterface {
 
     protected $dataStoreService;
     protected $entity_name;

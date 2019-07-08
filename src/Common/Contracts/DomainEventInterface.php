@@ -16,4 +16,6 @@ interface DomainEventInterface extends EventInterface {
 
     public function getPayload();
 
+    public function getSerializedPayload(): string;
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\events;
+namespace tests\Events;
 
 use Webravo\Common\Contracts\DomainEventInterface;
 use Webravo\Application\Event\EventInterface;
@@ -9,7 +9,7 @@ use DateTime;
 
 class TestEvent extends GenericEvent implements DomainEventInterface {
 
-    private $type = 'tests\events\TestEvent';
+    private $type = 'tests\Events\TestEvent';
 
     private $payload;
 
@@ -27,10 +27,12 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         return $this->payload;
     }
 
+    /*
     public function getSerializedPayload(): string
     {
         return json_encode($this->getPayload());
     }
+    */
 
     public function toArray(): array
     {
@@ -38,7 +40,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
             'guid' => $this->getGuid(),
             'type' => $this->getType(),
             'occurred_at' => $this->getOccurredAt(),
-            'payload' => $this->getSerializedPayload(),
+            'payload' => $this->getPayload(),
         ];
         return $data;
     }
@@ -55,8 +57,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
             $this->setOccurredAt($data['occurred_at']);
         }
         if (isset($data['payload'])) {
-           $payload = json_decode($data['payload']);
-           $this->setPayload($payload);
+           $this->setPayload($data['payload']);
         }
     }
 

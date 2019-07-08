@@ -3,11 +3,13 @@ namespace Webravo\Persistence\Eloquent\DataTable;
 
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Infrastructure\Repository\StorableInterface;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 use Webravo\Persistence\Repository\AbstractDataTable;
+use Webravo\Common\Entity\AbstractEntity;
 
-class EventDataTable extends AbstractDataTable {
+class EventDataTable extends AbstractDataTable implements StorableInterface {
 
     // Eloquent models names to use
     private $eventsModel;
@@ -21,6 +23,7 @@ class EventDataTable extends AbstractDataTable {
     {
         parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
+        // TODO don't reload configuration if $this->eventsModel is already set
         $eventsModel = Configuration::get('EVENTS_ELOQUENT_MODEL', null, 'App\Events');
         $this->eventsModel = empty($eventsModel) ? null : $eventsModel;
         if ($this->eventsModel) {
@@ -42,34 +45,60 @@ class EventDataTable extends AbstractDataTable {
         return $event;
     }    
 
-    public static function getByGuid($guid)
-    {
-        $eventData = new static(new EventHydrator());
-        $eventsModel = $eventData->eventsModel;
-        if ($eventsModel) {
-            $o_event = $eventsModel::where('guid', $guid)->first();
-            if (!is_null($o_event)) {
-                // Extract raw data from Eloquent model
-                return $eventData->hydrator->Hydrate($o_event);
-            }
-        }
-        return null;
-    }
-
-    public function persist($event) {
+    public function persist(AbstractEntity $entity) {
         if ($this->eventsModel) {
-            // Check parent class
-            if (strpos(get_parent_class($event), 'GenericEvent') === false) {
-                throw new \Exception('EventDataTable: parameter must be instance of DomainEventInterface');
-            }
-
             // Extract data from Event as array to store directly on Eloquent model
-            $data = $this->hydrator->Extract($event);
-
+            // (serialization of payload is handled by hydrator->Extract)
+            if (method_exists($entity, "toSerializedArray")) {
+                $data = $entity->toSerializedArray();
+                $data = $this->hydrator->Map($data);
+            }
+            else {
+                $data = $entity->toArray(); // $this->hydrator->Extract($entity);
+                $data = $this->hydrator->Map($data);
+            }
             // Create Eloquent object
             $o_event = $this->eventsModel::create($data);
         }
     }
+
+    public function getByGuid($guid)
+    {
+        $o_event = $this->getObjectByGuid($guid);
+        if (!is_null($o_event)) {
+            // Extract raw data from Eloquent model
+            // (de-serialization of payload is handled by hydrator->Hydrate)
+            return $this->hydrator->Hydrate($o_event);
+        }
+        return null;
+    }
+
+    public function getObjectByGuid($guid)
+    {
+        // $eventData = new static(new EventHydrator());
+        $eventsModel = $this->eventsModel;
+        if ($eventsModel) {
+            return $eventsModel::where('guid', $guid)->first();
+        }
+        return null;
+    }
+
+    public function update(AbstractEntity $entity)
+    {
+        // TODO: Implement update() method.
+    }
+
+    public function delete(AbstractEntity $entity)
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function deleteByGuid($guid)
+    {
+        // TODO: Implement deleteByGuid() method.
+    }
+
+    // Getters & Setters
 
     public function setType($type) {
         $this->type = $type;
@@ -94,5 +123,4 @@ class EventDataTable extends AbstractDataTable {
     public function getPayload() {
         return $this->payload;
     }
-    
 }

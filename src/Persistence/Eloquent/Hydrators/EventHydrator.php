@@ -1,6 +1,7 @@
 <?php
 namespace Webravo\Persistence\Eloquent\Hydrators;
 
+use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Repository\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 
@@ -9,6 +10,7 @@ class EventHydrator implements HydratorInterface {
 
     /**
      * Convert eloquent attributes to array
+     * (handle de-serialization of event payload)
      * @param $eloquent_object
      * @return array                    // TODO declare return type when all implementors have been refactored
      */
@@ -19,7 +21,7 @@ class EventHydrator implements HydratorInterface {
             'guid' => $object->guid,
             'type' => $object->event_type,
             'occurred_at' => $object->occurred_at,
-            'payload' => $object->payload
+            'payload' => json_decode($object->payload),
         ];
         return $data;
     }
@@ -46,19 +48,22 @@ class EventHydrator implements HydratorInterface {
 
     /**
      * Extract data from Event instance and return as raw data array
-     * @param $event
+     * (handle serialization of event payload)
+     * @param DataStoreEventEntity $event
      * @return array
      * @throws \Exception
      */
-    public function Extract($event) {
+    public function Extract(DataStoreEventEntity $eventEntity) {
+        /*
         if (strpos(get_parent_class($event), 'GenericEvent')===false) {
             throw new \Exception('[EventHydrator][Extract] parameter must be instance of DomainEventInterface');
         }
+        */
         $data = [
-            'guid' => $event->getGuid(),
-            'event_type' => $event->getType(),
-            'occurred_at' => $event->getOccurredAt(),
-            'payload' => $event->getSerializedPayload()
+            'guid' => $eventEntity->getGuid(),
+            'event_type' => $eventEntity->getType(),
+            'occurred_at' => $eventEntity->getOccurredAt(),
+            'payload' => $eventEntity->getSerializedPayload()
         ];
         return $data;
 

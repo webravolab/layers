@@ -2,10 +2,12 @@
 
 namespace Webravo\Persistence\Repository;
 
+use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Repository\HydratorInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
+use Webravo\Infrastructure\Repository\StorableInterface;
 
-abstract class AbstractDataTable {
+abstract class AbstractDataTable implements StorableInterface {
 
     protected $guid;
 
@@ -22,8 +24,16 @@ abstract class AbstractDataTable {
         return $this->guid;
     }
 
-    abstract static function getByGuid($guid);
+    abstract function persist(AbstractEntity $object);
 
-    abstract function persist($object);
+    abstract function getByGuid($guid);
+
+    abstract function getObjectByGuid($guid);
+
+    abstract function update(AbstractEntity $entity);
+
+    abstract function delete(AbstractEntity $entity);
+
+    abstract function deleteByGuid($guid);
 
 }
