@@ -1,15 +1,17 @@
 <?php
 namespace Webravo\Persistence\Eloquent\DataTable;
 
+use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Infrastructure\Repository\StorableInterface;
 use Webravo\Persistence\Repository\AbstractDataTable;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
-use \DateTime;
+use DateTime;
 
-class JobDataTable extends AbstractDataTable {
+class JobDataTable extends AbstractDataTable implements StorableInterface {
 
     public $body;           // Compatibility with AMQPMessage
 
@@ -59,13 +61,19 @@ class JobDataTable extends AbstractDataTable {
         return $job;
     }
 
-    public static function getByGuid($guid)
+    public function getByGuid($guid)
     {
         // TODO: Implement getByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
-    public function persist($payload) {
+    public function getObjectByGuid($guid)
+    {
+        // TODO: Implement getObjectByGuid() method.
+        throw(new Exception('Unimplemented'));
+    }
+
+    public function persist(AbstractEntity $payload) {
         if ($this->jobsModel) {
             if (empty($this->created_at)) {
                 $this->created_at = new DateTime();
@@ -82,6 +90,23 @@ class JobDataTable extends AbstractDataTable {
             $o_command = $this->jobsModel::create($data);
         }
     }
+
+    public function update(AbstractEntity $entity)
+    {
+        // TODO: Implement update() method.
+    }
+
+    public function delete(AbstractEntity $entity)
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function deleteByGuid($guid)
+    {
+        // TODO: Implement deleteByGuid() method.
+    }
+
+    // Getters & Setters
 
     public function setName($name) {
         $this->jobName = $name;
