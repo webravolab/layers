@@ -63,21 +63,46 @@ class JobDataTable extends AbstractDataTable implements StorableInterface {
 
     public function getByGuid($guid)
     {
+        $o_command = $this->getObjectByGuid($guid);
+        if (!is_null($o_command)) {
+            // Extract raw data from Eloquent model
+            // (de-serialization of payload is handled by hydrator->Hydrate)
+            return $this->hydrator->Hydrate($o_command);
+        }
+        return null;
         // TODO: Implement getByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
     public function getObjectByGuid($guid)
     {
+        // $eventData = new static(new EventHydrator());
+        $commandsModel = $this->jobsModel;
+        if ($commandsModel) {
+            return $commandsModel::where('guid', $guid)->first();
+        }
+        return null;
         // TODO: Implement getObjectByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
     public function persistEntity(AbstractEntity $entity) {
-        // Cannot implement entity store
-        throw new \Exception('Unimplemented');
+        if ($this->jobsModel) {
+            // Extract data from Entity as array to store directly on Eloquent model
+            if (method_exists($entity, "toSerializedArray")) {
+                // Entity could implement it's own serialization method
+                $data = $entity->toSerializedArray();
+                $data = $this->hydrator->Map($data);
+            }
+            else {
+                $data = $entity->toArray();
+                // data['payload'] = json_encode($data);
+                $data = $this->hydrator->Map($data);
+            }
+            // Create Eloquent object
+            $o_event = $this->jobsModel::create($data);
+        }
     }
-
     public function persist($payload) {
         if ($this->jobsModel) {
             if (empty($this->created_at)) {

@@ -24,7 +24,8 @@ class JobHydrator implements HydratorInterface {
             'payload' => $object->payload,
             'header' => $object->header,
         ];
-        return JobDataTable::buildFromArray($data);
+        return $data;
+        // return JobDataTable::buildFromArray($data);
     }
 
     /**
@@ -36,13 +37,15 @@ class JobHydrator implements HydratorInterface {
     {
         $data = [
             'guid' => (isset($a_values['guid']) ? $a_values['guid'] : ''),
-            'name' => (isset($a_values['name']) ? $a_values['name'] : ''),
-            'channel' => (isset($a_values['channel']) ? $a_values['channel'] : ''),
-            'status' => (isset($a_values['status']) ? $a_values['status'] : null),
+            'name' => (isset($a_values['name']) ? $a_values['name'] : 'undefined'),
+            'channel' => (isset($a_values['channel']) ? $a_values['channel'] : 'undefined'),
+            'status' => (isset($a_values['status']) ? $a_values['status'] : 'QUEUED'),
             'created_at' => (isset($a_values['created_at']) ? $a_values['created_at'] : null),
             'delivered_at' => (isset($a_values['delivered_at']) ? $a_values['delivered_at'] : null),
-            'payload' => (isset($a_values['payload']) ? $a_values['payload'] : null),
-            'header' => (isset($a_values['header']) ? $a_values['header'] : null),
+            'header' => json_encode($a_values['header']),
+            'payload' => json_encode($a_values['payload']),
+            // 'payload' => (isset($a_values['payload']) ? $a_values['payload'] : null),
+            // 'header' => (isset($a_values['header']) ? $a_values['header'] : null),
         ];
         if (isset($a_values['id']) && $a_values['id'] > 0) {
             // Set ID only if exists and not empty

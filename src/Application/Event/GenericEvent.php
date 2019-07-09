@@ -71,7 +71,10 @@ abstract class GenericEvent implements EventInterface {
 
     abstract public function getPayload();
 
-    abstract public function toArray(): array;
+    public function toArray(): array
+    {
+
+    }
 
     public static function buildFromArray(array $data): EventInterface
     {
@@ -98,5 +101,4 @@ abstract class GenericEvent implements EventInterface {
         $json = json_encode($this->toArray());
         return $json;
     }
-
 }
