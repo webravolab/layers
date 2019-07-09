@@ -8,7 +8,6 @@ use Webravo\Persistence\Repository\AbstractDataStoreTable;
 
 class DataStoreTest extends TestCase
 {
-    /*
     public function testDataStore()
     {
 
@@ -77,9 +76,7 @@ class DataStoreTest extends TestCase
         echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
 
     }
-    */
 
-    /*
     public function testDataStoreMassiveInsert()
     {
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
@@ -110,7 +107,6 @@ class DataStoreTest extends TestCase
 
         echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
     }
-    */
 
     public function testDataStoreCursor()
     {
@@ -120,8 +116,6 @@ class DataStoreTest extends TestCase
         $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
 
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
-
-
 
     }
 }
