@@ -1,6 +1,7 @@
 <?php
 namespace Webravo\Persistence\Eloquent\DataTable;
 
+use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Repository\HydratorInterface;
 use Webravo\Infrastructure\Repository\StorableInterface;
@@ -43,9 +44,10 @@ class EventDataTable extends AbstractDataTable implements StorableInterface {
         if (isset($data['occurred_at'])) { $event->occurred_at = $data['occurred_at']; }
         if (isset($data['payload'])) { $event->payload = $data['payload'];}
         return $event;
-    }    
+    }
 
-    public function persist(AbstractEntity $entity) {
+
+    public function persistEntity(AbstractEntity $entity) {
         if ($this->eventsModel) {
             // Extract data from Event as array to store directly on Eloquent model
             // (serialization of payload is handled by hydrator->Extract)
@@ -54,12 +56,17 @@ class EventDataTable extends AbstractDataTable implements StorableInterface {
                 $data = $this->hydrator->Map($data);
             }
             else {
-                $data = $entity->toArray(); // $this->hydrator->Extract($entity);
+                $data = $entity->toArray();
                 $data = $this->hydrator->Map($data);
             }
             // Create Eloquent object
             $o_event = $this->eventsModel::create($data);
         }
+    }
+
+    public function persist($payload) {
+        // Cannot implement raw payload store
+        throw new \Exception('Unimplemented');
     }
 
     public function getByGuid($guid)

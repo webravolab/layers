@@ -20,7 +20,7 @@ class EventDataStoreTable extends AbstractDataStoreTable implements StorableInte
         parent::__construct($dataStoreService, $entity_name, $entity_classname);
     }
 
-    public function persist(AbstractEntity $entity) {
+    public function persistEntity(AbstractEntity $entity) {
 
         $a_name = get_class($entity);
         $b = new $a_name;
@@ -41,6 +41,11 @@ class EventDataStoreTable extends AbstractDataStoreTable implements StorableInte
             $dsObject[$attribute] = $value;
         }
         $version = $this->dataStoreService->connection()->insert($dsObject);
+    }
+
+    public function persist($payload) {
+        // Cannot implement raw payload store
+        throw new \Exception('Unimplemented');
     }
 
     // All basic functions are implemented by AbstractDataStoreTable

@@ -73,7 +73,12 @@ class JobDataTable extends AbstractDataTable implements StorableInterface {
         throw(new Exception('Unimplemented'));
     }
 
-    public function persist(AbstractEntity $payload) {
+    public function persistEntity(AbstractEntity $entity) {
+        // Cannot implement entity store
+        throw new \Exception('Unimplemented');
+    }
+
+    public function persist($payload) {
         if ($this->jobsModel) {
             if (empty($this->created_at)) {
                 $this->created_at = new DateTime();

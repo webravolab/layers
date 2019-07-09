@@ -24,7 +24,9 @@ abstract class AbstractDataTable implements StorableInterface {
         return $this->guid;
     }
 
-    abstract function persist(AbstractEntity $object);
+    abstract function persist($payload);
+
+    abstract function persistEntity(AbstractEntity $object);
 
     abstract function getByGuid($guid);
 

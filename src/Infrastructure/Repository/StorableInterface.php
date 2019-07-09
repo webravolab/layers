@@ -10,7 +10,9 @@ use Webravo\Common\Entity\AbstractEntity;
  */
 interface StorableInterface {
 
-    public function persist(AbstractEntity $entity);
+    public function persist($payload);
+
+    public function persistEntity(AbstractEntity $entity);
 
     public function getByGuid($guid);
 

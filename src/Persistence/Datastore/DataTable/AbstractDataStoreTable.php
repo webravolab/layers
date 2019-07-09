@@ -27,7 +27,7 @@ abstract class AbstractDataStoreTable implements StorableInterface {
         }
     }
 
-    public function persist(AbstractEntity $entity) {
+    public function persistEntity(AbstractEntity $entity) {
 
         $a_name = get_class($entity);
         $b = new $a_name;
@@ -43,6 +43,11 @@ abstract class AbstractDataStoreTable implements StorableInterface {
             $dsObject[$attribute] = $value;
         }
         $version = $this->dataStoreService->connection()->insert($dsObject);
+    }
+
+    public function persist($payload) {
+        // Cannot implement raw payload store
+        throw new \Exception('Unimplemented');
     }
 
     public function getByGuid($guid)

@@ -8,7 +8,7 @@ use Webravo\Application\Exception\CommandException;
 
 class TestCommand extends GenericCommand implements CommandInterface {
 
-    protected $command_name = 'TestCommand';
+    protected $command_name = 'tests\Commands\TestCommand';
     protected $strParam1;
     protected $intParam2;
     protected $floatParam3;
@@ -47,31 +47,40 @@ class TestCommand extends GenericCommand implements CommandInterface {
     public function toArray(): array
     {
         $data = [
-            'param1' => $this->getParam1(),
-            'param2' => $this->getParam2(),
-            'param3' => $this->getParam3(),
-            'param4' => $this->getParam4(),
-            'param5' => $this->getParam5(),
+            'command' => $this->getCommandName(),
+            'queue_name' => $this->getQueueName(),
+            'binding_key' => $this->getBindingKey(),
+            'header' => $this->getHeader(),
+            'payload' => [
+                'param1' => $this->getParam1(),
+                'param2' => $this->getParam2(),
+                'param3' => $this->getParam3(),
+                'param4' => $this->getParam4(),
+                'param5' => $this->getParam5(),
+            ]
         ];
         return $data;
     }
 
     public function fromArray(array $data)
     {
-        if (isset($data['param1'])) {
-            $this->strParam1 = $data['param1'];
-        }
-        if (isset($data['param2'])) {
-            $this->intParam2 = $data['param2'];
-        }
-        if (isset($data['param3'])) {
-            $this->floatParam3 = $data['param3'];
-        }
-        if (isset($data['param4'])) {
-            $this->clsParam4 = $data['param4'];
-        }
-        if (isset($data['param5'])) {
-            $this->arrParam5 = $data['param5'];
+        if (isset($data['payload'])) {
+            $payload_data = $data['payload'];
+            if (isset($payload_data['param1'])) {
+                $this->strParam1 = $payload_data['param1'];
+            }
+            if (isset($payload_data['param2'])) {
+                $this->intParam2 = $payload_data['param2'];
+            }
+            if (isset($payload_data['param3'])) {
+                $this->floatParam3 = $payload_data['param3'];
+            }
+            if (isset($payload_data['param4'])) {
+                $this->clsParam4 = $payload_data['param4'];
+            }
+            if (isset($payload_data['param5'])) {
+                $this->arrParam5 = $payload_data['param5'];
+            }
         }
     }
 

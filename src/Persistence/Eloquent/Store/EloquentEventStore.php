@@ -34,7 +34,7 @@ class EloquentEventStore implements EventStoreInterface {
         $entity_name = get_class($e_event);
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);
-        $eventDataTable->persist($e_event);
+        $eventDataTable->persistEntity($e_event);
    }
 
     public function AllEvents()

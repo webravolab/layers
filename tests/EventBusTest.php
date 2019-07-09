@@ -10,7 +10,6 @@ use Webravo\Persistence\Service\RabbitMQService;
 class EventBusTest extends TestCase
 {
 
-/*
     public function testEloquentEventStore()
     {
         $eventStore = new EloquentEventStore();
@@ -94,7 +93,7 @@ class EventBusTest extends TestCase
 
     }
 
-*/
+
     public function testRabbitMQBus() {
 
 

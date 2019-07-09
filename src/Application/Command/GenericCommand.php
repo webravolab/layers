@@ -72,12 +72,12 @@ abstract class GenericCommand implements CommandInterface {
     {
         if (isset($data['command'])) {
             $commandName = $data['command'];
-            if (strpos($commandName, 'Project\\Domain\\Command\\') === false) {
-                $commandClassName = 'Project\\Domain\\Command\\' . $commandName;
+            if (strpos($commandName, '\\') === false && strpos($commandName, 'Project\\Domain\\Command\\') === false) {
+                $commandName = 'Project\\Domain\\Command\\' . $commandName;
             }
             try {
                 // Generate a new instance of the real command class based on its name
-                $class = new \ReflectionClass($commandClassName);
+                $class = new \ReflectionClass($commandName);
                 $commandInstance = $class->newInstanceWithoutConstructor();
                 // Set common attributes
                 $commandInstance->setCommandName($commandName);

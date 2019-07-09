@@ -28,7 +28,7 @@ class DataStoreEventStore implements EventStoreInterface {
         $e_event = DataStoreEventEntity::buildFromArray($a_values);
         $entity_name = get_class($e_event);
         $eventDataTable = new EventDataStoreTable($this->dataStoreService);
-        $eventDataTable->persist($e_event);
+        $eventDataTable->persistEntity($e_event);
    }
 
     public function AllEvents()
