@@ -32,7 +32,7 @@ class DataStoreTest extends TestCase
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
 
         // Save entity
-        $dtOne->persist($a);
+        $dtOne->persistEntity($a);
 
         // retrieve entity
         $guid = $a->getGuid();
@@ -68,7 +68,7 @@ class DataStoreTest extends TestCase
             $a->setName($name);
             $a->setForeignKey($fk);
             $a->setCreatedAt($created_at);
-            $dtOne->persist($a);
+            $dtOne->persistEntity($a);
         }
 
         $end_time = microtime(true);
@@ -100,7 +100,7 @@ class DataStoreTest extends TestCase
             $a->setName($name);
             $a->setForeignKey($fk);
             $a->setCreatedAt($created_at);
-            $dtOne->persist($a);
+            $dtOne->persistEntity($a);
         }
 
         $end_time = microtime(true);
@@ -117,6 +117,7 @@ class DataStoreTest extends TestCase
 
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
 
-    }
+        self::assertTrue(false, 'Test incomplete...');
+   }
 }
 
