@@ -12,7 +12,7 @@ class EloquentCommandStore implements CommandStoreInterface {
     public function Append(CommandInterface $command)
     {
         $hydrator = new JobHydrator();
-        $commandDataTable = new JobdDataTable($hydrator);
+        $commandDataTable = new JobDataTable($hydrator);
         $commandDataTable->persist($command);
     }
     

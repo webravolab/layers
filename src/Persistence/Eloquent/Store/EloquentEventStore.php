@@ -37,11 +37,13 @@ class EloquentEventStore implements EventStoreInterface {
         $eventDataTable->persistEntity($e_event);
    }
 
+   /*
     public function AllEvents()
     {
         // TODO: Implement AllEvents() method.
         throw new \Exception('Unimplemented');
     }
+   */
 
     public function getByGuid($guid): ?DomainEventInterface
     {

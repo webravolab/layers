@@ -30,7 +30,7 @@ abstract class AbstractEntity implements EntityInterface
 
     abstract public function fromArray(array $a_values);
 
-    public static function buildFromArray(array $a_values): EntityInterface
+    public static function buildFromArray(array $a_values)
     {
         $instance = new static();
         $instance->fromArray($a_values);

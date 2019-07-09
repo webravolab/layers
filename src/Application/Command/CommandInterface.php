@@ -14,7 +14,7 @@ interface CommandInterface {
     public function setHeader(array $value);
     public function toArray(): array;
     public function fromArray(array $data);
-    public static function buildFromArray(array $data): CommandInterface;
+    public static function buildFromArray(array $data);
     public function getSerializedPayload(): string;
 
 }

@@ -10,6 +10,6 @@ interface EntityInterface
 
     public function fromArray(array $a_values);
 
-    public static function buildFromArray(array $a_values): EntityInterface;
+    public static function buildFromArray(array $a_values);
 
 }

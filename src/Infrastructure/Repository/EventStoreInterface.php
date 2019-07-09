@@ -15,7 +15,7 @@ interface EventStoreInterface {
 
     public function Append(DomainEventInterface $domainEvent);
 
-    public function AllEvents();
+    // public function AllEvents();
 
     // TODO
     // Implements other methods to retrieve or filter commands

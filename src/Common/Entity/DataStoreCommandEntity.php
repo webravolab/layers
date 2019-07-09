@@ -5,52 +5,68 @@ use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Common\ValueObject\DateTimeObject;
 use DateTimeInterface;
 
-class DataStoreEventEntity extends AbstractEntity
+class DataStoreCommandEntity extends AbstractEntity
 {
 
+    /*
     private $type;
     private $occurred_at;
     private $payload;
+    */
 
-    public function setType($value)
+    private $command_name = null;
+    private $binding_key = null;
+    private $queue_name = null;
+    private $header = array();
+
+
+    public function setCommandName($value)
     {
-        $this->type = $value;
+        $this->command_name = $value;
     }
 
-    public function getType()
+    public function getCommandName()
     {
-        return $this->type;
+        return $this->command_name;
     }
 
-    public function setOccurredAt($value)
+    public function setBindingKey($value)
     {
-        $this->occurred_at = new DateTimeObject($value);
+        $this->binding_key = $value;
     }
 
-    public function getOccurredAt():\DateTimeInterface
+    public function getBindingKey()
     {
-        if ($this->occurred_at instanceof DateTimeObject) {
-            return $this->occurred_at->getValue();
-        }
+        return $this->binding_key;
     }
 
-    public function setPayload($value)
+    public function setQueueName($value)
     {
-        $this->payload = $value;
+        $this->queue_name = $value;
     }
 
-    public function getPayload()
+    public function getQueueName()
     {
-        return $this->payload;
+        return $this->queue_name;
+    }
+
+    public function setHeader($value)
+    {
+        $this->header = $value;
+    }
+
+    public function getHeader()
+    {
+        return $this->header;
     }
 
     public function toArray(): array
     {
         return [
-            'guid' => $this->getGuid(),
-            'type' => $this->getType(),
-            'occurred_at' => $this->getOccurredAt(),
-            'payload' => $this->getPayload(),
+            'command_name' => $this->getCommandName(),
+            'binding_key' => $this->getBindingKey(),
+            'queue_name' => $this->getQueueName(),
+            'header' => $this->getHeader(),
         ];
     }
 

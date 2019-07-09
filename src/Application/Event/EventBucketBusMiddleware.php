@@ -6,11 +6,11 @@ use Psr\Log\LoggerInterface;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
 
 /**
- * Class EventStoreBusMiddleware
+ * Class EventBucketBusMiddleware
  * use the "Decorator Pattern" to add a Event Storage level to Event Bus chain
  * @package Webravo\Application\Event
  */
-class EventStoreBusMiddleware implements EventBusMiddlewareInterface {
+class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
 
     private $next;              // The next level in the Event Bus Chain
     private $eventStore;

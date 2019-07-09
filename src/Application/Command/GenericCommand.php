@@ -4,8 +4,9 @@ namespace Webravo\Application\Command;
 
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Exception\CommandException;
+use Webravo\Common\Entity\EntityInterface;
 
-abstract class GenericCommand implements CommandInterface {
+abstract class GenericCommand implements CommandInterface, EntityInterface {
 
     protected $command_name = null;
     protected $binding_key = null;
@@ -68,7 +69,7 @@ abstract class GenericCommand implements CommandInterface {
         // TO BE OVERRIDDEN BY INSTANCES
     }
 
-    public static function buildFromArray(array $data): CommandInterface
+    public static function buildFromArray(array $data)
     {
         if (isset($data['command'])) {
             $commandName = $data['command'];
