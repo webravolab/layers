@@ -2,23 +2,23 @@
 namespace Webravo\Common\Entity;
 
 use Webravo\Common\Entity\AbstractEntity;
-use Webravo\Common\ValueObject\DateTimeObject;
-use DateTimeInterface;
+use DateTime;
 
 class DataStoreCommandEntity extends AbstractEntity
 {
-
-    /*
-    private $type;
-    private $occurred_at;
-    private $payload;
-    */
 
     private $command_name = null;
     private $binding_key = null;
     private $queue_name = null;
     private $header = array();
+    private $payload;
+    private $created_at;
 
+
+    public function __construct()
+    {
+        $this->created_at = new DateTime;
+    }
 
     public function setCommandName($value)
     {
@@ -60,21 +60,46 @@ class DataStoreCommandEntity extends AbstractEntity
         return $this->header;
     }
 
+    public function setPayload($value)
+    {
+        $this->payload = $value;
+    }
+
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    public function setCreatedAt($value)
+    {
+        $this->created_at = $value;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
     public function toArray(): array
     {
         return [
-            'command_name' => $this->getCommandName(),
+            'guid' => $this->getGuid(),
+            'command' => $this->getCommandName(),
             'binding_key' => $this->getBindingKey(),
             'queue_name' => $this->getQueueName(),
             'header' => $this->getHeader(),
+            'payload' => $this->getPayload(),
+            'created_at' => $this->getCreatedAt(),
         ];
     }
 
     public function fromArray(array $a_values)
     {
         if (isset($a_values['guid'])) { $this->setGuid($a_values['guid']); }
-        if (isset($a_values['type'])) { $this->setType($a_values['type']); }
-        if (isset($a_values['occurred_at'])) { $this->setOccurredAt($a_values['occurred_at']); }
+        if (isset($a_values['command'])) { $this->setCommandName($a_values['command']); }
+        if (isset($a_values['binding_key'])) { $this->setBindingKey($a_values['binding_key']); }
+        if (isset($a_values['queue_name'])) { $this->setQueueName($a_values['queue_name']); }
+        if (isset($a_values['created_at'])) { $this->setCreatedAt($a_values['created_at']); }
         if (isset($a_values['payload'])) {
             if (is_string($a_values['payload'])) {
                 $payload = json_decode($a_values['payload'], true);
@@ -91,6 +116,22 @@ class DataStoreCommandEntity extends AbstractEntity
         else {
             $this->setPayload(null);
         }
+        if (isset($a_values['header'])) {
+            if (is_string($a_values['header'])) {
+                $header = json_decode($a_values['header'], true);
+                if ($payload !== null) {
+                    $this->setHeader($header);
+                } else {
+                    $this->setHeader($a_values['header']);
+                }
+            }
+            else {
+                $this->setHeader($a_values['header']);
+            }
+        }
+        else {
+            $this->setHeader([]);
+        }
     }
 
     /**
@@ -100,19 +141,11 @@ class DataStoreCommandEntity extends AbstractEntity
     public function toSerializedArray(): array {
         return [
             'guid' => $this->getGuid(),
-            'type' => $this->getType(),
-            'occurred_at' => $this->getOccurredAt(),
-            'payload' => $this->getSerializedPayload(),
+            'command' => $this->getCommandName(),
+            'binding_key' => $this->getBindingKey(),
+            'queue_name' => $this->getQueueName(),
+            'header' => json_encode($this->getHeader()),
+            'payload' => json_encode($this->getPayload()),
         ];
     }
-
-    /**
-     * Custom function to return a Json serialized version of Payload
-     * @return string
-     */
-    public function getSerializedPayload(): string
-    {
-        return json_encode($this->getPayload());
-    }
-
 }
