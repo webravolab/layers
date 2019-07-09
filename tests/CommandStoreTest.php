@@ -24,7 +24,7 @@ class CommandStoreTest extends TestCase
 
         $command = new \tests\Commands\TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
-        // $guid = $command->getGuid();
+        $guid = $command->getGuid();
 
         $commandStore->Append($command);
 

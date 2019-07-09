@@ -50,8 +50,8 @@ class EventDataTable extends AbstractDataTable implements StorableInterface {
     public function persistEntity(AbstractEntity $entity) {
         if ($this->eventsModel) {
             // Extract data from Event as array to store directly on Eloquent model
-            // (serialization of payload is handled by hydrator->Extract)
             if (method_exists($entity, "toSerializedArray")) {
+                // Entity could implement it's own serialization method
                 $data = $entity->toSerializedArray();
                 $data = $this->hydrator->Map($data);
             }

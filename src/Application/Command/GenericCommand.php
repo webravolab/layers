@@ -4,10 +4,10 @@ namespace Webravo\Application\Command;
 
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Exception\CommandException;
-use Webravo\Common\Entity\EntityInterface;
+use Webravo\Common\Entity\AbstractEntity;
 
-abstract class GenericCommand implements CommandInterface, EntityInterface {
-
+abstract class GenericCommand extends AbstractEntity implements CommandInterface
+{
     protected $command_name = null;
     protected $binding_key = null;
     protected $queue_name = null;
@@ -56,6 +56,7 @@ abstract class GenericCommand implements CommandInterface, EntityInterface {
     public function toArray(): array
     {
         $data = [
+            'guid' => $this->getGuid(),
             'command' => get_class($this),
             'binding_key' => $this->binding_key,
             'queue_name' => $this->queue_name,

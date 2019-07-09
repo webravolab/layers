@@ -17,6 +17,7 @@ class TestCommand extends GenericCommand implements CommandInterface {
 
 
     public function __construct($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5) {
+        parent::__construct();
         $this->strParam1 = $strParam1;
         $this->intParam2 = $intParam2;
         $this->floatParam3 = $floatParam3;
@@ -46,11 +47,10 @@ class TestCommand extends GenericCommand implements CommandInterface {
 
     public function toArray(): array
     {
-        $data = [
-            'command' => $this->getCommandName(),
-            'queue_name' => $this->getQueueName(),
-            'binding_key' => $this->getBindingKey(),
-            'header' => $this->getHeader(),
+        //  Get all base data from GenericEvent
+        $data = parent::toArray();
+        // Add all other data as "payload"
+        $data += [
             'payload' => [
                 'param1' => $this->getParam1(),
                 'param2' => $this->getParam2(),
