@@ -43,7 +43,6 @@ class EventStoreTest extends TestCase
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
     }
 
-
     public function testDBStoreEventBus()
     {
         $eventStore = new EloquentEventStore();
@@ -74,10 +73,11 @@ class EventStoreTest extends TestCase
 
         $event = new \tests\Events\TestEvent();
 
-        $payload = new stdClass();
-        $payload->value = 'this is a test value';
-        $payload->number = 175;
-        $payload->float = 1.75;
+        $payload = [
+            'value' => 'this is a test value',
+            'number' => 175,
+            'float' => 1.75,
+        ];
 
         $event->setPayload( $payload);
 

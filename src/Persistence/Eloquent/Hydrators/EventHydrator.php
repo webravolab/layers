@@ -21,7 +21,7 @@ class EventHydrator implements HydratorInterface {
             'guid' => $object->guid,
             'type' => $object->event_type,
             'occurred_at' => $object->occurred_at,
-            'payload' => json_decode($object->payload),
+            'payload' => json_decode($object->payload, true),
         ];
         return $data;
     }

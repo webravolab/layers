@@ -61,7 +61,7 @@ class DataStoreEventEntity extends AbstractEntity
         if (isset($a_values['occurred_at'])) { $this->setOccurredAt($a_values['occurred_at']); }
         if (isset($a_values['payload'])) {
             if (is_string($a_values['payload'])) {
-                $payload = json_decode($a_values['payload']);
+                $payload = json_decode($a_values['payload'],true);
                 if ($payload !== null) {
                     $this->setPayload($payload);
                 } else {
