@@ -37,6 +37,7 @@ class DBQueueServiceTest extends TestCase
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
+        $publisherService->deleteChannel('fanout-bind-exchange');
         $publisherService->createChannel('fanout', 'fanout-bind-exchange');
 
         $subscriberService1 = new DBQueueService($jobQueueService);
@@ -80,6 +81,7 @@ class DBQueueServiceTest extends TestCase
 
         $subscriberService1->processSingleMessage('test-bind1', $callback);
 
+        $publisherService->deleteChannel('fanout-bind-exchange');
         $publisherService->close();
         $subscriberService1->close();
         $subscriberService2->close();
@@ -135,6 +137,7 @@ class DBQueueServiceTest extends TestCase
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
+        $publisherService->deleteChannel('topic-exchange');
         $publisherService->createChannel('topic', 'topic-exchange');
         // $publisherService->createQueue('test-topic');
 
@@ -187,6 +190,7 @@ class DBQueueServiceTest extends TestCase
         $subscriberService2->processSingleMessage('test-topic2', $callback2);
         $subscriberService3->processSingleMessage('test-topic3', $callback3);
 
+        $publisherService->deleteChannel('topic-exchange');
         $publisherService->close();
         $subscriberService1->close();
         $subscriberService2->close();
@@ -199,6 +203,7 @@ class DBQueueServiceTest extends TestCase
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
+        $publisherService->deleteChannel('direct-exchange');
         $publisherService->createChannel('direct', 'direct-exchange');
 
         $subscriberService1 = new DBQueueService($jobQueueService);
@@ -234,6 +239,7 @@ class DBQueueServiceTest extends TestCase
         $subscriberService2->processSingleMessage('test-direct2', $callback2);
         $subscriberService1->processSingleMessage('test-direct1', $callback);
 
+        $publisherService->deleteChannel('direct-exchange');
         $publisherService->close();
         $subscriberService1->close();
         $subscriberService2->close();
@@ -245,6 +251,7 @@ class DBQueueServiceTest extends TestCase
 
         $jobQueueService = new EloquentJobStore();
         $publisherService  = new DBQueueService($jobQueueService);
+        $publisherService->deleteChannel('fanout-exchange');
         $publisherService->createChannel('fanout', 'fanout-exchange');
 
         $subscriberService1 = new DBQueueService($jobQueueService);
@@ -289,6 +296,7 @@ class DBQueueServiceTest extends TestCase
         $subscriberService1->processSingleMessage('test-fanout1', $callback);
         $subscriberService1->processSingleMessage('test-fanout1', $callback);
 
+        $publisherService->deleteChannel('fanout-exchange');
         $publisherService->close();
         $subscriberService1->close();
         $subscriberService2->close();

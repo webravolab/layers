@@ -55,6 +55,11 @@ class DBQueueService implements QueueServiceInterface {
         }
     }
 
+    public function deleteChannel(string $exchange_name)
+    {
+        $this->queueStore->deleteChannel($this->channelName);
+    }
+
     public function getDefaultStrategy()
     {
         return $this->defaultStrategy;

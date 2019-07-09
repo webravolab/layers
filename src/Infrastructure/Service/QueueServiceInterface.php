@@ -9,6 +9,8 @@ interface QueueServiceInterface
 
     public function createChannel(string $strategy, string $name, string $bindingKey = null);
 
+    public function deleteChannel(string $name);
+
     public function getDefaultStrategy();
 
     public function getDefaultChannelName();

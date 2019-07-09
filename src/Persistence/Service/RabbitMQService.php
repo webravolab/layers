@@ -65,6 +65,11 @@ class RabbitMQService implements QueueServiceInterface
         }
     }
 
+    public function deleteChannel(string $exchange_name)
+    {
+        $this->channel->exchange_delete($exchange_name, false, true);
+    }
+
     public function getDefaultStrategy()
     {
         return $this->defaultStrategy;

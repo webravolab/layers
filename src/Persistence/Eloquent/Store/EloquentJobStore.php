@@ -308,4 +308,9 @@ class EloquentJobStore implements JobQueueInterface {
         }
     }
 
+    public function deleteChannel(string $channelName)
+    {
+        $affected = $this->jobsQueueModel::where('channel', $channelName)
+            ->delete();
+    }
 }

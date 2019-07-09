@@ -33,5 +33,7 @@ interface JobQueueInterface {
     public function unbindQueue(string $queueName, string $channel = null);
     
     public function cleanup(string $queueNamePrefixed);
+
+    public function deleteChannel(string $channelName);
     
 }
