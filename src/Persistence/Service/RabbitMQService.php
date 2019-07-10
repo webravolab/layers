@@ -110,7 +110,12 @@ class RabbitMQService implements QueueServiceInterface
         }
         $this->channel->queue_unbind($queueName, $this->exchangeName, $this->bindingKey);
     }
-    
+
+    public function purgeQueue(string $queueName): void
+    {
+        $this->channel->queue_purge($queueName);
+    }
+
     public function publishMessage($message, $queueName = null, $bindingKey = null, array $header = []): ?string
     {
         $bindingKey = $bindingKey ?? '';

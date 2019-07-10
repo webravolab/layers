@@ -118,6 +118,7 @@ class RabbitMQTest extends TestCase
         $publisherService = new RabbitMQService();
 
         $subscriberService1 = new RabbitMQService();
+        $subscriberService1->purgeQueue('test-roundrobin');
         $jobs_waiting = $subscriberService1->createQueue('test-roundrobin');
         echo " n. " . $jobs_waiting . " message in queue (1)\n";
 

@@ -313,4 +313,11 @@ class EloquentJobStore implements JobQueueInterface {
         $affected = $this->jobsQueueModel::where('channel', $channelName)
             ->delete();
     }
+
+    public function purgeQueue(string $queueName): void
+    {
+        $queueName = $queueName . '-' . $this->prefix;
+        $this->jobsModel::where('channel', $queueName)
+            ->delete();
+    }
 }

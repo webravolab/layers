@@ -103,7 +103,12 @@ class DBQueueService implements QueueServiceInterface {
         $this->queueStore->unbindQueue($queueName, $channelName, $bindingKey);
         $this->queueStore->cleanup($queueName);
     }
-    
+
+    public function purgeQueue(string $queueName): void
+    {
+        $this->queueStore->purgeQueue($queueName);
+    }
+
     public function publishMessage($message, $queueName = null, $bindingKey = null, array $header = []): ?string
     {
         if (empty($this->channelName) && empty($this->defaultStrategy)) {
@@ -174,12 +179,8 @@ class DBQueueService implements QueueServiceInterface {
 
     public function close()
     {
-        // Don't delete queues on close
-        /* 
-        foreach($this->queues as $queueName => $bool) {
-            $this->queueStore->deleteQueue($queueName);
-        }
-        */
+        // Nothing to do ...
+        // ... Don't delete queues on close
     }
         
     public function delete()

@@ -31,6 +31,8 @@ interface JobQueueInterface {
     public function bindQueue(string $queueName, string $channel = null);
 
     public function unbindQueue(string $queueName, string $channel = null);
+
+    public function purgeQueue(string $queueName): void;
     
     public function cleanup(string $queueNamePrefixed);
 

@@ -17,10 +17,13 @@ interface QueueServiceInterface
 
     public function createQueue(string $queueName): int;
 
+
     public function subscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null);
 
     public function unsubscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null);
-    
+
+    public function purgeQueue(string $queueName): void;
+
     public function publishMessage($message, $queueName = null, $bindingKey = null, array $header = []): ?string;
 
     public function processSingleMessage($queueName, $callback);

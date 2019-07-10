@@ -12,7 +12,10 @@ class DBQueueServiceRPCTestTest extends TestCase
         $jobQueueService = new EloquentJobStore();
         $publisherService = new DBQueueService($jobQueueService);
 
+        $publisherService->publishMessage('Test to be deleted', 'test-rpc');
+
         $subscriberService = new DBQueueService($jobQueueService);
+        $subscriberService->purgeQueue('test-rpc');
         $jobs_waiting = $subscriberService->createQueue('test-rpc');
         echo " n. " . $jobs_waiting . " message in queue (1)\n";
 

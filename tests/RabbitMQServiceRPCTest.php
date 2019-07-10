@@ -9,9 +9,12 @@ class RabbitMQServiceRPCTestTest extends TestCase
         $execution_id = (new Datetime())->format('H:i:s');
 
         $publisherService = new RabbitMQService();
+        $publisherService->publishMessage('Test to be deleted', 'test-rpc');
 
         $subscriberService = new RabbitMQService();
+        $subscriberService->purgeQueue('test-rpc');
         $jobs_waiting = $subscriberService->createQueue('test-rpc');
+
         echo " n. " . $jobs_waiting . " message in queue (1)\n";
 
         $this->assertEquals($jobs_waiting,0,'Queue is not empty');
@@ -26,6 +29,8 @@ class RabbitMQServiceRPCTestTest extends TestCase
         ];
 
         $publisherService->publishMessage('Message - ' . $execution_id, 'test-rpc', null, $header);
+
+        sleep(1);
 
         $message = $subscriberService->getSingleMessage('test-rpc');
 

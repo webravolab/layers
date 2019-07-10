@@ -95,6 +95,8 @@ class DBQueueServiceTest extends TestCase
         $publisherService = new DBQueueService($jobQueueService);
 
         $subscriberService1 = new DBQueueService($jobQueueService);
+        $subscriberService1->purgeQueue('test-roundrobin');
+
         $jobs_waiting = $subscriberService1->createQueue('test-roundrobin');
         echo " n. " . $jobs_waiting . " message in queue (1)\n";
 
