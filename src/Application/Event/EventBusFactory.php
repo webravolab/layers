@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class EventBusFactory
- * Create a basic Event Bus including 3 middlewares, a Queue, a Logger and a Local Dispatcher
+ * Create a basic Event Bus including 3 middlewares, a Logger, a Queue, and a Local Dispatcher
  * @package Webravo\Application\Event
  */
 class EventBusFactory {

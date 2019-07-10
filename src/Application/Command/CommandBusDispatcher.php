@@ -7,14 +7,32 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 
 class CommandBusDispatcher implements CommandBusMiddlewareInterface {
 
-    public function dispatch(CommandInterface $command): CommandResponse {
+    private $next;
+
+    public function __construct(?CommandBusMiddlewareInterface $next) {
+        $this->next = $next;
+    }
+
+    public function dispatch(CommandInterface $command): ?CommandResponse {
         $commandClass = get_class($command);
         $handlerClass = $this->getHandler($command);
-        $handler = DependencyBuilder::resolve($handlerClass);
-        if ($handler == null) {
-            throw new CommandException('Handler for command ' . $commandClass . ' not found', 101);
+        if (class_exists($handlerClass)) {
+            $handlerClass = new $handlerClass;
         }
-        return $handler->handle($command);
+        else {
+            $handlerClass = DependencyBuilder::resolve($handlerClass);
+            if ($handlerClass === null) {
+                if (!is_null($this->next)) {
+                    // If no local command handler is available, forward to the next level in the bus
+                    return $this->next->dispatch($command);
+                }
+                else {
+                    // No local handler and no more levels in the bus
+                    throw new CommandException('Handler for command ' . $commandClass . ' not found', 101);
+                }
+            }
+        }
+        return $handlerClass->handle($command);
     }
 
 

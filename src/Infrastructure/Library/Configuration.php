@@ -4,6 +4,7 @@ namespace Webravo\Infrastructure\Library;
 
 use Webravo\Infrastructure\Service\ConfigurationServiceInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
+use Webravo\Persistence\Service\ConfigurationService;
 
 class Configuration
 {
@@ -12,12 +13,10 @@ class Configuration
     public static function instance()
     {
         if (null === static::$instance) {
-            try {
-                static::$instance = DependencyBuilder::resolve('Webravo\Infrastructure\Service\ConfigurationServiceInterface');
-            }
-            catch(\Exception $e) {
+            static::$instance = DependencyBuilder::resolve('Webravo\Infrastructure\Service\ConfigurationServiceInterface');
+            if (null === static::$instance) {
                 // Default concrete
-                static::$instance = new \Webravo\Persistence\Service\ConfigurationService();
+                static::$instance = new ConfigurationService();
             }
         }
         return static::$instance;

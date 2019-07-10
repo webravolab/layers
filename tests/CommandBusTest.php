@@ -10,8 +10,10 @@ use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
 
 use Webravo\Persistence\Eloquent\Store\EloquentJobStore;
 use Webravo\Persistence\Service\DBQueueService;
+use Webravo\Persistence\Service\NullQueueService;
 use Webravo\Application\Command\CommandRemoteBusMiddleware;
 use Webravo\Persistence\Service\RabbitMQService;
+use Webravo\Persistence\Service\NullLoggerService;
 
 class CommandBusTest extends TestCase
 {
@@ -22,6 +24,49 @@ class CommandBusTest extends TestCase
     private $exchange_name = 'test-remote-command'; // -exchange';
     private $queue_name = 'test-remote-command'; // -queue';
     private $bind_name = 'test-remote-command-bind'; //-queue-bind';
+
+    public function testCommandBusFactory()
+    {
+        $this->queueService = new NullQueueService();
+        $loggerService = new NullLoggerService();
+
+        $commandBus = CommandBusFactory::build($this->queueService, $loggerService);
+
+        $strParam1 = 'This is a command without handler test 1';
+
+        $command = new \tests\Commands\TestWithoutHandlerCommand($strParam1);
+
+        // This dispatch must return null, because there is no local handler and no remote command bus
+        $response = $commandBus->dispatch($command);
+
+        self::assertNull($response, "Command dispatch response must be Null");
+    }
+
+    public function testCommandBusFactoryWithDummyHandler()
+    {
+        // Add a dummy command handler to satisfy the local command dispatcher
+        /*
+        app()->bind('tests\Commands\TestWithoutHandlerHandler', function ($app) {
+            return new tests\Commands\DummyHandler();
+        });
+        */
+
+        app()->bind('tests\Commands\TestWithoutHandlerHandler', 'tests\Commands\DummyHandler');
+
+        $this->queueService = new NullQueueService();
+        $loggerService = new NullLoggerService();
+
+        $commandBus = CommandBusFactory::build($this->queueService, $loggerService);
+
+        $strParam1 = 'This is a command without handler test 2';
+
+        $command = new \tests\Commands\TestWithoutHandlerCommand($strParam1);
+
+        // This dispatch must return null, because there is no local handler and no remote command bus
+        $response = $commandBus->dispatch($command);
+
+        self::assertEquals($response->getValue(), "dummy says ok", "Command response is invalid");
+    }
 
     public function testCommandRemoteBusMiddleware_DB()
     {

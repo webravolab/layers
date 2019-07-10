@@ -5,6 +5,16 @@ use Webravo\Infrastructure\Service\QueueServiceInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class CommandBusFactory
+ *
+ * Create a basic Command Bus including 3 middlewares, a Logger, a Local Command Dispatcher, a Remote Command Queue
+ *
+ * If a command handler is found locally (by class resolver) the local handler is invoked ...
+ * ... otherwise the command is sent to the remote queue for remote execution
+ *
+ * @package Webravo\Application\Command
+ */
 class CommandBusFactory {
 
     private static $instance = null;
@@ -26,7 +36,9 @@ class CommandBusFactory {
     // Build Command bus stack
     static function Build(QueueServiceInterface $queueService = null, LoggerInterface $loggerService = null): CommandBusMiddlewareInterface {
         return new CommandLoggerBusMiddleware(
-            new CommandRemoteBusMiddleware(new CommandBusDispatcher(), $queueService), $loggerService
+            new CommandBusDispatcher(
+                new CommandRemoteBusMiddleware(null, $queueService)
+            ), $loggerService
         );
     }
 }

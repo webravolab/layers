@@ -20,6 +20,7 @@ class RabbitMQServiceRPCTestTest extends TestCase
         $this->assertEquals($jobs_waiting,0,'Queue is not empty');
 
         $publisherService->createQueue('test-rpc-reply');
+        $publisherService->purgeQueue('test-rpc-reply');
 
         $message_id = 'MSG' . rand(1000,9999);
 
