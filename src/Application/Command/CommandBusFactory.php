@@ -25,8 +25,8 @@ class CommandBusFactory {
 
     // Build Command bus stack
     static function Build(QueueServiceInterface $queueService = null, LoggerInterface $loggerService = null): CommandBusMiddlewareInterface {
-        return new LoggerBusMiddleware(
-            new RemoteBusMiddleware(new CommandBusDispatcher(), $queueService), $loggerService
+        return new CommandLoggerBusMiddleware(
+            new CommandRemoteBusMiddleware(new CommandBusDispatcher(), $queueService), $loggerService
         );
     }
 }

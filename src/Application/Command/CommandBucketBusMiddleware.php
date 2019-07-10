@@ -10,7 +10,7 @@ class CommandBucketBusMiddleware implements CommandBusMiddlewareInterface {
     private $next;
     private $commandStore;
 
-    public function __construct(CommandBusMiddlewareInterface $next,  ?CommandStoreInterface $commandStore = null) {
+    public function __construct(?CommandBusMiddlewareInterface $next,  ?CommandStoreInterface $commandStore = null) {
         $this->next = $next;
         $this->commandStore = $commandStore;
     }

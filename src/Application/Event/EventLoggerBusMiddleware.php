@@ -14,7 +14,7 @@ class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
     private $next;              // The next level in the Event Bus Chain
     private $loggerService;
 
-    public function __construct(EventBusMiddlewareInterface $next,  LoggerInterface $loggerService = null) {
+    public function __construct(?EventBusMiddlewareInterface $next,  LoggerInterface $loggerService = null) {
         $this->next = $next;
         $this->loggerService = $loggerService;
     }
@@ -33,8 +33,9 @@ class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
         if (!is_null($this->loggerService)) {
             $this->loggerService->debug('Fire event: ' . $event->getType());
         }
-
-        $this->next->dispatch($event);
+        if (!is_null($this->next)) {
+            $this->next->dispatch($event);
+        }
 
         /*
         if (!is_null($this->loggerService)) {

@@ -10,7 +10,7 @@ use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
 
 use Webravo\Persistence\Eloquent\Store\EloquentJobStore;
 use Webravo\Persistence\Service\DBQueueService;
-use Webravo\Application\Command\RemoteBusMiddleware;
+use Webravo\Application\Command\CommandRemoteBusMiddleware;
 use Webravo\Persistence\Service\RabbitMQService;
 
 class CommandBusTest extends TestCase
@@ -49,7 +49,7 @@ class CommandBusTest extends TestCase
         $this->queueService->setDefaultQueue($this->queue_name);
         $this->queueService->createQueue($this->queue_name);
 
-        $commandRemoteDispatcher = new RemoteBusMiddleware(null, $this->queueService);
+        $commandRemoteDispatcher = new CommandRemoteBusMiddleware(null, $this->queueService);
 
         $this->subscriberService->createChannel($this->strategy, $this->exchange_name);
         $this->subscriberService->createQueue($this->bind_name);

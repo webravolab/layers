@@ -5,7 +5,7 @@ use Webravo\Application\Command\CommandResponse;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Service\QueueServiceInterface;
 
-class RemoteBusMiddleware implements CommandBusMiddlewareInterface {
+class CommandRemoteBusMiddleware implements CommandBusMiddlewareInterface {
 
     private $next;
     private $queueService;
