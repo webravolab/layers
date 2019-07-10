@@ -212,6 +212,8 @@ class EloquentJobStore implements JobQueueInterface {
                 ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime()]);
         }
         catch (ModelNotFoundException $e) {
+            // firstOrFail() throw this exception if the record does not exists
+            // see https://laravel.com/docs/5.7/eloquent#retrieving-single-models
             return null;
         }
 

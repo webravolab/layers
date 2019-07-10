@@ -5,7 +5,6 @@ use Webravo\Persistence\Eloquent\Store\EloquentEventStore;
 use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Application\Event\EventBucketBusMiddleware;
 use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
-use Webravo\Persistence\Service\RabbitMQService;
 
 class EventStoreTest extends TestCase
 {

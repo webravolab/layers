@@ -2,7 +2,7 @@
 
 use Webravo\Persistence\Service\RabbitMQService;
 
-class RabbitMQServiceRPCTestTest extends TestCase
+class RabbitMQServiceRPCTest extends TestCase
 {
     public function testRabbitMQServiceRPC() {
 
