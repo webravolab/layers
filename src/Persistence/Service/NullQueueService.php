@@ -54,6 +54,11 @@ class NullQueueService implements QueueServiceInterface {
         }
     }
 
+    public function deleteChannel(string $name)
+    {
+        // Do nothing
+    }
+
     public function getDefaultStrategy()
     {
         return $this->defaultStrategy;
@@ -87,6 +92,11 @@ class NullQueueService implements QueueServiceInterface {
     public function unsubscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null)
     {
         // TODO: Implement unsubscribeQueue() method.
+    }
+
+    public function purgeQueue(string $queueName): void
+    {
+        // Do nothing
     }
 
     public function publishMessage($message, $queueName = null, $bindingKey = null, array $header = []): ?string

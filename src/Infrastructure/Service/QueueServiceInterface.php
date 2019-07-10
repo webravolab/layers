@@ -17,7 +17,6 @@ interface QueueServiceInterface
 
     public function createQueue(string $queueName): int;
 
-
     public function subscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null);
 
     public function unsubscribeQueue(string $queueName, string $exchangeName = null, string $bindingKey = null);
