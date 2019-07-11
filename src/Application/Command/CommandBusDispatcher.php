@@ -16,23 +16,27 @@ class CommandBusDispatcher implements CommandBusMiddlewareInterface {
     public function dispatch(CommandInterface $command): ?CommandResponse {
         $commandClass = get_class($command);
         $handlerClass = $this->getHandler($command);
-        if (class_exists($handlerClass)) {
-            $handlerClass = new $handlerClass;
-        }
-        else {
-            $handlerClass = DependencyBuilder::resolve($handlerClass);
-            if ($handlerClass === null) {
+        // First... attempt to build the handler class by the DependencyBuilder ...
+        // ... to inject any interface referenced in class constructor...
+        $handlerInstance = DependencyBuilder::resolve($handlerClass);
+        if ($handlerInstance === null) {
+            // Second... try to instantiate the class directly
+            if (class_exists($handlerClass)) {
+                $handlerInstance = new $handlerClass;
+            }
+            else {
+                // Third: dispatch the command to the next component in the bus
                 if (!is_null($this->next)) {
                     // If no local command handler is available, forward to the next level in the bus
                     return $this->next->dispatch($command);
                 }
                 else {
                     // No local handler and no more levels in the bus
-                    throw new CommandException('Handler for command ' . $commandClass . ' not found', 101);
+                    throw new CommandException('Handler not found for command: ' . $commandClass, 101);
                 }
             }
         }
-        return $handlerClass->handle($command);
+        return $handlerInstance->handle($command);
     }
 
 
