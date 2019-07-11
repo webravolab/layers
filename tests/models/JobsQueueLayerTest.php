@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class JobsQueue extends Model
+class JobsQueueLayerTest extends Model
 {
     protected $connection = 'testbench';
 

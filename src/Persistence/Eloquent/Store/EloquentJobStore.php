@@ -33,7 +33,7 @@ class EloquentJobStore implements JobQueueInterface {
         $this->jobsQueueModel = Configuration::get('JOBS_QUEUE_ELOQUENT_MODEL', null, 'App\JobsQueue');
         $this->jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
         if (!class_exists($this->jobsQueueModel) || !class_exists($this->jobsModel)) {
-            throw new \Exception('[EloquenJobStore] Invalid queue models: '  . $this->jobsQueueModel . ' / ' . $this->jobsModel);
+            throw new \Exception('[EloquentJobStore] Invalid queue models: '  . $this->jobsQueueModel . ' / ' . $this->jobsModel);
         }
     }
 

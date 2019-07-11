@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Commands extends Model
+class CommandsLayerTest extends Model
 {
     protected $connection = 'testbench';
 
