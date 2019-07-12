@@ -10,12 +10,17 @@ interface DomainEventInterface extends EventInterface {
 
     public function getOccurredAt();
 
+    /**
+     * set event type (needed when event is rebuilded from raw data)
+     * @param $type
+     * @return mixed
+     */
     public function setType($type);
 
     public function setPayload($value);
 
     public function getPayload();
 
-    public function getSerializedPayload(): string;
+    // public function getSerializedPayload(): string;
 
 }

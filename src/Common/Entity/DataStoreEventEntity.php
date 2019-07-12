@@ -15,7 +15,7 @@ class DataStoreEventEntity extends AbstractEntity
     private $payload;
 
     /**
-     * Array of all event properties, including dynamic created
+     * Array of all event properties, including properties created dynamically
      * @var array
      */
     protected $a_properties = ['guid','type','occurred_at','guid'];

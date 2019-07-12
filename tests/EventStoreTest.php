@@ -24,6 +24,7 @@ class EventStoreTest extends TestCase
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
     }
 
+
     public function testDataStoreEventStore()
     {
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
@@ -31,8 +32,17 @@ class EventStoreTest extends TestCase
 
         $eventStore = new DataStoreEventStore();
 
+
+        // $guid = "194db1c0-a4a8-11e9-a106-45ff99f6becd";
+        // $retrieved_event = $eventStore->getByGuid($guid, 'TestEvent');
+
+
+
         $event = new \tests\Events\TestEvent();
-        $event->setPayload('test value');
+        $event->setPayload([
+            'payload1' => 'payload value 1',
+            'payload2' => 'payload value 2',
+        ]);
         $event->setStrValue('this is a string');
         $event->setIntValue((int) Rand(1,9999));
         $event->setFloatValue((float) Rand());
@@ -44,10 +54,10 @@ class EventStoreTest extends TestCase
 
         $retrieved_event = $eventStore->getByGuid($guid, $event->getType());
 
-        $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
         $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
         $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
         $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
+        $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
     }
 
     public function testDBStoreEventBus()
