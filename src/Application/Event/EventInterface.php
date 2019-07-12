@@ -6,6 +6,8 @@ interface EventInterface {
 
     public function getType(): string;
 
+    public function getClassName(): string;
+
     public function toArray(): array;
 
     public function fromArray(array $data);

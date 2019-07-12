@@ -33,13 +33,21 @@ class EventStoreTest extends TestCase
 
         $event = new \tests\Events\TestEvent();
         $event->setPayload('test value');
+        $event->setStrValue('this is a string');
+        $event->setIntValue((int) Rand(1,9999));
+        $event->setFloatValue((float) Rand());
+
         $guid = $event->getGuid();
+        $class_name = $event->getClassName();
 
         $eventStore->Append($event);
 
-        $retrieved_event = $eventStore->getByGuid($guid);
+        $retrieved_event = $eventStore->getByGuid($guid, $event->getType());
 
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
+        $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
+        $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
+        $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
     }
 
     public function testDBStoreEventBus()

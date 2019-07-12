@@ -28,7 +28,8 @@ class DataStoreEventStore implements EventStoreInterface {
         $e_event = DataStoreEventEntity::buildFromArray($a_values);
         $entity_name = get_class($e_event);
         $eventDataTable = new EventDataStoreTable($this->dataStoreService);
-        $eventDataTable->persistEntity($e_event);
+        // Save event with it's name
+        $eventDataTable->persistEntity($e_event, $domainEvent->getType());
    }
 
     public function AllEvents()
@@ -37,11 +38,11 @@ class DataStoreEventStore implements EventStoreInterface {
         throw new \Exception('Unimplemented');
     }
 
-    public function getByGuid($guid): ?DomainEventInterface
+    public function getByGuid($guid, $entity_name = null): ?DomainEventInterface
     {
         $eventDataTable = new EventDataStoreTable($this->dataStoreService);
-        $a_event = $eventDataTable->getByGuid($guid);
-        $event = GenericEvent::buildFromArray($a_event->toArray());
+        $event = $eventDataTable->getByGuid($guid, $entity_name);
+        // $event = GenericEvent::buildFromArray($e_event->toArray());
         return $event;
     }
 }

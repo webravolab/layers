@@ -9,8 +9,18 @@ use DateTime;
 
 class TestEvent extends GenericEvent implements DomainEventInterface {
 
-    private $type = 'tests\Events\TestEvent';
+    /**
+     * The event name used at Domain level
+     * @var string
+     */
+    private $type = 'TestEvent';
 
+    // Event explicit properties
+    private $strValue;
+    private $intValue;
+    private $floatValue;
+
+    // Event payload to be serialized (if any)
     private $payload;
 
     public function __construct(?DateTime $occurred_at = null) {
@@ -27,6 +37,37 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         return $this->payload;
     }
 
+    public function setStrValue(?string $value)
+    {
+        $this->strValue = $value;
+    }
+
+    public function getStrValue(): ?string
+    {
+        return $this->strValue;
+    }
+
+    public function setIntValue(?int $value)
+    {
+        $this->intValue = $value;
+    }
+
+    public function getIntValue(): ?int
+    {
+        return $this->intValue;
+    }
+
+    public function setFloatValue(?float $value)
+    {
+        $this->floatValue = $value;
+    }
+
+    public function getFloatValue(): ?float
+    {
+        return $this->floatValue;
+    }
+
+
     /*
     public function getSerializedPayload(): string
     {
@@ -36,28 +77,32 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
 
     public function toArray(): array
     {
-        $data = [
-            'guid' => $this->getGuid(),
-            'type' => $this->getType(),
-            'occurred_at' => $this->getOccurredAt(),
+        $data = parent::toArray() + [
             'payload' => $this->getPayload(),
+            'str_value' => $this->getStrValue(),
+            'float_value' => $this->getFloatValue(),
+            'int_value' => $this->getIntValue(),
         ];
         return $data;
     }
 
     public function fromArray(array $data)
     {
-        if (isset($data['guid'])) {
-            $this->setGuid($data['guid']);
-        }
-        if (isset($data['type'])) {
-            $this->setType($data['type']);
-        }
-        if (isset($data['occurred_at'])) {
-            $this->setOccurredAt($data['occurred_at']);
-        }
+        // Get base properties
+        parent::fromArray($data);
+
+        // Get custom properties
         if (isset($data['payload'])) {
            $this->setPayload($data['payload']);
+        }
+        if (isset($data['str_value'])) {
+            $this->setStrValue($data['str_value']);
+        }
+        if (isset($data['int_value'])) {
+            $this->setIntValue($data['int_value']);
+        }
+        if (isset($data['float_value'])) {
+            $this->setFloatValue($data['float_value']);
         }
     }
 

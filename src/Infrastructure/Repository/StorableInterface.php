@@ -14,9 +14,9 @@ interface StorableInterface {
 
     public function persistEntity(AbstractEntity $entity);
 
-    public function getByGuid($guid);
+    public function getByGuid($guid, $entity_name = null);
 
-    public function getObjectByGuid($guid);
+    public function getObjectByGuid($guid, $entity_name = null);
 
     public function update(AbstractEntity $entity);
 

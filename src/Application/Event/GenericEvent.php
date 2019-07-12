@@ -67,19 +67,59 @@ abstract class GenericEvent implements EventInterface {
         return $this->type;
     }
 
+    public function getClassName(): string {
+        return get_class($this);
+    }
+
     abstract public function setPayload($value);
 
     abstract public function getPayload();
 
-    abstract public function toArray(): array;
+    /**
+     * Convert to array the base properties
+     * (to be called as parent::toArray() from classes extending GenericEvent)
+     * @return array
+     */
+    public function toArray(): array {
+        return [
+            'guid' => $this->getGuid(),
+            'type' => $this->getType(),
+            'class_name' => $this->getClassName(),
+            'occurred_at' => $this->getOccurredAt(),
+        ];
+    }
+
+    /**
+     * Import base properties from an array
+     * (to be called as parent::fromArray($data) from classes extending GenericEvent)
+     * @param array $data
+     */
+    public function fromArray(array $data)
+    {
+        if (isset($data['guid'])) {
+            $this->setGuid($data['guid']);
+        }
+        if (isset($data['type'])) {
+            $this->setType($data['type']);
+        }
+        if (isset($data['occurred_at'])) {
+            $this->setOccurredAt($data['occurred_at']);
+        }
+    }
 
     public static function buildFromArray(array $data): EventInterface
     {
-        if (isset($data['type'])) {
+        $eventName = null;
+        if (isset($data['class_name']) && class_exists($data['class_name'])) {
+            $eventName = $data['class_name'];
+        }
+        elseif (isset($data['type'])) {
             $eventName = $data['type'];
             if (strpos($eventName, '\\') === false && strpos($eventName, 'Project\\Domain\\Event\\') === false) {
                 $eventName = 'Project\\Domain\\Event\\' . $eventName;
             }
+        }
+        if (!empty($eventName)) {
             try {
                 $class = new \ReflectionClass($eventName);
                 $eventInstance = $class->newInstance();

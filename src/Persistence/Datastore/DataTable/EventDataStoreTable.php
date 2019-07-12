@@ -20,10 +20,10 @@ class EventDataStoreTable extends AbstractDataStoreTable implements StorableInte
         parent::__construct($dataStoreService, $entity_name, $entity_classname);
     }
 
-    public function persistEntity(AbstractEntity $entity) {
+    public function persistEntity(AbstractEntity $entity, $customName = null) {
 
-        $a_name = get_class($entity);
-        $b = new $a_name;
+        // $a_name = get_class($entity);
+        // $b = new $a_name;
         if (method_exists($entity, "toSerializedArray")) {
             $entity_data = $entity->toSerializedArray();
         }
@@ -33,7 +33,8 @@ class EventDataStoreTable extends AbstractDataStoreTable implements StorableInte
         $guid = $entity->getGuid();
 
         // Create key based on guid
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        $entity_name = $customName ?? $this->entity_name;
+        $key = $this->dataStoreService->connection()->key($entity_name, $guid);
 
         // Create an entity
         $dsObject = $this->dataStoreService->connection()->entity($key);

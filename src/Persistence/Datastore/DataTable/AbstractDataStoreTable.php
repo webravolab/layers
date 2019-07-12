@@ -2,6 +2,7 @@
 
 namespace Webravo\Persistence\Repository;
 
+use mysql_xdevapi\Exception;
 use Webravo\Infrastructure\Repository\StorableInterface;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use Webravo\Common\Entity\AbstractEntity;
@@ -50,21 +51,41 @@ abstract class AbstractDataStoreTable implements StorableInterface {
         throw new \Exception('Unimplemented');
     }
 
-    public function getByGuid($guid)
+    public function getByGuid($guid, $entity_name = null)
     {
-        $dsObject = $this->getObjectByGuid($guid);
+        // TODO - find by guid without entity name
+        if (!$entity_name) {
+            $entity_name = $this->entity_classname;
+        }
+        $dsObject = $this->getObjectByGuid($guid, $entity_name);
         if (!is_null($dsObject)) {
-            $entity = new $this->entity_classname;
-            $entity->fromArray($dsObject->get());
-            return $entity;
+            if ($dsObject->getProperty('class_name')) {
+                $entity_classname = $dsObject->getProperty('class_name');
+            }
+            else {
+                $entity_classname = $this->entity_classname;
+            }
+            if (class_exists($entity_classname)) {
+                // TODO - Replace with dependency builder
+                $entity = new $entity_classname;
+                $entity->fromArray($dsObject->get());
+                return $entity;
+            }
+            else {
+                throw new Exception("[AbstractDataStoreTable][getByGuid] Cannot rebuild entity: $entity_classname");
+            }
         }
         return null;
     }
 
-    public function getObjectByGuid($guid)
+    public function getObjectByGuid($guid, $entity_name = null)
     {
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        if (!$entity_name) {
+            $entity_name = $this->entity_classname;
+        }
+        $key = $this->dataStoreService->connection()->key($entity_name, $guid);
         $dsObject = $this->dataStoreService->connection()->lookup($key);
+        // TODO - If not found search only by Guid (using GQL)
         return $dsObject;
     }
 
