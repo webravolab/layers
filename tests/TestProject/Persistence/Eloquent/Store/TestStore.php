@@ -36,7 +36,7 @@ class TestStore extends AbstractEloquentStore implements TestStoreInterface
             //Not found
             return null;
         }
-        $a_properties = $this->hydrator->hydrate($o_entity);
+        $a_properties = $this->hydrator->hydrateEloquent($o_entity);
         return $a_properties;
     }
 
@@ -48,7 +48,7 @@ class TestStore extends AbstractEloquentStore implements TestStoreInterface
 
     public function append(array $a_properties)
     {
-        $a_attributes = $this->hydrator->map($a_properties);
+        $a_attributes = $this->hydrator->mapEloquent($a_properties);
         if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
             throw new Exception('[TestStore][append] empty guid');
         }
@@ -60,7 +60,7 @@ class TestStore extends AbstractEloquentStore implements TestStoreInterface
         if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
             throw new Exception('[TestStore][update] empty guid');
         }
-        $a_attributes = $this->hydrator->map($a_properties);
+        $a_attributes = $this->hydrator->mapEloquent($a_properties);
         $guid = $a_attributes['guid'];        // TODO: Implement update() method.
         $object = $this->getObjectByGuid($guid);
         if (!$object) {

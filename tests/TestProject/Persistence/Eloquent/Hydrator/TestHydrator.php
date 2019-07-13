@@ -6,7 +6,7 @@ use DateTime;
 
 class TestHydrator implements HydratorInterface
 {
-    public function hydrate($eloquent_object):array
+    public function hydrateEloquent($eloquent_object):array
     {
         $data = [
             'id' => $eloquent_object->id,
@@ -18,12 +18,23 @@ class TestHydrator implements HydratorInterface
         return $data;
     }
 
+    public function hydrateDatastore($datastore_object):array
+    {
+        $data = [
+            'guid' => $datastore_object['guid'],
+            'name' => $datastore_object['name'],
+            'created_at' => $datastore_object['created_at'],
+            'fk_id' => $datastore_object['fk_id'],
+        ];
+        return $data;
+    }
+
     /**
-     * map entity properties to eloquent model attributes
+     * map entity properties to Eloquent model attributes
      * @param array $a_values
      * @return array
      */
-    public function map(array $a_values): array
+    public function mapEloquent(array $a_values): array
     {
         $data = [
             'guid' => (isset($a_values['guid']) ? $a_values['guid'] : ''),
@@ -37,4 +48,21 @@ class TestHydrator implements HydratorInterface
         }
         return $data;
     }
+
+    /**
+     * map entity properties to Datastore entity attributes
+     * @param array $a_values
+     * @return array
+     */
+    public function mapDatastore(array $a_values): array
+    {
+        $data = [
+            'guid' => (isset($a_values['guid']) ? $a_values['guid'] : ''),
+            'name' => (isset($a_values['name']) ? $a_values['name'] : null),
+            'fk_id' => (isset($a_values['fk_id']) ? $a_values['fk_id'] : null),
+            'created_at' => (isset($a_values['created_at']) ? new DateTime($a_values['created_at']) : null),
+        ];
+        return $data;
+    }
+
 }

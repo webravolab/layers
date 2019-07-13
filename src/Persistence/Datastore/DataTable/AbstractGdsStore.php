@@ -35,7 +35,9 @@ abstract class AbstractGdsStore implements StoreInterface {
     {
         $dsObject = $this->getObjectByGuid($guid);
         if (!is_null($dsObject)) {
-            return $dsObject->get();
+            $a_attributes = $dsObject->get();
+            $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
+            return $a_properties;
         }
         return null;
     }
@@ -51,7 +53,7 @@ abstract class AbstractGdsStore implements StoreInterface {
     {
         if ($this->hydrator) {
             // If an Hydrator is set ... use it to map properties between Domain entity and DataStore entity
-            $a_properties = $this->hydrator->map($a_properties);
+            $a_properties = $this->hydrator->mapDatastore($a_properties);
         }
         if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
             throw new Exception('[AbstractGdsStore][append] empty guid');
@@ -72,7 +74,7 @@ abstract class AbstractGdsStore implements StoreInterface {
     {
         if ($this->hydrator) {
             // If an Hydrator is set ... use it to map properties between Domain entity and DataStore entity
-            $a_properties = $this->hydrator->map($a_properties);
+            $a_properties = $this->hydrator->mapDatastore($a_properties);
         }
         if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
             throw new Exception('[AbstractGdsStore][' . $this->entity_name . '][update] empty guid');
@@ -110,81 +112,4 @@ abstract class AbstractGdsStore implements StoreInterface {
         // Delete entity
         $version = $this->dataStoreService->getConnection()->delete($key);
     }
-
-    /*
-    public function persistEntity(AbstractEntity $entity) {
-
-        $a_name = get_class($entity);
-        $b = new $a_name;
-        $entity_data = $entity->toArray();
-        $guid = $entity->getGuid();
-
-        // Create key based on guid
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-
-        // Create an entity
-        $dsObject = $this->dataStoreService->getConnection()->entity($key);
-        foreach($entity_data as $attribute => $value) {
-            $dsObject[$attribute] = $value;
-        }
-        $version = $this->dataStoreService->getConnection()->insert($dsObject);
-    }
-
-    public function persist($payload) {
-        // Cannot implement raw payload store
-        throw new \Exception('Unimplemented');
-    }
-
-    public function getByGuid($guid)
-    {
-        $dsObject = $this->getObjectByGuid($guid);
-        if (!is_null($dsObject)) {
-            $entity = new $this->entity_classname;
-            $entity->fromArray($dsObject->get());
-            return $entity;
-        }
-        return null;
-    }
-
-    public function getObjectByGuid($guid)
-    {
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-        $dsObject = $this->dataStoreService->getConnection()->lookup($key);
-        return $dsObject;
-    }
-
-    public function update(AbstractEntity $entity) {
-        // $entity_name = get_class($entity);
-        $entity_data = $entity->toArray();
-        $guid = $entity->getGuid();
-
-        // Create key based on guid
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-
-        $dsObject = $this->getObjectByGuid($guid);
-        if (!is_null($dsObject)) {
-            foreach($entity_data as $attribute => $value) {
-                $dsObject[$attribute] = $value;
-            }
-            $version = $this->dataStoreService->getConnection()->update($dsObject);
-        }
-        else {
-            throw new \Exception('[DataStoreTable][' . $this->entity_name . '][Update] Guid ' . $guid . ' does not exists');
-        }
-    }
-
-    public function delete(AbstractEntity $entity)
-    {
-        $guid = $entity->getGuid();
-        $this->deleteByGuid($guid);
-    }
-
-    public function deleteByGuid($guid)
-    {
-        // Create key based on guid
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-        // Delete entity
-        $version = $this->dataStoreService->getConnection()->delete($key);
-    }
-    */
 }
