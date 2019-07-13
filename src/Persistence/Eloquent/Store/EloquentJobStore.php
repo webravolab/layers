@@ -191,7 +191,7 @@ class EloquentJobStore implements JobQueueInterface {
 
         $jobs = Array();
         foreach($c_jobs as $o_job) {
-            $jobs[] = $jobHydrator->Hydrate($o_job);
+            $jobs[] = $jobHydrator->hydrate($o_job);
         }
 
         return $jobs;
@@ -232,7 +232,7 @@ class EloquentJobStore implements JobQueueInterface {
 
         $jobHydrator = new JobHydrator();
 
-        $job = $jobHydrator->Hydrate($o_job);
+        $job = $jobHydrator->hydrate($o_job);
 
         return $job;
     }

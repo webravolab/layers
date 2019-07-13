@@ -1,0 +1,44 @@
+<?php
+
+use Faker\Factory;
+use tests\TestProject\Domain\Entity\TestEntity;
+use tests\TestProject\Persistence\Eloquent\Store\TestStore;
+use tests\TestProject\Domain\Repository\TestRepository;
+use tests\TestProject\Domain\Service\TestService;
+use Webravo\Common\ValueObject\DateTimeObject;
+
+class EntityTest extends TestCase
+{
+
+    public function testEntity()
+    {
+
+        $faker = Factory::create();
+        $name = $faker->name();
+        $fk = $faker->numberBetween(1000,100000);
+        $created_at = $faker->dateTimeThisYear();
+        $created_at = $created_at->format('Y-m-d H:i:s') . '.' . $faker->numberBetween(100000,999999);
+        $created_at = new DateTimeObject($created_at);
+
+        $entity = new TestEntity();
+        $entity_name = get_class($entity);
+        $entity->setName($name);
+        $entity->setForeignKey($fk);
+        $entity->setCreatedAt($created_at);
+
+        $guid = $entity->getGuid();
+
+        $store = new TestStore();
+        $repository = new TestRepository($store);
+        $service = new TestService($repository);
+
+        $service->create($entity);
+
+        $retrieved_entity = $service->getByGuid($guid);
+
+        $this->assertEquals($entity->getGuid(), $retrieved_entity->getGuid());
+        $this->assertEquals($entity->getName(), $retrieved_entity->getName());
+        $this->assertEquals($entity->getForeignKey(), $retrieved_entity->getForeignKey());
+        $this->assertEquals($entity->getCreatedAt()->toISOString(), $retrieved_entity->getCreatedAt()->toISOString());
+    }
+}

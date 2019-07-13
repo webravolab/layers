@@ -53,11 +53,11 @@ class EventDataTable extends AbstractDataTable implements StorableInterface {
             if (method_exists($entity, "toSerializedArray")) {
                 // Entity could implement it's own serialization method
                 $data = $entity->toSerializedArray();
-                $data = $this->hydrator->Map($data);
+                $data = $this->hydrator->map($data);
             }
             else {
                 $data = $entity->toArray();
-                $data = $this->hydrator->Map($data);
+                $data = $this->hydrator->map($data);
             }
             // Create Eloquent object
             $o_event = $this->eventsModel::create($data);
@@ -74,8 +74,8 @@ class EventDataTable extends AbstractDataTable implements StorableInterface {
         $o_event = $this->getObjectByGuid($guid);
         if (!is_null($o_event)) {
             // Extract raw data from Eloquent model
-            // (de-serialization of payload is handled by hydrator->Hydrate)
-            return $this->hydrator->Hydrate($o_event);
+            // (de-serialization of payload is handled by hydrator->hydrate)
+            return $this->hydrator->hydrate($o_event);
         }
         return null;
     }

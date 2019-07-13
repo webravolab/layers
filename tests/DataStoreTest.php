@@ -2,7 +2,7 @@
 use Webravo\Infrastructure\Library\Configuration;
 
 use Faker\Factory;
-use Tests\Entity\TestEntity;
+use tests\TestProject\Domain\Entity\TestEntity;
 use tests\DataStoreTable\TestDataStoreTable;
 use Webravo\Persistence\Repository\AbstractDataStoreTable;
 

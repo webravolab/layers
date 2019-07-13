@@ -1,7 +1,11 @@
 <?php
-namespace test\TestProject\Domain\Service;
+namespace tests\TestProject\Domain\Service;
 
+use tests\TestProject\Domain\Entity\TestEntity;
 use Webravo\Infrastructure\Library\DependencyBuilder;
+use Webravo\Common\Entity\EntityInterface;
+use tests\TestProject\Domain\Repository\TestRepositoryInterface;
+
 
 class TestService implements TestServiceInterface
 {
@@ -11,10 +15,10 @@ class TestService implements TestServiceInterface
 
     protected $repository;
 
-    public function __construct(?test\TestProject\Domain\Repository\TestRepositoryInterface $repository)
+    public function __construct(?TestRepositoryInterface $repository)
     {
         if (is_null($repository)) {
-            $this->repository = DependencyBuilder::resolve('test\TestProject\Domain\Repository\TestRepositoryInterface');
+            $this->repository = DependencyBuilder::resolve('tests\TestProject\Domain\Repository\TestRepositoryInterface');
         }
         else {
             $this->repository = $repository;
@@ -23,30 +27,30 @@ class TestService implements TestServiceInterface
 
     /**
      * Store entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function create(EntityInterface $page)
+    public function create(EntityInterface $entity)
     {
-
+        $this->repository->persist($entity);
     }
 
     /**
      * Update entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function update(EntityInterface $page)
+    public function update(EntityInterface $entity)
     {
 
     }
 
     /**
      * Delete entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function delete(EntityInterface $page)
+    public function delete(EntityInterface $entity)
     {
 
     }
@@ -69,7 +73,9 @@ class TestService implements TestServiceInterface
      */
     public function getByGuid(string $guid)
     {
-
+        $a_properties = $this->repository->getByGuid($guid);
+        $entity = TestEntity::buildFromArray($a_properties);
+        return $entity;
     }
 
 }

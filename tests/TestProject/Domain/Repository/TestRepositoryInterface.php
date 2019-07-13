@@ -1,5 +1,5 @@
 <?php
-namespace test\TestProject\Domain\Repository;
+namespace tests\TestProject\Domain\Repository;
 
 use Webravo\Common\Repository\RepositoryInterface;
 

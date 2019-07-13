@@ -1,7 +1,8 @@
 <?php
-namespace Tests\Entity;
+namespace tests\TestProject\Domain\Entity;
 
 use DateTimeInterface;
+use Webravo\Common\ValueObject\DateTimeObject;
 
 Class TestEntity extends \Webravo\Common\Entity\AbstractEntity implements TestEntityInterface
 {
@@ -29,12 +30,12 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity implements TestEn
         $this->foreign_key = (int) $value;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): DateTimeObject
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(DateTimeInterface $value)
+    public function setCreatedAt(DateTimeObject $value)
     {
         $this->created_at = $value;
     }
@@ -45,12 +46,14 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity implements TestEn
      */
     public function toArray(): array
     {
-        return [
-            'guid' => $this->guid,
-            'name' => $this->name,
-            'fk_id' => $this->foreign_key,
-            'created_at' => $this->created_at,
-        ];
+        if ($this->created_at instanceof DateTimeObject) {
+            return [
+                'guid' => $this->guid,
+                'name' => $this->name,
+                'fk_id' => $this->foreign_key,
+                'created_at' => $this->created_at->toRFC3339(),
+            ];
+        }
     }
 
     /**
@@ -63,6 +66,6 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity implements TestEn
         $this->setGuid($a_values['guid']);
         $this->setName($a_values['name']);
         $this->setForeignKey($a_values['fk_id']);
-        $this->setCreatedAt($a_values['created_at']);
+        $this->setCreatedAt(new DateTimeObject($a_values['created_at']));
     }
 }

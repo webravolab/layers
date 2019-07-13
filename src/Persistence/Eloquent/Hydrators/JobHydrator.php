@@ -11,7 +11,7 @@ class JobHydrator implements HydratorInterface {
      * @param $eloquent_object
      * @return array                    // TODO declare return type when all implementors have been refactored
      */
-    public function Hydrate($object) {
+    public function hydrate($object) {
 
         $data = [
             'id' => $object->id,
@@ -28,11 +28,11 @@ class JobHydrator implements HydratorInterface {
     }
 
     /**
-     * Map (convert) from entity array to eloquent attributes array
+     * map (convert) from entity array to eloquent attributes array
      * @param $a_values
      * @return array
      */
-    public function Map(array $a_values): array
+    public function map(array $a_values): array
     {
         $data = [
             'guid' => (isset($a_values['guid']) ? $a_values['guid'] : ''),

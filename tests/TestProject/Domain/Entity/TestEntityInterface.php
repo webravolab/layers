@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Entity;
+namespace tests\TestProject\Domain\Entity;
 
-use DateTimeInterface;
+use Webravo\Common\ValueObject\DateTimeObject;
 
 interface TestEntityInterface extends \Webravo\Common\Entity\EntityInterface
 {
@@ -16,8 +16,8 @@ interface TestEntityInterface extends \Webravo\Common\Entity\EntityInterface
 
     public function setForeignKey($value);
 
-    public function getCreatedAt(): DateTimeInterface;
+    public function getCreatedAt(): DateTimeObject;
 
-    public function setCreatedAt(DateTimeInterface $value);
+    public function setCreatedAt(DateTimeObject $value);
 
 }

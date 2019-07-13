@@ -1,6 +1,6 @@
 <?php
 
-namespace test\TestProject\Domain\Events;
+namespace tests\TestProject\Domain\Events;
 
 use Webravo\Common\Contracts\DomainEventInterface;
 use Webravo\Application\Event\EventInterface;

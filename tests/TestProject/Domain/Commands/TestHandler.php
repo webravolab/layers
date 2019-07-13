@@ -1,6 +1,6 @@
 <?php
 
-namespace test\TestProject\Domain\Commands;
+namespace tests\TestProject\Domain\Commands;
 
 use Webravo\Application\Command\CommandHandlerInterface;
 use Webravo\Application\Command\CommandInterface;

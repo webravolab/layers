@@ -1,8 +1,9 @@
 <?php
-namespace test\TestProject\Domain\Repository;
+namespace tests\TestProject\Domain\Repository;
 
 use Webravo\Common\Entity\EntityInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
+use tests\TestProject\Infrastructure\Repository\TestStoreInterface;
 
 class TestRepository implements TestRepositoryInterface
 {
@@ -13,10 +14,10 @@ class TestRepository implements TestRepositoryInterface
 
     protected $store;
 
-    public function __construct(?test\TestProject\Infrastructure\Repository\TestStoreInterface $store)
+    public function __construct(?TestStoreInterface $store)
     {
         if (is_null($store)) {
-            $this->store = DependencyBuilder::resolve('test\TestProject\Infrastructure\Repository\TestStoreInterface');
+            $this->store = DependencyBuilder::resolve('tests\TestProject\Infrastructure\Repository\TestStoreInterface');
         }
         else {
             $this->store = $store;
@@ -25,11 +26,13 @@ class TestRepository implements TestRepositoryInterface
 
     public function getByGuid($guid)
     {
-        // TODO: Implement getByGuid() method.
+        $a_data = $this->store->getByGuidId($guid);
+        return $a_data;
     }
 
     public function persist(EntityInterface $object)
     {
-        // TODO: Implement persist() method.
+        $a_data = $object->toArray();
+        $this->store->Append($a_data);
     }
 }

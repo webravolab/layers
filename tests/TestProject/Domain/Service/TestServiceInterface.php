@@ -1,29 +1,30 @@
 <?php
-namespace test\TestProject\Domain\Service;
+namespace tests\TestProject\Domain\Service;
+use Webravo\Common\Entity\EntityInterface;
 
 interface TestServiceInterface
 {
 
     /**
      * Store entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function create(EntityInterface $page);
+    public function create(EntityInterface $entity);
 
     /**
      * Update entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function update(EntityInterface $page);
+    public function update(EntityInterface  $page);
 
     /**
      * Delete entity
-     * @param EntityInterface $page
+     * @param EntityInterface
      * @return mixed
      */
-    public function delete(EntityInterface $page);
+    public function delete(EntityInterface  $page);
 
 
     /**

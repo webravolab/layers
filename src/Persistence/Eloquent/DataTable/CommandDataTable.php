@@ -67,8 +67,8 @@ class CommandDataTable extends AbstractDataTable implements StorableInterface {
         $o_command = $this->getObjectByGuid($guid);
         if (!is_null($o_command)) {
             // Extract raw data from Eloquent model
-            // (de-serialization of payload is handled by hydrator->Hydrate)
-            return $this->hydrator->Hydrate($o_command);
+            // (de-serialization of payload is handled by hydrator->hydrate)
+            return $this->hydrator->hydrate($o_command);
         }
         return null;
     }
@@ -94,7 +94,7 @@ class CommandDataTable extends AbstractDataTable implements StorableInterface {
             // Add creation date
             $data['created_at'] = $this->getCreatedAt();
             // Convert array to Eloquent model data structure
-            $data = $this->hydrator->Map($data);
+            $data = $this->hydrator->map($data);
             // Store Eloquent object
             $o_command = $this->commandModel::create($data);
         }

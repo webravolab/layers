@@ -1,11 +1,13 @@
 <?php
-namespace test\TestProject\Infrastructure\Repository;
+namespace tests\TestProject\Infrastructure\Repository;
 
 interface TestStoreInterface {
 
     public function setConnection($db_connection_name);
 
     public function getById($id);
+
+    public function getByGuidId(string $id);
 
     public function Append(array $data);
 
