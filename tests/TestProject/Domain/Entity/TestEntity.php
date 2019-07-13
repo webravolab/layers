@@ -3,25 +3,20 @@ namespace Tests\Entity;
 
 use DateTimeInterface;
 
-Class TestEntity extends \Webravo\Common\Entity\AbstractEntity
+Class TestEntity extends \Webravo\Common\Entity\AbstractEntity implements TestEntityInterface
 {
     protected $name = null;
     protected $foreign_key = null;
     protected $created_at = null;
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
 
     public function getName()
     {
         return $this->name;
     }
 
-    public function setForeignKey($value)
+    public function setName($name)
     {
-        $this->foreign_key = (int) $value;
+        $this->name = $name;
     }
 
     public function getForeignKey()
@@ -29,9 +24,9 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity
         return $this->foreign_key;
     }
 
-    public function setCreatedAt(DateTimeInterface $value)
+    public function setForeignKey($value)
     {
-        $this->created_at = $value;
+        $this->foreign_key = (int) $value;
     }
 
     public function getCreatedAt(): DateTimeInterface
@@ -39,6 +34,15 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity
         return $this->created_at;
     }
 
+    public function setCreatedAt(DateTimeInterface $value)
+    {
+        $this->created_at = $value;
+    }
+
+    /**
+     * Custom implementations of toArray()
+     * @return array
+     */
     public function toArray(): array
     {
         return [
@@ -49,6 +53,11 @@ Class TestEntity extends \Webravo\Common\Entity\AbstractEntity
         ];
     }
 
+    /**
+     * Custom implementations of fromArray()
+     * @param array $a_values
+     * @return mixed|void
+     */
     public function fromArray(array $a_values)
     {
         $this->setGuid($a_values['guid']);

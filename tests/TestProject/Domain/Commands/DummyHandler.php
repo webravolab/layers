@@ -1,6 +1,6 @@
 <?php
 
-namespace tests\Commands;
+namespace test\TestProject\Domain\Commands;
 
 use Psr\Log\LoggerInterface;
 use Webravo\Application\Command\CommandHandlerInterface;

@@ -108,6 +108,8 @@ class DataStoreTest extends TestCase
         echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
     }
 
+    // TODO
+    /*
     public function testDataStoreCursor()
     {
         $googleProjectId = Configuration::get('GOOGLE_PROJECT_ID');
@@ -119,5 +121,6 @@ class DataStoreTest extends TestCase
 
         self::assertTrue(false, 'Test incomplete...');
    }
+   */
 }
 

@@ -2,8 +2,6 @@
 
 namespace Webravo\Common\Entity;
 
-use Webravo\Common\Entity\EntityInterface;
-use Webravo\Infrastructure\Service\GuidServiceInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 
 abstract class AbstractEntity implements EntityInterface
