@@ -7,6 +7,7 @@ use Webravo\Common\Contracts\HydratorInterface;
 use tests\TestProject\Persistence\Eloquent\Model\TestEntityModel;
 use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 
+use Exception;
 class TestStore extends AbstractEloquentStore implements TestStoreInterface
 {
 
@@ -48,21 +49,37 @@ class TestStore extends AbstractEloquentStore implements TestStoreInterface
     public function append(array $a_properties)
     {
         $a_attributes = $this->hydrator->map($a_properties);
+        if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
+            throw new Exception('[TestStore][append] empty guid');
+        }
         TestEntityModel::create($a_attributes);
     }
 
     public function update(array $a_properties)
     {
-        // TODO: Implement update() method.
+        if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
+            throw new Exception('[TestStore][update] empty guid');
+        }
+        $a_attributes = $this->hydrator->map($a_properties);
+        $guid = $a_attributes['guid'];        // TODO: Implement update() method.
+        $object = $this->getObjectByGuid($guid);
+        if (!$object) {
+            throw new Exception('[TestStore][update] guid ' . $guid . " not found");
+        }
+        $object->update($a_attributes);
     }
 
     public function delete(array $a_properties)
     {
-        // TODO: Implement Delete() method.
+        if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
+            throw new Exception('[TestStore][delete] empty guid');
+        }
+        $guid = $a_properties['guid'];
+        $this->deleteByGuid($guid);
     }
 
     public function deleteByGuid(string $guid)
     {
-        // TODO: Implement deleteByGuid() method.
+        TestEntityModel::where('guid', $guid)->delete();
     }
 }

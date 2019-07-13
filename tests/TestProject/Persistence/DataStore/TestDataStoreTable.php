@@ -1,6 +1,8 @@
 <?php
 namespace tests\TestProject\Persistence\DataStore;
 
+use tests\TestProject\Persistence\Hydrator\TestHydrator;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use Webravo\Persistence\DataStore\DataTable\AbstractGdsStore;
@@ -12,10 +14,13 @@ Class TestDataStoreTable extends AbstractGdsStore implements TestStoreInterface
     protected $entity_classname = 'tests\TestProject\Domain\Entity\TestEntity';
     protected $gds_entity_name = "TestEntity";
 
-    public function __construct(DataStoreServiceInterface $dataStoreService, $entity_name = null, $entity_classname = null, $gds_entity_name = null)
+    public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = null, $entity_classname = null, $gds_entity_name = null)
     {
         if (is_null($dataStoreService)) {
             $dataStoreService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\DataStoreServiceInterface');
+        }
+        if (is_null($hydrator)) {
+            $hydrator = new TestHydrator();
         }
         if (!empty($entity_name)) {
             $this->entity_name = $entity_name;
@@ -26,7 +31,7 @@ Class TestDataStoreTable extends AbstractGdsStore implements TestStoreInterface
         if (!empty($gds_entity_name)) {
             $this->gds_entity_name = $gds_entity_name;
         }
-        parent::__construct($dataStoreService, $this->entity_name, $this->entity_classname, $this->gds_entity_name);
+        parent::__construct($dataStoreService, $hydrator, $this->entity_name, $this->entity_classname, $this->gds_entity_name);
     }
 
     public function setConnection($dummy)

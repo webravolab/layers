@@ -29,24 +29,34 @@ class TestRepository implements TestRepositoryInterface
     public function getByGuid($guid): ?EntityInterface
     {
         $a_properties = $this->store->getByGuid($guid);
+        if (is_null($a_properties) || !is_array($a_properties)) {
+            return null;
+        }
         $entity = TestEntity::buildFromArray($a_properties);
         return $entity;
     }
 
-    public function persist(EntityInterface $object)
+    public function persist(EntityInterface $entity)
     {
-        $a_data = $object->toArray();
-        $this->store->Append($a_data);
+        $a_data = $entity->toArray();
+        $this->store->append($a_data);
     }
 
     public function update(EntityInterface $entity)
     {
-        // TODO: Implement update() method.
+        $a_data = $entity->toArray();
+        $this->store->update($a_data);
     }
 
     public function delete(EntityInterface $entity)
     {
-        // TODO: Implement delete() method.
+        $a_data = $entity->toArray();
+        $this->store->delete($a_data);
+    }
+
+    public function deleteByGuid(string $guid)
+    {
+        $this->store->deleteByGuid($guid);
     }
 
 

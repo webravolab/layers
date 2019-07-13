@@ -4,7 +4,6 @@ use Webravo\Common\Entity\EntityInterface;
 
 interface TestServiceInterface
 {
-
     /**
      * Store entity
      * @param EntityInterface

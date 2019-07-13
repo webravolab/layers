@@ -42,7 +42,7 @@ class TestService implements TestServiceInterface
      */
     public function update(EntityInterface $entity)
     {
-
+        $this->repository->update($entity);
     }
 
     /**
@@ -52,7 +52,7 @@ class TestService implements TestServiceInterface
      */
     public function delete(EntityInterface $entity)
     {
-
+        $this->repository->delete($entity);
     }
 
 
@@ -63,7 +63,7 @@ class TestService implements TestServiceInterface
      */
     public function deleteByGuid(string $guid)
     {
-
+        $this->repository->deleteByGuid($guid);
     }
 
     /**

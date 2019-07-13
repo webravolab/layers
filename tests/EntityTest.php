@@ -40,6 +40,18 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->getName(), $retrieved_entity->getName());
         $this->assertEquals($entity->getForeignKey(), $retrieved_entity->getForeignKey());
         $this->assertEquals($entity->getCreatedAt()->toISOString(), $retrieved_entity->getCreatedAt()->toISOString());
+
+        // Test Update
+        $fk = $faker->numberBetween(1000,100000);
+        $entity->setForeignKey($fk);
+        $service->update($entity);
+        $retrieved_entity = $service->getByGuid($guid);
+        $this->assertEquals($entity->getForeignKey(), $retrieved_entity->getForeignKey());
+
+        // Test Delete
+        $service->delete($entity);
+        $deleted_entity = $service->getByGuid($guid);
+        $this->assertNull($deleted_entity);
     }
 
     public function testEntity2DataStore()
@@ -72,6 +84,21 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->getName(), $retrieved_entity->getName());
         $this->assertEquals($entity->getForeignKey(), $retrieved_entity->getForeignKey());
         $this->assertEquals($entity->getCreatedAt()->toISOString(), $retrieved_entity->getCreatedAt()->toISOString());
+
+        // Test Update
+        $fk = $faker->numberBetween(1000,100000);
+        $entity->setForeignKey($fk);
+        $service->update($entity);
+        $retrieved_entity = $service->getByGuid($guid);
+        $this->assertEquals($entity->getForeignKey(), $retrieved_entity->getForeignKey());
+
+        // Test Delete
+        $service->delete($entity);
+        $deleted_entity = $service->getByGuid($guid);
+        $this->assertNull($deleted_entity);
+
+        // GQL TEST QUERY
+        // select * from TestEntity where created_at > DATETIME("2019-01-01T00:00:00Z")
     }
 
 }

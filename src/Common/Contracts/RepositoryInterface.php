@@ -20,4 +20,5 @@ interface RepositoryInterface {
 
     public function delete(EntityInterface $entity);
 
+    public function deleteByGuid(string $guid);
 }
