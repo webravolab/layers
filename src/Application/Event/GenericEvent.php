@@ -11,11 +11,6 @@ use DateTimeInterface;
 abstract class GenericEvent implements EventInterface {
 
     /**
-     * @var GuidServiceInterface
-     */
-    private $guidService;
-
-    /**
      * @var string
      */
     private $guid;
@@ -30,11 +25,18 @@ abstract class GenericEvent implements EventInterface {
      */
     private $type;
 
+    /**
+     * The event payload
+     * @var 
+     */
+    private $payload;
+    
+    
     public function __construct($type, ?DateTime $occurred_at = null) {
 
         $this->type = $type;
-        $this->guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
-        $this->guid = $this->guidService->generate()->getValue();
+        $guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
+        $this->guid = $guidService->generate()->getValue();
         if (!is_null($occurred_at)) {
             $this->setOccurredAt($occurred_at);
         }
@@ -43,12 +45,12 @@ abstract class GenericEvent implements EventInterface {
         }
     }
 
-    public function setGuid($guid) {
-        $this->guid = $guid;
-    }
-
-    public function getGuid() {
+    public function getGuid():string {
         return $this->guid;
+    }
+    
+    public function setGuid(string $guid) {
+        $this->guid = $guid;
     }
 
     public function getOccurredAt(): ?DateTimeInterface {
@@ -59,7 +61,7 @@ abstract class GenericEvent implements EventInterface {
         $this->occurred_at = new DateTimeObject($occurred_at);
     }
 
-    public function setType($type) {
+    public function setType(string $type) {
         $this->type = $type;
     }
 
@@ -67,11 +69,48 @@ abstract class GenericEvent implements EventInterface {
         return $this->type;
     }
 
-    abstract public function setPayload($value);
+    public function setPayload($value) 
+    {
+        $this->payload = $value;   
+    }
 
-    abstract public function getPayload();
+    public function getPayload() 
+    {
+        return $this->payload;   
+    }
 
-    abstract public function toArray(): array;
+    public function toArray(): array 
+    {
+        return [
+            'guid' => $this->getGuid(),
+            'type' => $this->getType(),
+            'occurred_at' => $this->getOccurredAt(),
+            'payload' => $this->getPayload(),
+        ];        
+    }
+
+    public function fromArray(array $data)
+    {
+        if (isset($data['guid'])) { $this->setGuid($data['guid']); }
+        if (isset($data['type'])) { $this->setType($data['type']); }
+        if (isset($data['occurred_at'])) { $this->setOccurredAt($data['occurred_at']); }
+        if (isset($data['payload'])) {
+            if (is_string($data['payload'])) {
+                $payload = json_decode($data['payload'],true);
+                if ($payload !== null) {
+                    $this->setPayload($payload);
+                } else {
+                    $this->setPayload($data['payload']);
+                }
+            }
+            else {
+                $this->setPayload($data['payload']);
+            }
+        }
+        else {
+            $this->setPayload(null);
+        }
+    }        
 
     public static function buildFromArray(array $data): EventInterface
     {
@@ -99,4 +138,35 @@ abstract class GenericEvent implements EventInterface {
         return $json;
     }
 
+    public function setSerializedPayload(string $payload_serialized): string
+    {
+        if (is_string($payload_serialized)) {
+            $payload = json_decode($payload_serialized,true);
+            if ($payload !== null) {
+                $this->setPayload($payload);
+            } else {
+                $this->setPayload($payload_serialized);
+            }
+        }
+        else {
+            $this->setPayload($payload_serialized);
+        }
+    }
+
+    public function getSerializedEvent(): string
+    {
+        $json = json_encode($this->toArray());
+        return $json;
+    }
+
+    public static function buildFromSerializedEvent(string $event_serialized): ?EventInterface
+    {
+        if (is_string($event_serialized)) {
+            $event_array = json_decode($event_serialized, true);
+            if ($event_array !== null) {
+                return static::buildFromArray($event_array);
+            }
+        }
+        return null;
+    }
 }

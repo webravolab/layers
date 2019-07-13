@@ -6,6 +6,12 @@ use Webravo\Application\Event\EventInterface;
 
 interface DomainEventInterface extends EventInterface {
 
+    // DomainEventInterface extends EventInterface adding additional properties handling:
+    // guid
+    // occurred_at
+    // type
+    // payload
+
     public function getGuid();
 
     public function getOccurredAt();

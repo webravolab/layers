@@ -26,7 +26,7 @@ abstract class AbstractEloquentStore implements StoreInterface {
 
     abstract function append(array $data);
 
-    abstract function getByGuid(STRING $guid);
+    abstract function getByGuid(string $guid);
 
     abstract function getObjectByGuid(string $guid);
 
