@@ -5,13 +5,13 @@ use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Infrastructure\Repository\HydratorInterface;
-use Webravo\Infrastructure\Repository\StorableInterface;
-use Webravo\Persistence\Repository\AbstractDataTable;
+use Webravo\Common\Contracts\StoreInterface;
+use Webravo\Persistence\Repository\AbstractEloquentStore;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
 use DateTime;
 
-class JobDataTable extends AbstractDataTable implements StorableInterface {
+class JobDataTable extends AbstractEloquentStore implements StoreInterface {
 
     public $body;           // Compatibility with AMQPMessage
 

@@ -73,8 +73,7 @@ class TestService implements TestServiceInterface
      */
     public function getByGuid(string $guid)
     {
-        $a_properties = $this->repository->getByGuid($guid);
-        $entity = TestEntity::buildFromArray($a_properties);
+        $entity = $this->repository->getByGuid($guid);
         return $entity;
     }
 

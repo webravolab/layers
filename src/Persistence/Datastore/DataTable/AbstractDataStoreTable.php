@@ -1,8 +1,8 @@
 <?php
 
-namespace Webravo\Persistence\Repository;
+namespace Webravo\Persistence\DataStore\DataTable;
 
-use Webravo\Infrastructure\Repository\StorableInterface;
+use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Repository\HydratorInterface;
@@ -11,7 +11,7 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 
 use ReflectionClass;
 
-abstract class AbstractDataStoreTable implements StorableInterface {
+abstract class AbstractDataStoreTable implements StoreInterface {
 
     protected $dataStoreService;
     protected $entity_name;
@@ -35,14 +35,14 @@ abstract class AbstractDataStoreTable implements StorableInterface {
         $guid = $entity->getGuid();
 
         // Create key based on guid
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
 
         // Create an entity
-        $dsObject = $this->dataStoreService->connection()->entity($key);
+        $dsObject = $this->dataStoreService->getConnection()->entity($key);
         foreach($entity_data as $attribute => $value) {
             $dsObject[$attribute] = $value;
         }
-        $version = $this->dataStoreService->connection()->insert($dsObject);
+        $version = $this->dataStoreService->getConnection()->insert($dsObject);
     }
 
     public function persist($payload) {
@@ -63,8 +63,8 @@ abstract class AbstractDataStoreTable implements StorableInterface {
 
     public function getObjectByGuid($guid)
     {
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
-        $dsObject = $this->dataStoreService->connection()->lookup($key);
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
+        $dsObject = $this->dataStoreService->getConnection()->lookup($key);
         return $dsObject;
     }
 
@@ -74,14 +74,14 @@ abstract class AbstractDataStoreTable implements StorableInterface {
         $guid = $entity->getGuid();
 
         // Create key based on guid
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
 
         $dsObject = $this->getObjectByGuid($guid);
         if (!is_null($dsObject)) {
             foreach($entity_data as $attribute => $value) {
                 $dsObject[$attribute] = $value;
             }
-            $version = $this->dataStoreService->connection()->update($dsObject);
+            $version = $this->dataStoreService->getConnection()->update($dsObject);
         }
         else {
             throw new \Exception('[DataStoreTable][' . $this->entity_name . '][Update] Guid ' . $guid . ' does not exists');
@@ -97,8 +97,8 @@ abstract class AbstractDataStoreTable implements StorableInterface {
     public function deleteByGuid($guid)
     {
         // Create key based on guid
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
         // Delete entity
-        $version = $this->dataStoreService->connection()->delete($key);
+        $version = $this->dataStoreService->getConnection()->delete($key);
     }
 }
