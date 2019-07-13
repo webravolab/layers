@@ -14,11 +14,11 @@ interface StoreInterface {
     // STORE GET/SET ELOQUENT ATTRIBUTES FROM/TO ELOQUENT MODEL
     // STORE USE HYDRATOR TO CONVERT PROPERTIES ARRAY TO ELOQUENT ATTRIBUTES (single or array)
 
-    public function append(array $a_properties);
-
     public function getByGuid(string $guid);
 
     public function getObjectByGuid(string $guid);
+
+    public function append(array $a_properties);
 
     public function update(array $a_properties);
 

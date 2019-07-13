@@ -3,6 +3,7 @@
 use Faker\Factory;
 use tests\TestProject\Domain\Entity\TestEntity;
 use tests\TestProject\Persistence\Eloquent\Store\TestStore;
+use tests\TestProject\Persistence\DataStore\TestDataStoreTable;
 use tests\TestProject\Domain\Repository\TestRepository;
 use tests\TestProject\Domain\Service\TestService;
 use Webravo\Common\ValueObject\DateTimeObject;
@@ -41,7 +42,6 @@ class EntityTest extends TestCase
         $this->assertEquals($entity->getCreatedAt()->toISOString(), $retrieved_entity->getCreatedAt()->toISOString());
     }
 
-
     public function testEntity2DataStore()
     {
         $faker = Factory::create();
@@ -59,7 +59,8 @@ class EntityTest extends TestCase
 
         $guid = $entity->getGuid();
 
-        $store = new TestStore();
+        $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
+        $store = new TestDataStoreTable($dataStoreClient);
         $repository = new TestRepository($store);
         $service = new TestService($repository);
 

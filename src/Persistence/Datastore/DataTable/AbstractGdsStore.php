@@ -2,31 +2,90 @@
 
 namespace Webravo\Persistence\DataStore\DataTable;
 
+use PHPUnit\Framework\ExpectationFailedException;
 use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
-use Webravo\Common\Entity\AbstractEntity;
-use Webravo\Infrastructure\Repository\HydratorInterface;
-use Webravo\Infrastructure\Library\DependencyBuilder;
+use Exception;
 
-
-use ReflectionClass;
-
-abstract class AbstractDataStoreTable implements StoreInterface {
+abstract class AbstractGdsStore implements StoreInterface {
 
     protected $dataStoreService;
+    protected $gds_entity_name;
     protected $entity_name;
     protected $entity_classname;
 
-    public function __construct(DataStoreServiceInterface $dataStoreService, $entity_name = null, $entity_classname = null) {
+    public function __construct(DataStoreServiceInterface $dataStoreService, $entity_name = null, $entity_classname = null, $gds_entity_name = null) {
         $this->dataStoreService = $dataStoreService;
         if (!empty($entity_name)) {
             $this->entity_name = $entity_name;
+            $this->gds_entity_name = $gds_entity_name;
         }
         if (!empty($entity_classname)) {
             $this->entity_classname = $entity_classname;
         }
+        if (!empty($gds_entity_name)) {
+            $this->gds_entity_name = $gds_entity_name;
+        }
     }
 
+    public function getByGuid(string $guid)
+    {
+        $dsObject = $this->getObjectByGuid($guid);
+        if (!is_null($dsObject)) {
+            return $dsObject->get();
+        }
+        return null;
+    }
+
+    public function getObjectByGuid(string $guid)
+    {
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
+        $dsObject = $this->dataStoreService->getConnection()->lookup($key);
+        return $dsObject;
+    }
+
+    public function append(array $a_properties)
+    {
+        // $a_name = get_class($entity);
+        // $b = new $a_name;
+        if (!isset($a_properties['guid']) || empty($a_properties['guid'])) {
+            throw new Exception('[AbstractGdsStore][append] empty guid');
+        }
+        $guid = $a_properties['guid'];
+        // Create key based on guid
+        $key = $this->dataStoreService->getConnection()->key($this->gds_entity_name, $guid);
+
+        // Create an entity
+        $dsObject = $this->dataStoreService->getConnection()->entity($key);
+        foreach($a_properties as $attribute => $value) {
+            $dsObject[$attribute] = $value;
+        }
+        $version = $this->dataStoreService->getConnection()->insert($dsObject);
+    }
+
+    public function update(array $a_properties)
+    {
+        // TODO: Implement update() method.
+        throw new \Exception('Unimplemented');
+    }
+
+    public function delete(array $a_properties)
+    {
+        if (isset($a_properties['guid'])) {
+            $guid = $a_properties['guid'];
+            $this->deleteByGuid($guid);
+        }
+    }
+
+    public function deleteByGuid(string $guid)
+    {
+        // Create key based on guid
+        $key = $this->dataStoreService->getConnection()->key($this->gds_entity_name, $guid);
+        // Delete entity
+        $version = $this->dataStoreService->getConnection()->delete($key);
+    }
+
+    /*
     public function persistEntity(AbstractEntity $entity) {
 
         $a_name = get_class($entity);
@@ -101,4 +160,5 @@ abstract class AbstractDataStoreTable implements StoreInterface {
         // Delete entity
         $version = $this->dataStoreService->getConnection()->delete($key);
     }
+    */
 }
