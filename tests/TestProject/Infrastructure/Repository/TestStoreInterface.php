@@ -1,18 +1,27 @@
 <?php
 namespace tests\TestProject\Infrastructure\Repository;
 
-interface TestStoreInterface {
+use Webravo\Common\Contracts\StoreInterface;
 
+interface TestStoreInterface extends StoreInterface
+{
+    // Add here any additional methods specific to the store
     public function setConnection($db_connection_name);
 
-    public function getById($id);
+    /**
+     * Methods inherited by StoreInterface:
+     **/
 
-    public function getByGuidId(string $id);
+    // public function append(array $data);
 
-    public function Append(array $data);
+    // public function getByGuid($guid);
 
-    public function Update($id, array $data);
+    // public function getObjectByGuid($guid);
 
-    public function Delete($id);
+    // public function update(array $data);
+
+    // public function delete(array $data);
+
+    // public function deleteByGuid($guid);
 
 }

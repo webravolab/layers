@@ -1,12 +1,12 @@
 <?php
 namespace tests\TestProject\Persistence\Hydrator;
 
-use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Common\Contracts\HydratorInterface;
 use DateTime;
 
 class TestHydrator implements HydratorInterface
 {
-    public function hydrate($eloquent_object)
+    public function hydrate($eloquent_object):array
     {
         $data = [
             'id' => $eloquent_object->id,

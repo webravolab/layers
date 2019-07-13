@@ -2,13 +2,13 @@
 namespace Webravo\Persistence\Datastore\DataTable;
 
 use Webravo\Common\Entity\AbstractEntity;
-use Webravo\Infrastructure\Repository\StorableInterface;
+use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Persistence\Repository\AbstractDataStoreTable;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 
 use DateTimeInterface;
 
-class EventDataStoreTable extends AbstractDataStoreTable implements StorableInterface {
+class EventDataStoreTable extends AbstractDataStoreTable implements StoreInterface {
 
     protected $id;
     protected $type;
@@ -33,14 +33,14 @@ class EventDataStoreTable extends AbstractDataStoreTable implements StorableInte
         $guid = $entity->getGuid();
 
         // Create key based on guid
-        $key = $this->dataStoreService->connection()->key($this->entity_name, $guid);
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
 
         // Create an entity
-        $dsObject = $this->dataStoreService->connection()->entity($key);
+        $dsObject = $this->dataStoreService->getConnection()->entity($key);
         foreach($entity_data as $attribute => $value) {
             $dsObject[$attribute] = $value;
         }
-        $version = $this->dataStoreService->connection()->insert($dsObject);
+        $version = $this->dataStoreService->getConnection()->insert($dsObject);
     }
 
     public function persist($payload) {

@@ -4,13 +4,13 @@ namespace Webravo\Persistence\Eloquent\DataTable;
 use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Repository\HydratorInterface;
-use Webravo\Infrastructure\Repository\StorableInterface;
+use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
-use Webravo\Persistence\Repository\AbstractDataTable;
+use Webravo\Persistence\Repository\AbstractEloquentStore;
 use Webravo\Common\Entity\AbstractEntity;
 
-class EventDataTable extends AbstractDataTable implements StorableInterface {
+class EventDataTable extends AbstractEloquentStore implements StoreInterface {
 
     // Eloquent models names to use
     private $eventsModel;

@@ -1,7 +1,7 @@
 <?php
 namespace tests\TestProject\Domain\Repository;
 
-use Webravo\Common\Repository\RepositoryInterface;
+use Webravo\Common\Contracts\RepositoryInterface;
 
 interface TestRepositoryInterface extends RepositoryInterface
 {

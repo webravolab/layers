@@ -1,5 +1,5 @@
 <?php
-namespace tests\TestProject\Domain\DataStoreTable;
+namespace tests\TestProject\Persistence\DataSTore\TestDataStoreTable;
 
 use Webravo\Persistence\Repository\AbstractDataStoreTable;
 

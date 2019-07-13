@@ -1,6 +1,6 @@
 <?php
 
-namespace Webravo\Infrastructure\Repository;
+namespace Webravo\Common\Contracts;
 
 interface HydratorInterface {
 
@@ -9,7 +9,7 @@ interface HydratorInterface {
      * @param $eloquent_object
      * @return array                    // TODO declare return type when all implementors have been refactored
      */
-    public function hydrate($eloquent_object);
+    public function hydrate($eloquent_object): array;
 
 
     /**

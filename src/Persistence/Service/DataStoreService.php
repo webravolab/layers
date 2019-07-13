@@ -5,7 +5,6 @@ namespace Webravo\Persistence\Service;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use \Google\Cloud\Datastore\DatastoreClient;
-use \Exception;
 
 class DataStoreService implements DataStoreServiceInterface {
 
@@ -16,21 +15,30 @@ class DataStoreService implements DataStoreServiceInterface {
         $googleProjectId = Configuration::get('GOOGLE_PROJECT_ID');
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
 
-        $this->dataStoreClient = new DatastoreClient([
+        $this->setConnection(new DatastoreClient([
             'projectId' => $googleProjectId,
             'keyFilePath' => $googleConfigFile,
-        ]);
+            ])
+        );
     }
 
     /**
-     * Get the DataStore instance
-     * @return DatastoreClient|null
+     * Inject the datastore connection from external
+     * @param $connection
+     * @return mixed
      */
-    public function connection()
+    public function setConnection($connection)
+    {
+        $this->dataStoreClient = $connection;
+    }
+
+    /**
+     * Get the current datastore connection
+     * @return mixed
+     */
+    public function getConnection()
     {
         return $this->dataStoreClient;
     }
-
-
 
 }
