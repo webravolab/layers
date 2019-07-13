@@ -1,10 +1,12 @@
 <?php
-use Webravo\Infrastructure\Library\Configuration;
 
-use Faker\Factory;
 use tests\TestProject\Domain\Entity\TestEntity;
-use tests\DataStoreTable\TestDataStoreTable;
-use Webravo\Persistence\Repository\AbstractDataStoreTable;
+use tests\TestProject\Persistence\DataStore\TestDataStoreTable;
+use tests\TestProject\Persistence\Hydrator\TestHydrator;
+use Webravo\Infrastructure\Library\Configuration;
+use Webravo\Common\ValueObject\DateTimeObject;
+use Faker\Factory;
+use DateTime;
 
 class DataStoreTest extends TestCase
 {
@@ -27,54 +29,39 @@ class DataStoreTest extends TestCase
         $entity_name = get_class($a);
         $a->setName($name);
         $a->setForeignKey($fk);
-        $a->setCreatedAt($created_at);
+        $a->setCreatedAt(new DateTimeObject($created_at));
 
-        $dtOne = new TestDataStoreTable($dataStoreClient, null);
+        $hydrator = new TestHydrator();
+
+        $dtOne = new TestDataStoreTable($dataStoreClient, $hydrator);
 
         // Save entity
-        $dtOne->persistEntity($a);
+        $a_properties = $a->toArray();
+        $dtOne->append($a_properties);
 
         // retrieve entity
         $guid = $a->getGuid();
 
-        $b = $dtOne->getByGuid($guid);
+        $b = TestEntity::buildFromArray($dtOne->getByGuid($guid));
 
         self::assertEquals($a->getName(), $b->getName(), 'Entity name saved and read does not match');
 
         // Update entity
         $b->setName('Giorgio Bianchi');
 
-        $dtOne->update($b);
+        $a_properties = $b->toArray();
+        $dtOne->update($a_properties);
 
-        $c = $dtOne->getByGuid($guid);
+        $c = TestEntity::buildFromArray($dtOne->getByGuid($guid));
 
         self::assertEquals($b->getName(), $c->getName(), 'Entity name after update does not match');
 
-        $dtOne->delete($c);
+        $a_properties = $c->toArray();
+        $dtOne->delete($a_properties);
 
         // Double deletion .. no errors
-        $dtOne->delete($c);
-
-        // Massive test
-        $start_time = microtime(true);
-
-        for($x=0; $x<100; $x++) {
-            $name = $faker->name();
-            $fk = $faker->numberBetween(1000,100000);
-            $created_at = $faker->dateTimeThisYear();
-            $created_at = $created_at->format('Y-m-d H:i:s') . '.' . $faker->numberBetween(100000,999999);
-            $created_at = new DateTime($created_at);
-            $a = new TestEntity();
-            $a->setName($name);
-            $a->setForeignKey($fk);
-            $a->setCreatedAt($created_at);
-            $dtOne->persistEntity($a);
-        }
-
-        $end_time = microtime(true);
-
-        echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
-
+        $a_properties = $c->toArray();
+        $dtOne->delete($a_properties);
     }
 
     public function testDataStoreMassiveInsert()
@@ -99,8 +86,11 @@ class DataStoreTest extends TestCase
             $a = new TestEntity();
             $a->setName($name);
             $a->setForeignKey($fk);
-            $a->setCreatedAt($created_at);
-            $dtOne->persistEntity($a);
+            $a->setCreatedAt(new DateTimeObject($created_at));
+
+            // Save entity
+            $a_properties = $a->toArray();
+            $dtOne->append($a_properties);
         }
 
         $end_time = microtime(true);
