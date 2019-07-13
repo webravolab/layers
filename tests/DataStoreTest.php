@@ -37,7 +37,7 @@ class DataStoreTest extends TestCase
         // retrieve entity
         $guid = $a->getGuid();
 
-        $b = $dtOne->getByGuid($guid);
+        $b = $dtOne->getByGuid($guid, 'TestEntity');
 
         self::assertEquals($a->getName(), $b->getName(), 'Entity name saved and read does not match');
 
@@ -46,7 +46,7 @@ class DataStoreTest extends TestCase
 
         $dtOne->update($b);
 
-        $c = $dtOne->getByGuid($guid);
+        $c = $dtOne->getByGuid($guid, 'Test Entity');
 
         self::assertEquals($b->getName(), $c->getName(), 'Entity name after update does not match');
 
@@ -108,6 +108,8 @@ class DataStoreTest extends TestCase
         echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
     }
 
+    // TODO
+    /*
     public function testDataStoreCursor()
     {
         $googleProjectId = Configuration::get('GOOGLE_PROJECT_ID');
@@ -119,5 +121,6 @@ class DataStoreTest extends TestCase
 
         self::assertTrue(false, 'Test incomplete...');
    }
+   */
 }
 
