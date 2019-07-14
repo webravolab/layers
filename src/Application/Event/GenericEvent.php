@@ -43,7 +43,6 @@ abstract class GenericEvent implements EventInterface
 
     public function __construct($type, ?DateTime $occurred_at = null)
     {
-
         $this->type = $type;
         $this->class_name = get_class($this);
         $guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
@@ -162,16 +161,24 @@ abstract class GenericEvent implements EventInterface
         }
         if (!$eventInstance && isset($data['type'])) {
             $eventName = $data['type'];
-            if (strpos($eventName, '\\') === false && strpos($eventName, 'Project\\Domain\\Event\\') === false) {
-                $eventName = 'Project\\Domain\\Event\\' . $eventName;
+            /*
+            $a = get_declared_classes();
+            // $a = array_sort($a);
+            $len = strlen($eventName);
+            $r = array_filter($a, function ($value) use ($eventName, $len) {
+                $tail = substr($value, -($len));
+                return $tail === $eventName;
+            });
+            if (count($r)> 0) {
+                $eventName = array_shift($r);
             }
+            */
             $eventInstance = DependencyBuilder::resolve($eventName);
             if (!$eventInstance) {
-                try {
-                    $eventInstance = new ReflectionClass($eventName);
-                } catch (\ReflectionException $e) {
-                    // Class not found through reflection... continue
-                    // throw new EventException('[GenericEvent][buildFromArray] Event ' . $eventName . ' not found', 103);
+                if (strpos($eventName, '\\') === false) {
+                    // Not a fully qualified name ... try adding well-known namespaces
+                    $eventName = 'Project\\Domain\\Event\\' . $eventName;
+                    $eventInstance = DependencyBuilder::resolve($eventName);
                 }
             }
         }
