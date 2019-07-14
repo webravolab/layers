@@ -4,15 +4,15 @@ namespace Webravo\Persistence\Eloquent\DataTable;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
-use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
-use Webravo\Persistence\Repository\AbstractEloquentStore;
+use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
 use DateTime;
 
-class JobDataTable extends AbstractEloquentStore implements StoreInterface {
-
+class JobDataTable
+{
     public $body;           // Compatibility with AMQPMessage
 
     protected $id;
@@ -28,7 +28,7 @@ class JobDataTable extends AbstractEloquentStore implements StoreInterface {
     // Eloquent models names to use
     private $jobsModel;
 
-    public function __construct(HydratorInterface $hydrator)
+    public function __construct(HydratorInterface $hydrator = null)
     {
         parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
@@ -40,11 +40,14 @@ class JobDataTable extends AbstractEloquentStore implements StoreInterface {
                 $this->jobsModel = null;
             }
         }
+        // Set default values
+        $this->created_at = new DateTime();
+        $this->status = 'QUEUED';
     }
 
     public static function buildFromArray(array $data): JobDataTable
     {
-        $job = new static(new JobHydrator());
+        $job = new static();
         if (isset($data['id'])) { $job->id = $data['id']; }
         if (isset($data['guid'])) { $job->guid = $data['guid']; }
         if (isset($data['name'])) { $job->jobName = $data['name']; }
@@ -61,24 +64,21 @@ class JobDataTable extends AbstractEloquentStore implements StoreInterface {
         return $job;
     }
 
-    public function getByGuid($guid)
+    public function getByGuid(string $guid)
     {
         // TODO: Implement getByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
-    public function getObjectByGuid($guid)
+    public function getObjectByGuid(string $guid)
     {
         // TODO: Implement getObjectByGuid() method.
         throw(new Exception('Unimplemented'));
     }
 
-    public function persistEntity(AbstractEntity $entity) {
-        // Cannot implement entity store
-        throw new \Exception('Unimplemented');
-    }
-
-    public function persist($payload) {
+    public function append(array $data) {
+        // TODO: Implement append() method.
+        /*
         if ($this->jobsModel) {
             if (empty($this->created_at)) {
                 $this->created_at = new DateTime();
@@ -86,27 +86,26 @@ class JobDataTable extends AbstractEloquentStore implements StoreInterface {
             if (empty($this->status)) {
                 $this->status = 'QUEUED';
             }
-            $this->setPayload($payload);
 
-            // Build array data
-            $data = $this->hydrator->Extract($this);
+            $data = $this->toArray();
 
             // Create Eloquent Job
-            $o_command = $this->jobsModel::create($data);
+            $o_job = $this->jobsModel::create($data);
         }
+        */
     }
 
-    public function update(AbstractEntity $entity)
+    public function update(array $data)
     {
         // TODO: Implement update() method.
     }
 
-    public function delete(AbstractEntity $entity)
+    public function delete(array $data)
     {
         // TODO: Implement delete() method.
     }
 
-    public function deleteByGuid($guid)
+    public function deleteByGuid(string $guid)
     {
         // TODO: Implement deleteByGuid() method.
     }
@@ -204,4 +203,18 @@ class JobDataTable extends AbstractEloquentStore implements StoreInterface {
         return $this->getHeader();
     }
 
+    public function toArray()
+    {
+        $data = [
+            'guid' => $this->getGuid(),
+            'name' => $this->getName(),
+            'channel' => $this->getChannel(),
+            'status' => $this->getStatus(),
+            'created_at' => $this->getCreatedAt(),
+            'delivered_at' => $this->getDeliveredAt(),
+            'payload' => $this->getPayload(),
+            'header' => $this->getRawHeader()
+        ];
+        return $data;
+    }
 }

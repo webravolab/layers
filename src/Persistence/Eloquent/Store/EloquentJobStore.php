@@ -106,7 +106,12 @@ class EloquentJobStore implements JobQueueInterface {
                     $job = new JobDataTable($hydrator);
                     $job->setChannel($queueName);
                     $job->setHeader($header);
-                    $job->persist($payload);
+                    $job->setPayload($payload);
+                    $a_properties = $job->toArray();
+                    $a_attributes = $hydrator->mapEloquent($a_properties);
+                    $this->jobsModel::create($a_attributes);
+
+                    // $job->persist($payload);
                     // Update total # of messages sent to this queue
                     $this->jobsQueueModel::where('queue_name', $queueName)->update(['messages_total' => DB::raw('messages_total +1')]);
                     // Clean old ACK + NACK messages
@@ -133,7 +138,11 @@ class EloquentJobStore implements JobQueueInterface {
                         $job = new JobDataTable($hydrator);
                         $job->setChannel($queueName);
                         $job->setHeader($header);
-                        $job->persist($payload);
+                        $job->setPayload($payload);
+                        $a_properties = $job->toArray();
+                        $a_attributes = $hydrator->mapEloquent($a_properties);
+                        $this->jobsModel::create($a_attributes);
+                        // $job->persist($payload);
                         $is_delivered = true;
                         break;
                     case 'direct':
@@ -142,7 +151,11 @@ class EloquentJobStore implements JobQueueInterface {
                             $job = new JobDataTable($hydrator);
                             $job->setChannel($queueName);
                             $job->setHeader($header);
-                            $job->persist($payload);
+                            $job->setPayload($payload);
+                            $a_properties = $job->toArray();
+                            $a_attributes = $hydrator->mapEloquent($a_properties);
+                            $this->jobsModel::create($a_attributes);
+                            // $job->persist($payload);
                             $is_delivered = true;
                         }
                         break;
@@ -153,7 +166,11 @@ class EloquentJobStore implements JobQueueInterface {
                             $job = new JobDataTable($hydrator);
                             $job->setChannel($queueName);
                             $job->setHeader($header);
-                            $job->persist($payload);
+                            $job->setPayload($payload);
+                            $a_properties = $job->toArray();
+                            $a_attributes = $hydrator->mapEloquent($a_properties);
+                            $this->jobsModel::create($a_attributes);
+                            // $job->persist($payload);
                             $is_delivered = true;
                         }
                         break;
@@ -191,7 +208,8 @@ class EloquentJobStore implements JobQueueInterface {
 
         $jobs = Array();
         foreach($c_jobs as $o_job) {
-            $jobs[] = $jobHydrator->hydrate($o_job);
+            $data = $jobHydrator->hydrateEloquent($o_job);
+            $jobs[] = JobDataTable::buildFromArray($data);
         }
 
         return $jobs;
@@ -232,7 +250,8 @@ class EloquentJobStore implements JobQueueInterface {
 
         $jobHydrator = new JobHydrator();
 
-        $job = $jobHydrator->hydrate($o_job);
+        $data = $jobHydrator->hydrateEloquent($o_job);
+        $job = JobDataTable::buildFromArray($data);
 
         return $job;
     }
