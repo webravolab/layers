@@ -5,6 +5,7 @@ use Webravo\Persistence\Eloquent\Store\EloquentEventStore;
 use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Application\Event\EventBucketBusMiddleware;
 use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
+use tests\TestProject\Domain\Events\TestEvent;
 
 class EventStoreTest extends TestCase
 {
@@ -13,7 +14,7 @@ class EventStoreTest extends TestCase
     {
         $eventStore = new EloquentEventStore();
 
-        $event = new \tests\Events\TestEvent();
+        $event = new TestEvent();
         $event->setPayload('test value');
         $guid = $event->getGuid();
 
@@ -31,7 +32,7 @@ class EventStoreTest extends TestCase
 
         $eventStore = new DataStoreEventStore();
 
-        $event = new \tests\Events\TestEvent();
+        $event = new TestEvent();
         $event->setPayload('test value');
         $event->setStrValue('this is a string');
         $event->setIntValue((int) Rand(1,9999));

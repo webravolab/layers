@@ -6,7 +6,6 @@ use Webravo\Application\Event\GenericEvent;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
-use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 

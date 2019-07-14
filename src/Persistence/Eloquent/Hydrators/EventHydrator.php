@@ -2,7 +2,7 @@
 namespace Webravo\Persistence\Eloquent\Hydrators;
 
 use Webravo\Common\Entity\DataStoreEventEntity;
-use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 
 class EventHydrator implements HydratorInterface {
@@ -14,7 +14,7 @@ class EventHydrator implements HydratorInterface {
      * @param $eloquent_object
      * @return array                    // TODO declare return type when all implementors have been refactored
      */
-    public function hydrate($object): array
+    public function hydrateEloquent($object): array
     {
         $data = [
             'id' => $object->id,
@@ -31,7 +31,7 @@ class EventHydrator implements HydratorInterface {
      * @param $a_values
      * @return array
      */
-    public function map(array $a_values): array
+    public function mapEloquent(array $a_values): array
     {
         $data = [
             'guid' => (isset($a_values['guid']) ? $a_values['guid'] : ''),
@@ -44,6 +44,16 @@ class EventHydrator implements HydratorInterface {
             $data['id'] = $a_values['id'];
         }
         return $data;
+    }
+
+    public function hydrateDatastore($datastore_object): array
+    {
+        // TODO: Implement hydrateDatastore() method.
+    }
+
+    public function mapDatastore(array $a_values): array
+    {
+        // TODO: Implement mapDatastore() method.
     }
 
     /**

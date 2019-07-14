@@ -10,7 +10,8 @@ use DateTime;
 use DateTimeInterface;
 use ReflectionClass;
 
-abstract class GenericEvent implements EventInterface {
+abstract class GenericEvent implements EventInterface
+{
 
     /**
      * @var string
@@ -35,12 +36,13 @@ abstract class GenericEvent implements EventInterface {
 
     /**
      * The event payload
-     * @var 
+     * @var
      */
     private $payload;
-    
-    
-    public function __construct($type, ?DateTime $occurred_at = null) {
+
+
+    public function __construct($type, ?DateTime $occurred_at = null)
+    {
 
         $this->type = $type;
         $this->class_name = get_class($this);
@@ -48,55 +50,62 @@ abstract class GenericEvent implements EventInterface {
         $this->guid = $guidService->generate()->getValue();
         if (!is_null($occurred_at)) {
             $this->setOccurredAt($occurred_at);
-        }
-        else {
+        } else {
             $this->setOccurredAt(new DateTime());
         }
     }
 
-    public function getGuid():string {
+    public function getGuid(): string
+    {
         return $this->guid;
     }
-    
-    public function setGuid(string $guid) {
+
+    public function setGuid(string $guid)
+    {
         $this->guid = $guid;
     }
 
-    public function getOccurredAt(): ?DateTimeInterface {
+    public function getOccurredAt(): ?DateTimeInterface
+    {
         return $this->occurred_at->getValue();
     }
 
-    public function setOccurredAt($occurred_at) {
+    public function setOccurredAt($occurred_at)
+    {
         $this->occurred_at = new DateTimeObject($occurred_at);
     }
 
-    public function setType(string $type) {
+    public function setType(string $type)
+    {
         $this->type = $type;
     }
 
-    public function getType(): string {
+    public function getType(): string
+    {
         return $this->type;
     }
 
-    public function setClassName(string $name) {
+    public function setClassName(string $name)
+    {
         $this->class_name = $name;
     }
 
-    public function getClassName(): string {
+    public function getClassName(): string
+    {
         return $this->class_name;
     }
 
-    public function setPayload($value) 
+    public function setPayload($value)
     {
-        $this->payload = $value;   
+        $this->payload = $value;
     }
 
-    public function getPayload() 
+    public function getPayload()
     {
-        return $this->payload;   
+        return $this->payload;
     }
 
-    public function toArray(): array 
+    public function toArray(): array
     {
         return [
             'guid' => $this->getGuid(),
@@ -104,32 +113,38 @@ abstract class GenericEvent implements EventInterface {
             'class_name' => $this->getClassName(),
             'occurred_at' => $this->getOccurredAt(),
             'payload' => $this->getPayload(),
-        ];        
+        ];
     }
 
     public function fromArray(array $data)
     {
-        if (isset($data['guid'])) { $this->setGuid($data['guid']); }
-        if (isset($data['type'])) { $this->setType($data['type']); }
-        if (isset($data['class_name'])) { $this->setClassName($data['class_name']); }
-        if (isset($data['occurred_at'])) { $this->setOccurredAt($data['occurred_at']); }
+        if (isset($data['guid'])) {
+            $this->setGuid($data['guid']);
+        }
+        if (isset($data['type'])) {
+            $this->setType($data['type']);
+        }
+        if (isset($data['class_name'])) {
+            $this->setClassName($data['class_name']);
+        }
+        if (isset($data['occurred_at'])) {
+            $this->setOccurredAt($data['occurred_at']);
+        }
         if (isset($data['payload'])) {
             if (is_string($data['payload'])) {
-                $payload = json_decode($data['payload'],true);
+                $payload = json_decode($data['payload'], true);
                 if ($payload !== null) {
                     $this->setPayload($payload);
                 } else {
                     $this->setPayload($data['payload']);
                 }
-            }
-            else {
+            } else {
                 $this->setPayload($data['payload']);
             }
-        }
-        else {
+        } else {
             $this->setPayload(null);
         }
-    }        
+    }
 
     public static function buildFromArray(array $data): EventInterface
     {
@@ -140,14 +155,16 @@ abstract class GenericEvent implements EventInterface {
             if (!$eventInstance) {
                 try {
                     $eventInstance = new ReflectionClass($eventName);
-                }
-                catch (\ReflectionException $e) {
+                } catch (\ReflectionException $e) {
                     // Class not found through reflection... continue
                 }
             }
         }
         if (!$eventInstance && isset($data['type'])) {
             $eventName = $data['type'];
+            if (strpos($eventName, '\\') === false && strpos($eventName, 'Project\\Domain\\Event\\') === false) {
+                $eventName = 'Project\\Domain\\Event\\' . $eventName;
+            }
             $eventInstance = DependencyBuilder::resolve($eventName);
             if (!$eventInstance) {
                 try {
@@ -175,14 +192,13 @@ abstract class GenericEvent implements EventInterface {
     public function setSerializedPayload(string $payload_serialized): string
     {
         if (is_string($payload_serialized)) {
-            $payload = json_decode($payload_serialized,true);
+            $payload = json_decode($payload_serialized, true);
             if ($payload !== null) {
                 $this->setPayload($payload);
             } else {
                 $this->setPayload($payload_serialized);
             }
-        }
-        else {
+        } else {
             $this->setPayload($payload_serialized);
         }
     }

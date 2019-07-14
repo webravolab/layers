@@ -29,8 +29,8 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
         $this->eventsModel = empty($eventsModel) ? null : $eventsModel;
         if ($this->eventsModel) {
             if (!class_exists($this->eventsModel)) {
-                throw new \Exception('[EventDataTable] Invalid events model: ' . $this->eventsModel);
                 $this->eventsModel = null;
+                throw new \Exception('[EventDataTable] Invalid events model: ' . $this->eventsModel);
             }
         }
     }
@@ -47,9 +47,11 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
     }
 
 
-    public function append(array $data)
+    public function append(array $a_properties)
     {
-        // TODO: Implement append() method.
+        $a_attributes = $this->hydrator->mapEloquent($a_properties);
+        // Create Eloquent object
+        $o_event = $this->eventsModel::create($a_attributes);
     }
 
     public function persistEntity(AbstractEntity $entity) {
@@ -58,14 +60,15 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
             if (method_exists($entity, "toSerializedArray")) {
                 // Entity could implement it's own serialization method
                 $data = $entity->toSerializedArray();
-                $data = $this->hydrator->map($data);
+                // $data = $this->hydrator->mapEloquent($data);
             }
             else {
                 $data = $entity->toArray();
-                $data = $this->hydrator->map($data);
+                // $data = $this->hydrator->mapEloquent($data);
             }
             // Create Eloquent object
-            $o_event = $this->eventsModel::create($data);
+            $this->append($data);
+            // $o_event = $this->eventsModel::create($data);
         }
     }
 
@@ -74,18 +77,18 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
         throw new \Exception('Unimplemented');
     }
 
-    public function getByGuid($guid)
+    public function getByGuid(string $guid)
     {
         $o_event = $this->getObjectByGuid($guid);
         if (!is_null($o_event)) {
             // Extract raw data from Eloquent model
             // (de-serialization of payload is handled by hydrator->hydrate)
-            return $this->hydrator->hydrate($o_event);
+            return $this->hydrator->hydrateEloquent($o_event);
         }
         return null;
     }
 
-    public function getObjectByGuid($guid)
+    public function getObjectByGuid(string $guid)
     {
         // $eventData = new static(new EventHydrator());
         $eventsModel = $this->eventsModel;
@@ -95,22 +98,24 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
         return null;
     }
 
-    public function update(AbstractEntity $entity)
+    public function update(array $data)
     {
         // TODO: Implement update() method.
     }
 
-    public function delete(AbstractEntity $entity)
+    public function delete(array $data)
     {
         // TODO: Implement delete() method.
     }
 
-    public function deleteByGuid($guid)
+    public function deleteByGuid(string $guid)
     {
         // TODO: Implement deleteByGuid() method.
     }
 
-    // Getters & Setters
+    /**
+     * Getters & Setters
+     **/
 
     public function setType($type) {
         $this->type = $type;
