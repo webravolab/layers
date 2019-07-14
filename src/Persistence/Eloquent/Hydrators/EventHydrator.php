@@ -48,12 +48,24 @@ class EventHydrator implements HydratorInterface {
 
     public function hydrateDatastore($datastore_object): array
     {
-        // TODO: Implement hydrateDatastore() method.
+        $data = [
+            'guid' => $datastore_object['guid'],
+            'type' => $datastore_object['type'],
+            'occurred_at' => $datastore_object['occurred_at'],
+            'payload' => json_decode($datastore_object['payload'], true),
+        ];
+        return $data;
     }
 
     public function mapDatastore(array $a_values): array
     {
-        // TODO: Implement mapDatastore() method.
+        $data = [
+            'guid' => $a_values['guid'],
+            'type' => $a_values['type'],
+            'occurred_at' => $a_values['occurred_at'],
+            'payload' => $a_values['payload'],
+        ];
+        return $data;
     }
 
     /**
