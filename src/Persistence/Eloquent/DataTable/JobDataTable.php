@@ -1,13 +1,8 @@
 <?php
 namespace Webravo\Persistence\Eloquent\DataTable;
 
-use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
-use Webravo\Common\Contracts\HydratorInterface;
-use Webravo\Common\Contracts\StoreInterface;
-use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
-use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
 use DateTime;
 
@@ -15,6 +10,7 @@ class JobDataTable
 {
     public $body;           // Compatibility with AMQPMessage
 
+    protected $guid;
     protected $id;
     protected $jobName;
     protected $channel;
@@ -28,18 +24,20 @@ class JobDataTable
     // Eloquent models names to use
     private $jobsModel;
 
-    public function __construct(HydratorInterface $hydrator = null)
+    public function __construct()
     {
-        parent::__construct($hydrator);
+        // parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
         $jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
         $this->jobsModel = empty($jobsModel) ? null : $jobsModel;
         if ($this->jobsModel) {
             if (!class_exists($this->jobsModel)) {
-                throw new \Exception('[JobDataTable] Invalid job model: ' . $this->jobsModel);
                 $this->jobsModel = null;
+                throw new \Exception('[JobDataTable] Invalid job model: ' . $this->jobsModel);
             }
         }
+        $guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
+        $this->guid = $guidService->generate()->getValue();
         // Set default values
         $this->created_at = new DateTime();
         $this->status = 'QUEUED';
@@ -64,53 +62,15 @@ class JobDataTable
         return $job;
     }
 
-    public function getByGuid(string $guid)
+
+    /**
+     * Getters & Setters
+     **/
+
+    public function getGuid()
     {
-        // TODO: Implement getByGuid() method.
-        throw(new Exception('Unimplemented'));
+        return $this->guid;
     }
-
-    public function getObjectByGuid(string $guid)
-    {
-        // TODO: Implement getObjectByGuid() method.
-        throw(new Exception('Unimplemented'));
-    }
-
-    public function append(array $data) {
-        // TODO: Implement append() method.
-        /*
-        if ($this->jobsModel) {
-            if (empty($this->created_at)) {
-                $this->created_at = new DateTime();
-            }
-            if (empty($this->status)) {
-                $this->status = 'QUEUED';
-            }
-
-            $data = $this->toArray();
-
-            // Create Eloquent Job
-            $o_job = $this->jobsModel::create($data);
-        }
-        */
-    }
-
-    public function update(array $data)
-    {
-        // TODO: Implement update() method.
-    }
-
-    public function delete(array $data)
-    {
-        // TODO: Implement delete() method.
-    }
-
-    public function deleteByGuid(string $guid)
-    {
-        // TODO: Implement deleteByGuid() method.
-    }
-
-    // Getters & Setters
 
     public function setName($name) {
         $this->jobName = $name;
