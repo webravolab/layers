@@ -110,7 +110,7 @@ abstract class GenericEvent implements EventInterface
             'guid' => $this->getGuid(),
             'type' => $this->getType(),
             'class_name' => $this->getClassName(),
-            'occurred_at' => $this->getOccurredAt(),
+            'occurred_at' => $this->occurred_at->toRFC3339(),
             'payload' => $this->getPayload(),
         ];
     }

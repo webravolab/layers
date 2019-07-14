@@ -94,6 +94,7 @@ class DataStoreEventEntity extends AbstractEntity
      * Custom replacement of toArray() to return serialized version of payload
      * @return array
      */
+    /*
     public function toSerializedArray(): array {
         return [
             'guid' => $this->getGuid(),
@@ -103,6 +104,7 @@ class DataStoreEventEntity extends AbstractEntity
             'payload' => $this->getSerializedPayload(),
         ];
     }
+    */
 
     /**
      * Custom function to return a Json serialized version of Payload

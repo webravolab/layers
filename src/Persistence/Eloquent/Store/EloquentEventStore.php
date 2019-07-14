@@ -29,7 +29,9 @@ class EloquentEventStore implements EventStoreInterface {
         $eventDataTable->persist($domainEvent);
         */
         $a_values = $domainEvent->toArray();
+        $serialized_event = $domainEvent->getSerializedEvent();
         $e_event = DataStoreEventEntity::buildFromArray($a_values);
+        $e_event->setPayload($serialized_event);
         $entity_name = get_class($e_event);
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);
@@ -42,7 +44,8 @@ class EloquentEventStore implements EventStoreInterface {
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);
         $a_event = $eventDataTable->getByGuid($guid);
-        $event = GenericEvent::buildFromArray($a_event);
+        $a_encapsulated_event = $a_event['payload'];
+        $event = GenericEvent::buildFromArray($a_encapsulated_event);
         return $event;
     }
 }

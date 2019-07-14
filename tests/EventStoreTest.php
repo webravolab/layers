@@ -15,7 +15,17 @@ class EventStoreTest extends TestCase
         $eventStore = new EloquentEventStore();
 
         $event = new TestEvent();
-        $event->setPayload('test value');
+        $event->setStrValue('this is a string');
+        $event->setIntValue((int) Rand(1,9999));
+        $event->setFloatValue((float) Rand());
+
+        $payload = [
+            'value' => 'this is a test value',
+            'number' => 175,
+            'float' => 1.75,
+        ];
+        $event->setPayload($payload);
+
         $guid = $event->getGuid();
 
         $eventStore->Append($event);
