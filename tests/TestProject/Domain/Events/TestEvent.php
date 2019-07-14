@@ -2,13 +2,12 @@
 
 namespace tests\TestProject\Domain\Events;
 
-use Webravo\Common\Contracts\DomainEventInterface;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Event\GenericEvent;
 use DateTime;
 
-class TestEvent extends GenericEvent implements DomainEventInterface {
-
+class TestEvent extends GenericEvent
+{
     /**
      * The event name used at Domain level
      * @var string
@@ -20,22 +19,11 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
     private $intValue;
     private $floatValue;
 
-    // Event payload to be serialized (if any)
-    private $payload;
 
     public function __construct(?DateTime $occurred_at = null) {
         parent::__construct($this->type, $occurred_at);
     }
 
-    public function setPayload($value)
-    {
-        $this->payload = $value;
-    }
-
-    public function getPayload()
-    {
-        return $this->payload;
-    }
 
     public function setStrValue(?string $value)
     {
@@ -92,9 +80,6 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         parent::fromArray($data);
 
         // Get custom properties
-        if (isset($data['payload'])) {
-            $this->setPayload($data['payload']);
-        }
         if (isset($data['str_value'])) {
             $this->setStrValue($data['str_value']);
         }
@@ -106,6 +91,7 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         }
     }
 
+    /*
     public static function buildFromArray(array $data): EventInterface
     {
         if (isset($data['payload'])) {
@@ -115,4 +101,5 @@ class TestEvent extends GenericEvent implements DomainEventInterface {
         }
         throw(new EventException('Bad serialized event: ' . self::getType()));
     }
+    */
 }

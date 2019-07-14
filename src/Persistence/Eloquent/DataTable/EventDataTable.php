@@ -3,11 +3,11 @@ namespace Webravo\Persistence\Eloquent\DataTable;
 
 use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Library\Configuration;
-use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
-use Webravo\Persistence\Repository\AbstractEloquentStore;
+use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 use Webravo\Common\Entity\AbstractEntity;
 
 class EventDataTable extends AbstractEloquentStore implements StoreInterface {
@@ -46,6 +46,11 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
         return $event;
     }
 
+
+    public function append(array $data)
+    {
+        // TODO: Implement append() method.
+    }
 
     public function persistEntity(AbstractEntity $entity) {
         if ($this->eventsModel) {

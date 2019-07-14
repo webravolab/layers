@@ -14,6 +14,10 @@ interface EventInterface {
 
     public function setType(string $type);
 
+    public function setClassName(string $name);
+
+    public function getClassName(): string;
+
     public function getOccurredAt(): ?DateTimeInterface;
 
     public function setOccurredAt($occurred_at);

@@ -1,7 +1,7 @@
 <?php
 namespace Webravo\Application\Event;
 
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Event\EventHandlerInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use ReflectionClass;

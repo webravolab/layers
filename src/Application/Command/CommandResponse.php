@@ -1,7 +1,7 @@
 <?php
 namespace Webravo\Application\Command;
 
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Command\CommandResponseInterface;
 
 class CommandResponse implements CommandResponseInterface {
@@ -17,7 +17,7 @@ class CommandResponse implements CommandResponseInterface {
         return new self($value);
     }
 
-    public function addEvent(DomainEventInterface $event): void {
+    public function addEvent(EventInterface $event): void {
         $this->events[] = $event;
     }
 

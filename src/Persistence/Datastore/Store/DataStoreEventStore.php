@@ -6,7 +6,7 @@ use Webravo\Application\Event\GenericEvent;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
 use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\DataStoreEventEntity;
 /**
  * The "Event Store" is a simply event bucket sink to log all events
@@ -22,7 +22,7 @@ class DataStoreEventStore implements EventStoreInterface {
         $this->dataStoreService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\DataStoreServiceInterface');
     }
 
-    public function Append(DomainEventInterface $domainEvent)
+    public function Append(EventInterface $domainEvent)
     {
         $a_values = $domainEvent->toArray();
         $e_event = DataStoreEventEntity::buildFromArray($a_values);
@@ -37,7 +37,7 @@ class DataStoreEventStore implements EventStoreInterface {
         throw new \Exception('Unimplemented');
     }
 
-    public function getByGuid($guid): ?DomainEventInterface
+    public function getByGuid($guid): ?EventInterface
     {
         $eventDataTable = new EventDataStoreTable($this->dataStoreService);
         $a_event = $eventDataTable->getByGuid($guid);

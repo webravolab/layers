@@ -1,7 +1,6 @@
 <?php
 namespace Webravo\Application\Event;
 
-use Webravo\Common\Contracts\DomainEventInterface;
 use Psr\Log\LoggerInterface;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
 

@@ -2,7 +2,7 @@
 
 namespace Webravo\Infrastructure\Repository;
 
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 
 /**
  * The "Event Store" is a simply event bucket sink to log all events
@@ -13,7 +13,7 @@ use Webravo\Common\Contracts\DomainEventInterface;
  */
 interface EventStoreInterface {
 
-    public function Append(DomainEventInterface $domainEvent);
+    public function Append(EventInterface $domainEvent);
 
     // public function AllEvents();
 

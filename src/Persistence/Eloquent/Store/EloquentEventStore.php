@@ -3,7 +3,7 @@
 namespace Webravo\Persistence\Eloquent\Store;
 
 use Webravo\Application\Event\GenericEvent;
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\DataStoreEventEntity;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
 use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
@@ -22,7 +22,7 @@ use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
 
 class EloquentEventStore implements EventStoreInterface {
 
-    public function Append(DomainEventInterface $domainEvent)
+    public function Append(EventInterface $domainEvent)
     {
         /*
         $hydrator = new EventHydrator();
@@ -38,7 +38,7 @@ class EloquentEventStore implements EventStoreInterface {
    }
 
 
-    public function getByGuid($guid): ?DomainEventInterface
+    public function getByGuid($guid): ?EventInterface
     {
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);

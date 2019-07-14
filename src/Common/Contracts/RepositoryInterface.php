@@ -12,7 +12,7 @@ interface RepositoryInterface {
     // REPOSITORY RECEIVE/SEND DATA ARRAY FROM/TO STORE
     // REPOSITORY USE ENTITY toArray() and fromArray() TO CONVERT ENTITY <-> ARRAY
 
-    public function getByGuid($guid): ?EntityInterface;
+    public function getByGuid(string $guid): ?EntityInterface;
 
     public function persist(EntityInterface $entity);
 

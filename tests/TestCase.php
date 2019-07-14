@@ -32,10 +32,10 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         ]);
 
         // Inject test models
-        putenv('JOBS_ELOQUENT_MODEL=App\JobsLayerTest');
-        putenv('JOBS_QUEUE_ELOQUENT_MODEL=App\JobsQueueLayerTest');
-        putenv('EVENTS_ELOQUENT_MODEL=App\EventsLayerTest');
-        putenv('COMMAND_ELOQUENT_MODEL=App\CommandsLayerTest');
+        putenv('JOBS_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\JobsLayerTest');
+        putenv('JOBS_QUEUE_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\JobsQueueLayerTest');
+        putenv('EVENTS_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\EventsLayerTest');
+        putenv('COMMAND_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\CommandsLayerTest');
 
         $credentials_file = __DIR__ . '/google-credentials.json';
         if (file_exists($credentials_file)) {

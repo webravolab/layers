@@ -1,12 +1,14 @@
 <?php
 namespace Webravo\Application\Event;
 
+use tests\TestProject\Domain\Events\TestEvent;
 use Webravo\Application\Exception\EventException;
 use Webravo\Common\ValueObject\DateTimeObject;
 use Webravo\Infrastructure\Service\GuidServiceInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use DateTime;
 use DateTimeInterface;
+use ReflectionClass;
 
 abstract class GenericEvent implements EventInterface {
 
@@ -26,6 +28,12 @@ abstract class GenericEvent implements EventInterface {
     private $type;
 
     /**
+     * The event class name, used to rebuild the event from raw data
+     * @var
+     */
+    private $class_name;
+
+    /**
      * The event payload
      * @var 
      */
@@ -35,6 +43,7 @@ abstract class GenericEvent implements EventInterface {
     public function __construct($type, ?DateTime $occurred_at = null) {
 
         $this->type = $type;
+        $this->class_name = get_class($this);
         $guidService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\GuidServiceInterface');
         $this->guid = $guidService->generate()->getValue();
         if (!is_null($occurred_at)) {
@@ -69,6 +78,14 @@ abstract class GenericEvent implements EventInterface {
         return $this->type;
     }
 
+    public function setClassName(string $name) {
+        $this->class_name = $name;
+    }
+
+    public function getClassName(): string {
+        return $this->class_name;
+    }
+
     public function setPayload($value) 
     {
         $this->payload = $value;   
@@ -84,6 +101,7 @@ abstract class GenericEvent implements EventInterface {
         return [
             'guid' => $this->getGuid(),
             'type' => $this->getType(),
+            'class_name' => $this->getClassName(),
             'occurred_at' => $this->getOccurredAt(),
             'payload' => $this->getPayload(),
         ];        
@@ -93,6 +111,7 @@ abstract class GenericEvent implements EventInterface {
     {
         if (isset($data['guid'])) { $this->setGuid($data['guid']); }
         if (isset($data['type'])) { $this->setType($data['type']); }
+        if (isset($data['class_name'])) { $this->setClassName($data['class_name']); }
         if (isset($data['occurred_at'])) { $this->setOccurredAt($data['occurred_at']); }
         if (isset($data['payload'])) {
             if (is_string($data['payload'])) {
@@ -114,22 +133,37 @@ abstract class GenericEvent implements EventInterface {
 
     public static function buildFromArray(array $data): EventInterface
     {
-        if (isset($data['type'])) {
-            $eventName = $data['type'];
-            if (strpos($eventName, '\\') === false && strpos($eventName, 'Project\\Domain\\Event\\') === false) {
-                $eventName = 'Project\\Domain\\Event\\' . $eventName;
-            }
-            try {
-                $class = new \ReflectionClass($eventName);
-                $eventInstance = $class->newInstance();
-                $eventInstance->fromArray($data);
-                return $eventInstance;
-            }
-            catch (\ReflectionException $e) {
-                throw new EventException('Event ' . $eventName . ' not found', 103);
+        $eventInstance = null;
+        if (isset($data['class_name'])) {
+            $eventName = $data['class_name'];
+            $eventInstance = DependencyBuilder::resolve($eventName);
+            if (!$eventInstance) {
+                try {
+                    $eventInstance = new ReflectionClass($eventName);
+                }
+                catch (\ReflectionException $e) {
+                    // Class not found through reflection... continue
+                }
             }
         }
-        throw new EventException('[GenericEvent][buildFromArray] Event has not a valid type: ' . serialize($data), 104);
+        if (!$eventInstance && isset($data['type'])) {
+            $eventName = $data['type'];
+            $eventInstance = DependencyBuilder::resolve($eventName);
+            if (!$eventInstance) {
+                try {
+                    $eventInstance = new ReflectionClass($eventName);
+                } catch (\ReflectionException $e) {
+                    // Class not found through reflection... continue
+                    // throw new EventException('[GenericEvent][buildFromArray] Event ' . $eventName . ' not found', 103);
+                }
+            }
+        }
+        if ($eventInstance) {
+            // $eventInstance = $class->newInstance();
+            $eventInstance->fromArray($data);
+            return $eventInstance;
+        }
+        throw new EventException('[GenericEvent][buildFromArray] Event has not a valid class name nor type: ' . serialize($data), 104);
     }
 
     public function getSerializedPayload(): string

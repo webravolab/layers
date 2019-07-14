@@ -54,11 +54,6 @@ class EventHydrator implements HydratorInterface {
      * @throws \Exception
      */
     public function Extract(DataStoreEventEntity $eventEntity) {
-        /*
-        if (strpos(get_parent_class($event), 'GenericEvent')===false) {
-            throw new \Exception('[EventHydrator][Extract] parameter must be instance of DomainEventInterface');
-        }
-        */
         $data = [
             'guid' => $eventEntity->getGuid(),
             'event_type' => $eventEntity->getType(),

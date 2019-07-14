@@ -1,13 +1,13 @@
 <?php
 namespace Webravo\Application\Command;
 
-use Webravo\Common\Contracts\DomainEventInterface;
+use Webravo\Application\Event\EventInterface;
 
 interface CommandResponseInterface {
 
     public static function withValue($value): CommandResponseInterface;
 
-    public function addEvent(DomainEventInterface $event): void;
+    public function addEvent(EventInterface $event): void;
 
     public function hasEvents(): bool;
 
