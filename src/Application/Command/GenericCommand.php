@@ -3,15 +3,55 @@
 namespace Webravo\Application\Command;
 
 use Webravo\Application\Command\CommandInterface;
+use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Exception\CommandException;
 use Webravo\Common\Entity\AbstractEntity;
+use Webravo\Common\ValueObject\DateTimeObject;
+use DateTime;
+use DateTimeInterface;
 
 abstract class GenericCommand extends AbstractEntity implements CommandInterface
 {
+    /**
+     * The command name
+     * @var string
+     */
     protected $command_name = null;
+
+    /**
+     * The binding key used in topic queue (optional)
+     * @var string
+     */
     protected $binding_key = null;
+
+    /**
+     * The queue name (optional)
+     * @var string
+     */
     protected $queue_name = null;
+
+    /**
+     * The header parameters (optional)
+     * @var array
+     */
     protected $header = array();
+
+    /**
+     * The command creation date+time
+     * @var Webravo\Common\ValueObject\DateTimeObject;
+     */
+    private $created_at;
+
+
+    public function __construct(?DateTime $created_at = null)
+    {
+        parent::__construct();
+        if (!is_null($created_at)) {
+            $this->setCreatedAt($created_at);
+        } else {
+            $this->setCreatedAt(new DateTime());
+        }
+    }
 
     public function getCommandName(): string
     {
@@ -51,6 +91,16 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
     public function setHeader(array $value)
     {
         $this->header = $value;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->created_at->getValue();
+    }
+
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = new DateTimeObject($created_at);
     }
 
     public function toArray(): array
@@ -109,4 +159,20 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
         return $json;
     }
 
+    public function getSerializedCommand(): string
+    {
+        $json = json_encode($this->toArray());
+        return $json;
+    }
+
+    public static function buildFromSerializedCommand(string $command_serialized): ?CommandInterface
+    {
+        if (is_string($command_serialized)) {
+            $command_array = json_decode($command_serialized, true);
+            if ($command_array !== null) {
+                return static::buildFromArray($command_array);
+            }
+        }
+        return null;
+    }
 }

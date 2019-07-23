@@ -2,13 +2,14 @@
 namespace Webravo\Persistence\Datastore\DataTable;
 
 use Webravo\Common\Entity\AbstractEntity;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
-use Webravo\Persistence\Repository\AbstractDataStoreTable;
+use Webravo\Persistence\DataStore\DataTable\AbstractGdsStore;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 
 use DateTimeInterface;
 
-class CommandDataStoreTable extends AbstractDataStoreTable implements StoreInterface {
+class CommandDataStoreTable extends AbstractGdsStore implements StoreInterface {
 
     protected $id;
     protected $jobName;
@@ -17,9 +18,9 @@ class CommandDataStoreTable extends AbstractDataStoreTable implements StoreInter
     protected $header;
     protected $created_at;
 
-    public function __construct(DataStoreServiceInterface $dataStoreService, $entity_name = 'DataStoreCommandEntity', $entity_classname = 'Webravo\Common\Entity\DataStoreCommandEntity') {
-        // Inject in AbstractDataStoreTable the default Entity to manage Events
-        parent::__construct($dataStoreService, $entity_name, $entity_classname);
+    public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = 'DataStoreCommandEntity', $entity_classname = 'Webravo\Common\Entity\DataStoreCommandEntity') {
+        // Inject in AbstractGdsStore the default Entity to manage Commands
+        parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
     }
 
     public function persistEntity(AbstractEntity $entity) {

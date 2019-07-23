@@ -26,7 +26,7 @@ class TestRepository implements TestRepositoryInterface
         }
     }
 
-    public function getByGuid($guid): ?EntityInterface
+    public function getByGuid(string $guid): ?EntityInterface
     {
         $a_properties = $this->store->getByGuid($guid);
         if (is_null($a_properties) || !is_array($a_properties)) {

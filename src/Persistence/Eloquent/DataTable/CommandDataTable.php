@@ -4,10 +4,10 @@ namespace Webravo\Persistence\Eloquent\DataTable;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
-use Webravo\Infrastructure\Repository\HydratorInterface;
+use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Persistence\Eloquent\Hydrators\CommandHydrator;
-use Webravo\Persistence\Repository\AbstractEloquentStore;
+use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
 
 use DateTime;
@@ -62,18 +62,25 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
         return $command;
     }
 
-    public function getByGuid($guid)
+    public function append(array $a_properties)
+    {
+        $a_attributes = $this->hydrator->mapEloquent($a_properties);
+        // Create Eloquent object
+        $o_command = $this->commandModel::create($a_attributes);
+    }
+
+    public function getByGuid(string $guid)
     {
         $o_command = $this->getObjectByGuid($guid);
         if (!is_null($o_command)) {
             // Extract raw data from Eloquent model
             // (de-serialization of payload is handled by hydrator->hydrate)
-            return $this->hydrator->hydrate($o_command);
+            return $this->hydrator->hydrateEloquent($o_command);
         }
         return null;
     }
 
-    public function getObjectByGuid($guid)
+    public function getObjectByGuid(string $guid)
     {
         if ($this->commandModel) {
             return $this->commandModel::where('guid', $guid)->first();
@@ -94,7 +101,7 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
             // Add creation date
             $data['created_at'] = $this->getCreatedAt();
             // Convert array to Eloquent model data structure
-            $data = $this->hydrator->map($data);
+            $data = $this->hydrator->mapEloquent($data);
             // Store Eloquent object
             $o_command = $this->commandModel::create($data);
         }
@@ -111,24 +118,24 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
             $this->setPayload($payload);
 
             // Build array data
-            $data = $this->hydrator->Extract($this);
+            $data = $this->hydrator->mapEloquent($this);
 
             // Create Eloquent Command
             $o_command = $this->commandModel::create($data);
         }
     }
 
-    public function update(AbstractEntity $entity)
+    public function update(array $a_properties)
     {
         // TODO: Implement update() method.
     }
 
-    public function delete(AbstractEntity $entity)
+    public function delete(array $a_properties)
     {
         // TODO: Implement delete() method.
     }
 
-    public function deleteByGuid($guid)
+    public function deleteByGuid(string $guid)
     {
         // TODO: Implement deleteByGuid() method.
     }

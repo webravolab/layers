@@ -138,6 +138,7 @@ class DataStoreCommandEntity extends AbstractEntity
      * Custom replacement of toArray() to return serialized version of payload
      * @return array
      */
+    /*
     public function toSerializedArray(): array {
         return [
             'guid' => $this->getGuid(),
@@ -148,4 +149,5 @@ class DataStoreCommandEntity extends AbstractEntity
             'payload' => json_encode($this->getPayload()),
         ];
     }
+    */
 }

@@ -17,7 +17,7 @@ class EventDataStoreTable extends AbstractGdsStore implements StoreInterface {
     protected $payload;
 
     public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = 'DataStoreEventEntity', $entity_classname = 'Webravo\Common\Entity\DataStoreEventEntity') {
-        // Inject in AbstractDataStoreTable the default Entity to manage Events
+        // Inject in AbstractGdsStore the default Entity to manage Events
         parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
     }
 

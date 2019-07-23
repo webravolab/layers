@@ -11,7 +11,7 @@ class CommandHydrator implements HydratorInterface {
      * @param $eloquent_object
      * @return array                    // TODO declare return type when all implementors have been refactored
      */
-    public function hydrateEloquent($object) {
+    public function hydrateEloquent($object):array {
 
         $data = [
             'id' => $object->id,
@@ -51,12 +51,30 @@ class CommandHydrator implements HydratorInterface {
 
     public function hydrateDatastore($datastore_object): array
     {
-        // TODO: Implement hydrateDatastore() method.
+        $data = [
+            'guid' => $datastore_object['guid'],
+            'command' => $datastore_object['command'],
+            'binding_key' => $datastore_object['binding_key'],
+            'queue_name' => $datastore_object['queue_name'],
+            'payload' => json_decode($datastore_object['payload'], true),
+            'header' => json_decode($datastore_object['header'], true),
+            'created_at' => $datastore_object['created_at'],
+        ];
+        return $data;
     }
 
     public function mapDatastore(array $a_values): array
     {
-        // TODO: Implement mapDatastore() method.
+        $data = [
+            'guid' => $a_values['guid'],
+            'command' => $a_values['command'],
+            'binding_key' => $a_values['binding_key'],
+            'queue_name' => $a_values['queue_name'],
+            'payload' => json_encode($a_values['payload']),
+            'header' => json_encode($a_values['header']),
+            'created_at' => $a_values['created_at'],
+        ];
+        return $data;
     }
 
 }

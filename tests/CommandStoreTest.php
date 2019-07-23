@@ -3,6 +3,7 @@
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Persistence\Datastore\Store\DataStoreCommandStore;
 use Webravo\Persistence\Eloquent\Store\EloquentCommandStore;
+use tests\TestProject\Domain\Commands\TestCommand;
 
 class CommandStoreTest extends TestCase
 {
@@ -22,7 +23,7 @@ class CommandStoreTest extends TestCase
             'aValue2' => 2222,
         ];
 
-        $command = new \tests\Commands\TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
+        $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
         $guid = $command->getGuid();
 
@@ -55,7 +56,7 @@ class CommandStoreTest extends TestCase
             'aValue2' => 2222,
         ];
 
-        $command = new \tests\Commands\TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
+        $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
         $commandStore->Append($command);
 

@@ -6,6 +6,7 @@ use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Application\Event\EventBucketBusMiddleware;
 use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
 use Webravo\Persistence\Service\RabbitMQService;
+use tests\TestProject\Domain\Events\TestEvent;
 
 class EventBusTest extends TestCase
 {
@@ -20,7 +21,7 @@ class EventBusTest extends TestCase
         $subscriberService1->createQueue('test-event-bus');
         $subscriberService1->subscribeQueue('test-event-bus', 'fanout-bind-exchange');
 
-        $event = new \tests\Events\TestEvent();
+        $event = new TestEvent();
 
         $payload = new stdClass();
         $payload->value = 'this is a test value';

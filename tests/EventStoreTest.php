@@ -67,6 +67,7 @@ class EventStoreTest extends TestCase
         $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
         $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
         $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
+        $this->assertEquals($event->getOccurredAt()->format(DATE_RFC3339_EXTENDED), $retrieved_event->getOccurredAt()->format(DATE_RFC3339_EXTENDED));
     }
 
     public function testDBStoreEventBus()
@@ -77,7 +78,7 @@ class EventStoreTest extends TestCase
         // Instantiate an Event Store using DB as underlying storage
         $eventBus = new EventBucketBusMiddleware($eventLocalDispatcher, $eventStore);
 
-        $event = new \tests\Events\TestEvent();
+        $event = new TestEvent();
         $event->setPayload('test value');
         $guid = $event->getGuid();
 
@@ -97,7 +98,7 @@ class EventStoreTest extends TestCase
         // Instantiate an Event Store using Google Data Store as underlying storage
         $eventBus = new EventBucketBusMiddleware($eventLocalDispatcher, $eventStore);
 
-        $event = new \tests\Events\TestEvent();
+        $event = new TestEvent();
 
         $payload = [
             'value' => 'this is a test value',
@@ -114,8 +115,10 @@ class EventStoreTest extends TestCase
         $retrieved_event = $eventStore->getByGuid($guid);
 
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
-
-        $this->assertEquals($event->getOccurredAt(), $retrieved_event->getOccurredAt());
+        $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
+        $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
+        $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
+        $this->assertEquals($event->getOccurredAt()->format(DATE_RFC3339_EXTENDED), $retrieved_event->getOccurredAt()->format(DATE_RFC3339_EXTENDED));
 
     }
 
