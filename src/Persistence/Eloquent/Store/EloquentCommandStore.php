@@ -4,11 +4,11 @@ namespace Webravo\Persistence\Eloquent\Store;
 
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Command\GenericCommand;
-use Webravo\Infrastructure\Repository\CommandStoreInterface;
+use Webravo\Infrastructure\Repository\CommandRepositoryInterface;
 use Webravo\Persistence\Eloquent\DataTable\CommandDataTable;
 use Webravo\Persistence\Hydrators\CommandHydrator;
 
-class EloquentCommandStore implements CommandStoreInterface {
+class EloquentCommandStore implements CommandRepositoryInterface {
 
     public function Append(CommandInterface $command)
     {

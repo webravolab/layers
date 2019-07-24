@@ -5,7 +5,7 @@ namespace Webravo\Persistence\Datastore\Store;
 use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Application\Command\GenericCommand;
-use Webravo\Infrastructure\Repository\CommandStoreInterface;
+use Webravo\Infrastructure\Repository\CommandRepositoryInterface;
 use Webravo\Common\Entity\CommandEntity;
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Persistence\Datastore\DataTable\CommandDataStoreTable;
@@ -16,7 +16,7 @@ use Webravo\Persistence\Hydrators\CommandHydrator;
  * It is NOT used for command dispatching or process
  */
 
-class DataStoreCommandStore implements CommandStoreInterface {
+class DataStoreCommandStore implements CommandRepositoryInterface {
 
     private $dataStoreService;
 

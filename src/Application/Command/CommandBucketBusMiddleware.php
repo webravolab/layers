@@ -3,14 +3,14 @@ namespace Webravo\Application\Command;
 
 use Webravo\Application\Command\CommandResponse;
 use Psr\Log\LoggerInterface;
-use Webravo\Infrastructure\Repository\CommandStoreInterface;
+use Webravo\Infrastructure\Repository\CommandRepositoryInterface;
 
 class CommandBucketBusMiddleware implements CommandBusMiddlewareInterface {
 
     private $next;
     private $commandStore;
 
-    public function __construct(?CommandBusMiddlewareInterface $next,  ?CommandStoreInterface $commandStore = null) {
+    public function __construct(?CommandBusMiddlewareInterface $next,  ?CommandRepositoryInterface $commandStore = null) {
         $this->next = $next;
         $this->commandStore = $commandStore;
     }

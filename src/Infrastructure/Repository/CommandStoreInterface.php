@@ -8,10 +8,10 @@ use Webravo\Application\Command\CommandInterface;
  * The "Command Store" is a simply command bucket sink to log all commands
  * It is NOT used for command dispatching or process
  *
- * Interface CommandStoreInterface
+ * Interface CommandRepositoryInterface
  * @package Webravo\Infrastructure\Repository
  */
-interface CommandStoreInterface {
+interface CommandRepositoryInterface {
 
     public function Append(CommandInterface $command);
 

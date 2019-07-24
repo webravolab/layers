@@ -2,7 +2,7 @@
 
 namespace Webravo\Persistence\Service;
 
-use Webravo\Infrastructure\Repository\CommandStoreInterface;
+use Webravo\Infrastructure\Repository\CommandRepositoryInterface;
 use Webravo\Infrastructure\Service\QueueServiceInterface;
 use Webravo\Infrastructure\Library\Configuration;
 
