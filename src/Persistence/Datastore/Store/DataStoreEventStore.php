@@ -4,7 +4,7 @@ namespace Webravo\Persistence\Datastore\Store;
 
 use Webravo\Application\Event\GenericEvent;
 use Webravo\Infrastructure\Library\DependencyBuilder;
-use Webravo\Infrastructure\Repository\EventStoreInterface;
+use Webravo\Infrastructure\Repository\EventRepositoryInterface;
 use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\EventEntity;
@@ -15,7 +15,7 @@ use Webravo\Persistence\Hydrators\EventHydrator;
  * It is NOT used for event dispatching or process
  */
 
-class DataStoreEventStore implements EventStoreInterface {
+class DataStoreEventStore implements EventRepositoryInterface {
 
     private $dataStoreService;
 

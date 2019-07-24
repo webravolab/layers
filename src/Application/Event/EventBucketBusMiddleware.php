@@ -2,7 +2,7 @@
 namespace Webravo\Application\Event;
 
 use Psr\Log\LoggerInterface;
-use Webravo\Infrastructure\Repository\EventStoreInterface;
+use Webravo\Infrastructure\Repository\EventRepositoryInterface;
 
 /**
  * Class EventBucketBusMiddleware
@@ -14,7 +14,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
     private $next;              // The next level in the Event Bus Chain
     private $eventStore;
 
-    public function __construct(?EventBusMiddlewareInterface $next, EventStoreInterface $store) {
+    public function __construct(?EventBusMiddlewareInterface $next, EventRepositoryInterface $store) {
         $this->next = $next;
         $this->eventStore = $store;
     }

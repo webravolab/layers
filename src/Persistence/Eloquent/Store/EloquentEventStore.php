@@ -5,7 +5,7 @@ namespace Webravo\Persistence\Eloquent\Store;
 use Webravo\Application\Event\GenericEvent;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\EventEntity;
-use Webravo\Infrastructure\Repository\EventStoreInterface;
+use Webravo\Infrastructure\Repository\EventRepositoryInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 use Webravo\Persistence\Hydrators\EventHydrator;
 
@@ -19,7 +19,7 @@ use Webravo\Persistence\Hydrators\EventHydrator;
 // STORE GET/SET ELOQUENT ATTRIBUTES FROM/TO ELOQUENT MODEL
 // STORE USE HYDRATOR TO CONVERT DATA ARRAY TO ELOQUENT ATTRIBUTES (single or array)
 
-class EloquentEventStore implements EventStoreInterface {
+class EloquentEventStore implements EventRepositoryInterface {
 
     public function Append(EventInterface $domainEvent)
     {

@@ -8,10 +8,10 @@ use Webravo\Application\Event\EventInterface;
  * The "Event Store" is a simply event bucket sink to log all events
  * It is NOT used for event dispatching or process
  *
- * Interface EventStoreInterface
+ * Interface EventRepositoryInterface
  * @package Webravo\Infrastructure\Repository
  */
-interface EventStoreInterface {
+interface EventRepositoryInterface {
 
     public function Append(EventInterface $domainEvent);
 
