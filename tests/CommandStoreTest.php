@@ -25,6 +25,12 @@ class CommandStoreTest extends TestCase
 
         $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
+        $command->setHeader([
+            'header1' => 'header value 1',
+            'header2' => 22,
+            'header3' => (float) 22.22,
+        ]);
+
         $guid = $command->getGuid();
 
         $commandStore->append($command);
@@ -36,6 +42,7 @@ class CommandStoreTest extends TestCase
         $this->assertEquals($command->getParam3(), $retrieved_command->getParam3());
         $this->assertEquals($command->getParam4(), $retrieved_command->getParam4());
         $this->assertEquals($command->getParam5(), $retrieved_command->getParam5());
+        $this->assertEquals($command->getHeader(), $retrieved_command->getHeader());
     }
 
     public function testDataStoreCommandStore()
@@ -58,6 +65,12 @@ class CommandStoreTest extends TestCase
 
         $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
+        $command->setHeader([
+            'header1' => 'header value 1',
+            'header2' => 22,
+            'header3' => (float) 22.22,
+        ]);
+
         $commandStore->append($command);
 
         $guid = $command->getGuid();
@@ -69,5 +82,6 @@ class CommandStoreTest extends TestCase
         $this->assertEquals($command->getParam3(), $retrieved_command->getParam3());
         $this->assertEquals($command->getParam4(), $retrieved_command->getParam4());
         $this->assertEquals($command->getParam5(), $retrieved_command->getParam5());
+        $this->assertEquals($command->getHeader(), $retrieved_command->getHeader());
     }
 }

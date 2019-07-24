@@ -10,6 +10,9 @@ use Webravo\Application\Command\CommandRemoteBusMiddleware;
 use Webravo\Persistence\Service\RabbitMQService;
 use Webravo\Persistence\Service\NullLoggerService;
 
+use tests\TestProject\Domain\Commands\TestWithoutHandlerCommand;
+use tests\TestProject\Domain\Commands\TestCommand;
+
 class CommandBusTest extends TestCase
 {
     private $commandBusInternal;
@@ -29,7 +32,7 @@ class CommandBusTest extends TestCase
 
         $strParam1 = 'This is a command without handler test 1';
 
-        $command = new \tests\Commands\TestWithoutHandlerCommand($strParam1);
+        $command = new TestWithoutHandlerCommand($strParam1);
 
         // This dispatch must return null, because there is no local handler and no remote command bus
         $response = $commandBus->dispatch($command);
@@ -46,7 +49,7 @@ class CommandBusTest extends TestCase
         });
         */
 
-        app()->bind('tests\Commands\TestWithoutHandlerHandler', 'tests\Commands\DummyHandler');
+        app()->bind('tests\TestProject\Domain\Commands\TestWithoutHandlerHandler', 'tests\TestProject\Domain\Commands\DummyHandler');
 
         $this->queueService = new NullQueueService();
         $loggerService = new NullLoggerService();
@@ -55,9 +58,9 @@ class CommandBusTest extends TestCase
 
         $strParam1 = 'This is a command without handler test 2';
 
-        $command = new \tests\Commands\TestWithoutHandlerCommand($strParam1);
+        $command = new TestWithoutHandlerCommand($strParam1);
 
-        // This dispatch must return null, because there is no local handler and no remote command bus
+        // This dispatch must be handled by DummyHandler
         $response = $commandBus->dispatch($command);
 
         self::assertEquals($response->getValue(), "dummy says ok", "Command response is invalid");
@@ -108,7 +111,7 @@ class CommandBusTest extends TestCase
             'aValue2' => 2222,
         ];
 
-        $command = new \tests\Commands\TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
+        $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
         // $command->setQueueName($this->queue_name);
         $command->setBindingKey(null);
         $command->setHeader([
