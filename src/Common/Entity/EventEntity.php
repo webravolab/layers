@@ -91,22 +91,6 @@ class EventEntity extends AbstractEntity
     }
 
     /**
-     * Custom replacement of toArray() to return serialized version of payload
-     * @return array
-     */
-    /*
-    public function toSerializedArray(): array {
-        return [
-            'guid' => $this->getGuid(),
-            'type' => $this->getType(),
-            'class_name' => $this->getClassName(),
-            'occurred_at' => $this->getOccurredAt(),
-            'payload' => $this->getSerializedPayload(),
-        ];
-    }
-    */
-
-    /**
      * Custom function to return a Json serialized version of Payload
      * @return string
      */

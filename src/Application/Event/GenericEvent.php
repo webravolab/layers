@@ -192,8 +192,7 @@ abstract class GenericEvent implements EventInterface
 
     public function getSerializedPayload(): string
     {
-        $json = json_encode($this->toArray());
-        return $json;
+        return json_encode($this->getPayload());
     }
 
     public function setSerializedPayload(string $payload_serialized): string
@@ -212,8 +211,7 @@ abstract class GenericEvent implements EventInterface
 
     public function getSerializedEvent(): string
     {
-        $json = json_encode($this->toArray());
-        return $json;
+        return json_encode($this->toArray());
     }
 
     public static function buildFromSerializedEvent(string $event_serialized): ?EventInterface

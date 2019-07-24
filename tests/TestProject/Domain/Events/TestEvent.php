@@ -55,14 +55,6 @@ class TestEvent extends GenericEvent
         return $this->floatValue;
     }
 
-
-    /*
-    public function getSerializedPayload(): string
-    {
-        return json_encode($this->getPayload());
-    }
-    */
-
     public function toArray(): array
     {
         $data = parent::toArray() + [
@@ -90,16 +82,4 @@ class TestEvent extends GenericEvent
             $this->setFloatValue($data['float_value']);
         }
     }
-
-    /*
-    public static function buildFromArray(array $data): EventInterface
-    {
-        if (isset($data['payload'])) {
-            if (isset($data['type']) && isset($data['occurred_at'])) {
-                return self::construct($data['occurred_at']);
-            }
-        }
-        throw(new EventException('Bad serialized event: ' . self::getType()));
-    }
-    */
 }

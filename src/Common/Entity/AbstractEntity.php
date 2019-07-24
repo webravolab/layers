@@ -24,10 +24,25 @@ abstract class AbstractEntity implements EntityInterface
         $this->guid = $guid;
     }
 
+    /**
+     * toArray() must be implemented by derived class
+     * @return array
+     */
     abstract public function toArray(): array;
 
+    /**
+     * fromArray() must be implemented by derive class
+     * @param array $a_values
+     * @return mixed
+     */
     abstract public function fromArray(array $a_values);
 
+    /**
+     * Standard way to build an entity instance from an array of properties
+     * (could be overridden to handle custom properties that need special handling)
+     * @param array $a_values
+     * @return mixed|AbstractEntity
+     */
     public static function buildFromArray(array $a_values)
     {
         $instance = new static();

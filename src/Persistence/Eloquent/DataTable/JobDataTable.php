@@ -26,7 +26,6 @@ class JobDataTable
 
     public function __construct()
     {
-        // parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
         $jobsModel = Configuration::get('JOBS_ELOQUENT_MODEL', null, 'App\Jobs');
         $this->jobsModel = empty($jobsModel) ? null : $jobsModel;

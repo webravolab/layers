@@ -26,7 +26,6 @@ class JobHydrator implements HydratorInterface {
             'header' => $object->header,
         ];
         return $data;
-        //  return JobDataTable::buildFromArray($data);
     }
 
     /**
