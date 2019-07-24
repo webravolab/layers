@@ -6,7 +6,6 @@ use tests\TestProject\Persistence\Hydrator\TestHydrator;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Common\ValueObject\DateTimeObject;
 use Faker\Factory;
-use DateTime;
 
 class DataStoreTest extends TestCase
 {
