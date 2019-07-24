@@ -5,6 +5,7 @@ namespace Webravo\Persistence\DataStore\DataTable;
 use PHPUnit\Framework\ExpectationFailedException;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
+use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Infrastructure\Service\DataStoreServiceInterface;
 use Exception;
 
@@ -21,7 +22,7 @@ abstract class AbstractGdsStore implements StoreInterface {
         $this->hydrator = $hydrator;
         if (!empty($entity_name)) {
             $this->entity_name = $entity_name;
-            $this->gds_entity_name = $gds_entity_name;
+            $this->gds_entity_name = $entity_name;
         }
         if (!empty($entity_classname)) {
             $this->entity_classname = $entity_classname;
@@ -68,6 +69,32 @@ abstract class AbstractGdsStore implements StoreInterface {
             $dsObject[$attribute] = $value;
         }
         $version = $this->dataStoreService->getConnection()->insert($dsObject);
+    }
+
+    public function persistEntity(AbstractEntity $entity) {
+
+        $a_name = get_class($entity);
+        $b = new $a_name;
+        if (method_exists($entity, "toSerializedArray")) {
+            $entity_data = $entity->toSerializedArray();
+        }
+        else {
+            $entity_data = $entity->toArray();
+        }
+        $this->append($entity_data);
+        /*
+        $guid = $entity->getGuid();
+
+        // Create key based on guid
+        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
+
+        // Create an entity
+        $dsObject = $this->dataStoreService->getConnection()->entity($key);
+        foreach($entity_data as $attribute => $value) {
+            $dsObject[$attribute] = $value;
+        }
+        $version = $this->dataStoreService->getConnection()->insert($dsObject);
+        */
     }
 
     public function update(array $a_properties)

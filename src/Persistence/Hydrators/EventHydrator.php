@@ -53,6 +53,7 @@ class EventHydrator implements HydratorInterface {
             'type' => $datastore_object['type'],
             'occurred_at' => $datastore_object['occurred_at'],
             'payload' => json_decode($datastore_object['payload'], true),
+            'class_name' => $datastore_object['class_name'] ?? '',
         ];
         return $data;
     }
@@ -60,10 +61,11 @@ class EventHydrator implements HydratorInterface {
     public function mapDatastore(array $a_values): array
     {
         $data = [
-            'guid' => $a_values['guid'],
             'type' => $a_values['type'],
             'occurred_at' => $a_values['occurred_at'],
+            'class_name' => $a_values['class_name'] ?? '',
             'payload' => $a_values['payload'],
+            'guid' => $a_values['guid'],
         ];
         return $data;
     }
@@ -75,6 +77,7 @@ class EventHydrator implements HydratorInterface {
      * @return array
      * @throws \Exception
      */
+    /*
     public function Extract(EventEntity $eventEntity) {
         $data = [
             'guid' => $eventEntity->getGuid(),
@@ -83,6 +86,6 @@ class EventHydrator implements HydratorInterface {
             'payload' => $eventEntity->getSerializedPayload()
         ];
         return $data;
-
     }
+    */
 }

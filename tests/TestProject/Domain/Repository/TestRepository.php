@@ -38,8 +38,11 @@ class TestRepository implements TestRepositoryInterface
 
     public function persist(EntityInterface $entity)
     {
+        $this->store->persistEntity($entity);
+        /*
         $a_data = $entity->toArray();
         $this->store->append($a_data);
+        */
     }
 
     public function update(EntityInterface $entity)

@@ -31,7 +31,7 @@ class CommandDataStoreTable extends AbstractGdsStore implements StoreInterface {
             $entity_data = $entity->toSerializedArray();
         }
         else {
-            $entity_data = $entity->toArray(); // $this->hydrator->Extract($entity);
+            $entity_data = $entity->toArray();
         }
         $guid = $entity->getGuid();
 

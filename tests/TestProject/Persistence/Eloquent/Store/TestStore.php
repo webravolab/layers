@@ -5,6 +5,7 @@ use tests\TestProject\Infrastructure\Repository\TestStoreInterface;
 use tests\TestProject\Persistence\Hydrator\TestHydrator;
 use Webravo\Common\Contracts\HydratorInterface;
 use tests\TestProject\Persistence\Eloquent\Model\TestEntityModel;
+use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 
 use Exception;
@@ -53,6 +54,12 @@ class TestStore extends AbstractEloquentStore implements TestStoreInterface
             throw new Exception('[TestStore][append] empty guid');
         }
         TestEntityModel::create($a_attributes);
+    }
+
+    public function persistEntity(AbstractEntity $entity)
+    {
+        $a_data = $entity->toArray();
+        $this->append($a_data);
     }
 
     public function update(array $a_properties)

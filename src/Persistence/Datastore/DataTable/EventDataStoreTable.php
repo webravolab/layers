@@ -21,35 +21,7 @@ class EventDataStoreTable extends AbstractGdsStore implements StoreInterface {
         parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
     }
 
-    public function persistEntity(AbstractEntity $entity) {
-
-        $a_name = get_class($entity);
-        $b = new $a_name;
-        if (method_exists($entity, "toSerializedArray")) {
-            $entity_data = $entity->toSerializedArray();
-        }
-        else {
-            $entity_data = $entity->toArray(); // $this->hydrator->Extract($entity);
-        }
-        $guid = $entity->getGuid();
-
-        // Create key based on guid
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-
-        // Create an entity
-        $dsObject = $this->dataStoreService->getConnection()->entity($key);
-        foreach($entity_data as $attribute => $value) {
-            $dsObject[$attribute] = $value;
-        }
-        $version = $this->dataStoreService->getConnection()->insert($dsObject);
-    }
-
-    public function persist($payload) {
-        // Cannot implement raw payload store
-        throw new \Exception('Unimplemented');
-    }
-
-    // All basic functions are implemented by AbstractDataStoreTable
+    // All basic functions are implemented by AbstractGdsStore
 
     // Getters & Setters
     public function setType($type) {

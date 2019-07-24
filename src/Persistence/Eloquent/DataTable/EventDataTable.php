@@ -72,11 +72,6 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
         }
     }
 
-    public function persist($payload) {
-        // Cannot implement raw payload store
-        throw new \Exception('Unimplemented');
-    }
-
     public function getByGuid(string $guid)
     {
         $o_event = $this->getObjectByGuid($guid);

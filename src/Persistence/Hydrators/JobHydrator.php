@@ -69,6 +69,7 @@ class JobHydrator implements HydratorInterface {
      * @return array
      * @throws \Exception
      */
+    /*
     public function Extract($job) {
         $data = [
             'guid' => $job->getGuid(),
@@ -82,4 +83,5 @@ class JobHydrator implements HydratorInterface {
         ];
         return $data;
     }
+    */
 }
