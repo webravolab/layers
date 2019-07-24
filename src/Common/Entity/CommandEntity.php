@@ -2,7 +2,9 @@
 namespace Webravo\Common\Entity;
 
 use Webravo\Common\Entity\AbstractEntity;
+use Webravo\Common\ValueObject\DateTimeObject;
 use DateTime;
+use DateTimeInterface;
 
 class CommandEntity extends AbstractEntity
 {
@@ -72,12 +74,15 @@ class CommandEntity extends AbstractEntity
 
     public function setCreatedAt($value)
     {
-        $this->created_at = $value;
+        $this->created_at = new DateTimeObject($value);
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTimeInterface
     {
-        return $this->created_at;
+        if ($this->created_at instanceof DateTimeObject) {
+            return $this->created_at->getValue();
+        }
+        return null;
     }
 
     public function toArray(): array

@@ -38,7 +38,7 @@ class CommandHydrator implements HydratorInterface {
             'command' => (isset($a_values['command']) ? $a_values['command'] : ''),
             'binding_key' => (isset($a_values['binding_key']) ? $a_values['binding_key'] : ''),
             'queue_name' => (isset($a_values['queue_name']) ? $a_values['queue_name'] : null),
-            'payload' => (isset($a_values['payload']) ? json_encode($a_values['payload']) : null),
+            'payload' => (isset($a_values['payload']) ? $a_values['payload'] : null),
             'header' => (isset($a_values['header']) ? json_encode($a_values['header']) : null),
             'created_at' => (isset($a_values['created_at']) ? $a_values['created_at'] : null),
         ];
@@ -70,7 +70,7 @@ class CommandHydrator implements HydratorInterface {
             'command' => $a_values['command'],
             'binding_key' => $a_values['binding_key'],
             'queue_name' => $a_values['queue_name'],
-            'payload' => json_encode($a_values['payload']),
+            'payload' => $a_values['payload'],
             'header' => json_encode($a_values['header']),
             'created_at' => $a_values['created_at'],
         ];

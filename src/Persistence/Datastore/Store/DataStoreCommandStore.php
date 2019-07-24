@@ -31,11 +31,19 @@ class DataStoreCommandStore implements CommandRepositoryInterface {
         $serialized_command = $domainCommand->getSerializedCommand();
         $e_command = CommandEntity::buildFromArray($a_values);
         $e_command->setPayload($serialized_command);
-
+        $hydrator = new CommandHydrator();
+        $commandDataTable = new CommandDataStoreTable($this->dataStoreService, $hydrator);
+        $commandDataTable->persistEntity($e_command);
+        /*
+        $a_values = $domainCommand->toArray();
+        $serialized_command = $domainCommand->getSerializedCommand();
+        $e_command = CommandEntity::buildFromArray($a_values);
+        $e_command->setPayload($serialized_command);
         $entity_name = get_class($e_command);
         $hydrator = new CommandHydrator();
         $commandDataTable = new CommandDataStoreTable($this->dataStoreService, $hydrator);
         $commandDataTable->persistEntity($e_command);
+        */
    }
 
     public function getByGuid(string $guid): ?CommandInterface
@@ -43,7 +51,15 @@ class DataStoreCommandStore implements CommandRepositoryInterface {
         $hydrator = new CommandHydrator();
         $commandDataTable = new CommandDataStoreTable($this->dataStoreService, $hydrator);
         $a_command = $commandDataTable->getByGuid($guid);
+        $a_encapsulated_command = $a_command['payload'];
+        $command = GenericCommand::buildFromArray($a_encapsulated_command);
+        return $command;
+        /*
+        $hydrator = new CommandHydrator();
+        $commandDataTable = new CommandDataStoreTable($this->dataStoreService, $hydrator);
+        $a_command = $commandDataTable->getByGuid($guid);
         $command = GenericCommand::buildFromArray($a_command->toArray());
         return $command;
+        */
     }
 }

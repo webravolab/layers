@@ -40,10 +40,6 @@ class GenericCommandTest extends TestCase
         $this->assertEquals($command->getParam3(), $rebuilt_command->getParam3());
         $this->assertEquals($command->getParam4(), $rebuilt_command->getParam4());
         $this->assertEquals($command->getParam5(), $rebuilt_command->getParam5());
-
-
-
         $this->assertEquals($command->getSerializedCommand(), $rebuilt_command->getSerializedCommand());
     }
-
 }

@@ -38,11 +38,12 @@ class EventEntity extends AbstractEntity
         $this->occurred_at = new DateTimeObject($value);
     }
 
-    public function getOccurredAt():\DateTimeInterface
+    public function getOccurredAt(): ?DateTimeInterface
     {
         if ($this->occurred_at instanceof DateTimeObject) {
             return $this->occurred_at->getValue();
         }
+        return null;
     }
 
     public function setPayload($value)
