@@ -26,6 +26,7 @@ class GenericEventTest extends TestCase
         $this->assertEquals($event->getStrValue(), $rebuilt_event->getStrValue());
         $this->assertEquals($event->getIntValue(), $rebuilt_event->getIntValue());
         $this->assertEquals($event->getFloatValue(), $rebuilt_event->getFloatValue());
+        $this->assertEquals($event->getOccurredAt()->format(DATE_RFC3339_EXTENDED), $rebuilt_event->getOccurredAt()->format(DATE_RFC3339_EXTENDED));
 
         $this->assertEquals($event->getSerializedPayload(), $rebuilt_event->getSerializedPayload());
         $this->assertEquals($event->getSerializedEvent(), $rebuilt_event->getSerializedEvent());

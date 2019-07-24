@@ -17,7 +17,7 @@ class EloquentCommandStore implements CommandRepositoryInterface {
         $commandDataTable->persistEntity($command);
     }
 
-    public function getByGuid($guid): ?CommandInterface
+    public function getByGuid(string $guid): ?CommandInterface
     {
         $hydrator = new CommandHydrator();
         $commandDataTable = new CommandDataTable($hydrator);

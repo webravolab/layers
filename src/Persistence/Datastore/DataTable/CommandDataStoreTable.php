@@ -23,6 +23,7 @@ class CommandDataStoreTable extends AbstractGdsStore implements StoreInterface {
         parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
     }
 
+    /*
     public function persistEntity(AbstractEntity $entity) {
 
         $a_name = get_class($entity);
@@ -45,32 +46,48 @@ class CommandDataStoreTable extends AbstractGdsStore implements StoreInterface {
         }
         $version = $this->dataStoreService->getConnection()->insert($dsObject);
     }
-
-    public function persist($payload) {
-        // Cannot implement raw payload store
-        throw new \Exception('Unimplemented');
-    }
+    */
 
     // All basic functions are implemented by AbstractDataStoreTable
 
     // Getters & Setters
-    public function setType($type) {
-        $this->type = $type;
+
+    public function setName($name) {
+        $this->jobName = $name;
     }
 
-    public function getType()
+    public function getName()
     {
-        return $this->type;
+        return $this->jobName;
     }
 
-    public function setOccurredAt(DateTimeInterface $occurred_at)
-    {
-        $this->occurred_at = $occurred_at;
+    public function setChannel($chanel) {
+        $this->channel = $chanel;
     }
 
-    public function getOccurred_at():DateTimeInterface
+    public function getChannel()
     {
-        return $this->occurred_at;
+        return $this->channel;
+    }
+
+    public function setCreatedAt(DateTimeInterface $created_at)
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function getCreatedAt():DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setHeader($header)
+    {
+        $this->header = $header;
+    }
+
+    public function getHeader()
+    {
+        return $this->header;
     }
 
     public function setPayload($payload)

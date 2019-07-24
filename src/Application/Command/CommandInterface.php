@@ -19,7 +19,7 @@ interface CommandInterface {
     public function toArray(): array;
     public function fromArray(array $data);
     public static function buildFromArray(array $data);
-    public function getSerializedPayload(): string;
+    // public function getSerializedPayload(): string;
     public function getSerializedCommand(): string;
     public static function buildFromSerializedCommand(string $command_serialized): ?CommandInterface;
 

@@ -64,6 +64,10 @@ class TestCommand extends GenericCommand implements CommandInterface {
 
     public function fromArray(array $data)
     {
+        // Get base properties
+        parent::fromArray($data);
+
+        // Get custom properties
         if (isset($data['payload'])) {
             $payload_data = $data['payload'];
             if (isset($payload_data['param1'])) {

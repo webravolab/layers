@@ -55,7 +55,9 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
         if (isset($data['created_at'])) { $command->created_at = $data['created_at']; }
         // if (isset($data['delivered_at'])) { $command->delivered_at = $data['delivered_at']; }
         // if (isset($data['delivered_token'])) { $command->delivered_token = $data['delivered_token']; }
-        if (isset($data['header'])) { $command->header = $data['header']; }
+        if (isset($data['header'])) {
+            $command->header = $data['header'];
+        }
         if (isset($data['payload'])) {
             $command->payload = $data['payload'];
         }
@@ -68,6 +70,22 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
         // Create Eloquent object
         $o_command = $this->commandModel::create($a_attributes);
     }
+
+    public function persistEntity(AbstractEntity $entity) {
+        if ($this->commandModel) {
+            // Extract data from Command as array to store directly on Eloquent model
+            if (method_exists($entity, "toSerializedArray")) {
+                // Entity could implement it's own serialization method
+                $data = $entity->toSerializedArray();
+            }
+            else {
+                $data = $entity->toArray();
+            }
+            // Create Eloquent object
+            $this->append($data);
+        }
+    }
+
 
     public function getByGuid(string $guid)
     {
@@ -88,25 +106,7 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
         return null;
     }
 
-    public function persistEntity(AbstractEntity $entity) {
-        if ($this->commandModel) {
-            // Extract data from Command as array to store directly on Eloquent model
-            if (method_exists($entity, "toSerializedArray")) {
-                // Entity could implement it's own serialization method
-                $data = $entity->toSerializedArray();
-            }
-            else {
-                $data = $entity->toArray();
-            }
-            // Add creation date
-            $data['created_at'] = $this->getCreatedAt();
-            // Convert array to Eloquent model data structure
-            $data = $this->hydrator->mapEloquent($data);
-            // Store Eloquent object
-            $o_command = $this->commandModel::create($data);
-        }
-    }
-
+    /*
     public function persist($payload) {
         if ($this->commandModel) {
             if (empty($this->created_at)) {
@@ -124,6 +124,7 @@ class CommandDataTable extends AbstractEloquentStore implements StoreInterface {
             $o_command = $this->commandModel::create($data);
         }
     }
+    */
 
     public function update(array $a_properties)
     {

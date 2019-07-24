@@ -153,26 +153,16 @@ abstract class GenericEvent implements EventInterface
             $eventInstance = DependencyBuilder::resolve($eventName);
             if (!$eventInstance) {
                 try {
-                    $eventInstance = new ReflectionClass($eventName);
+                    $class = new ReflectionClass($eventName);
+                    $eventInstance = $class->newInstanceWithoutConstructor();
                 } catch (\ReflectionException $e) {
                     // Class not found through reflection... continue
+                    $eventInstance = null;
                 }
             }
         }
         if (!$eventInstance && isset($data['type'])) {
             $eventName = $data['type'];
-            /*
-            $a = get_declared_classes();
-            // $a = array_sort($a);
-            $len = strlen($eventName);
-            $r = array_filter($a, function ($value) use ($eventName, $len) {
-                $tail = substr($value, -($len));
-                return $tail === $eventName;
-            });
-            if (count($r)> 0) {
-                $eventName = array_shift($r);
-            }
-            */
             $eventInstance = DependencyBuilder::resolve($eventName);
             if (!$eventInstance) {
                 if (strpos($eventName, '\\') === false) {

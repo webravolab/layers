@@ -133,21 +133,4 @@ class CommandEntity extends AbstractEntity
             $this->setHeader([]);
         }
     }
-
-    /**
-     * Custom replacement of toArray() to return serialized version of payload
-     * @return array
-     */
-    /*
-    public function toSerializedArray(): array {
-        return [
-            'guid' => $this->getGuid(),
-            'command' => $this->getCommandName(),
-            'binding_key' => $this->getBindingKey(),
-            'queue_name' => $this->getQueueName(),
-            'header' => json_encode($this->getHeader()),
-            'payload' => json_encode($this->getPayload()),
-        ];
-    }
-    */
 }

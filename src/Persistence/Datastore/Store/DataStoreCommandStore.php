@@ -38,7 +38,7 @@ class DataStoreCommandStore implements CommandRepositoryInterface {
         $commandDataTable->persistEntity($e_command);
    }
 
-    public function getByGuid($guid): ?CommandInterface
+    public function getByGuid(string $guid): ?CommandInterface
     {
         $hydrator = new CommandHydrator();
         $commandDataTable = new CommandDataStoreTable($this->dataStoreService, $hydrator);

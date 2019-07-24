@@ -5,10 +5,12 @@ namespace Webravo\Application\Command;
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Exception\CommandException;
+use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Common\ValueObject\DateTimeObject;
 use DateTime;
 use DateTimeInterface;
+use ReflectionClass;
 
 abstract class GenericCommand extends AbstractEntity implements CommandInterface
 {
@@ -42,10 +44,16 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
      */
     private $created_at;
 
+    /**
+     * The command class name, used to rebuild the event from raw data
+     * @var
+     */
+    private $class_name;
 
     public function __construct(?DateTime $created_at = null)
     {
         parent::__construct();
+        $this->class_name = get_class($this);
         if (!is_null($created_at)) {
             $this->setCreatedAt($created_at);
         } else {
@@ -103,25 +111,89 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
         $this->created_at = new DateTimeObject($created_at);
     }
 
+    public function setClassName(string $name)
+    {
+        $this->class_name = $name;
+    }
+
+    public function getClassName(): string
+    {
+        return $this->class_name;
+    }
+
     public function toArray(): array
     {
         $data = [
             'guid' => $this->getGuid(),
-            'command' => get_class($this),
-            'binding_key' => $this->binding_key,
-            'queue_name' => $this->queue_name,
-            'header' => $this->getHeader()
+            'command' => $this->getCommandName($this),
+            'binding_key' => $this->getBindingKey(),
+            'queue_name' => $this->getQueueName(),
+            'header' => $this->getHeader(),
+            'created_at' => $this->created_at->toRFC3339(),
+            'class_name' => $this->getClassName(),
         ];
         return $data;
     }
 
     public function fromArray(array $data)
     {
-        // TO BE OVERRIDDEN BY INSTANCES
+        if (isset($data['guid'])) {
+            $this->setGuid($data['guid']);
+        }
+        if (isset($data['command'])) {
+            $this->setCommandName($data['command']);
+        }
+        if (isset($data['binding_key'])) {
+            $this->setBindingKey($data['binding_key']);
+        }
+        if (isset($data['queue_name'])) {
+            $this->setQueueName($data['queue_name']);
+        }
+        if (isset($data['created_at'])) {
+            $this->setCreatedAt($data['created_at']);
+        }
+        if (isset($data['header'])) {
+            $this->setHeader($data['header']);
+        }
+        if (isset($data['class_name'])) {
+            $this->setClassName($data['class_name']);
+        }
     }
 
     public static function buildFromArray(array $data)
     {
+        $commandInstance = null;
+        if (isset($data['class_name'])) {
+            $commandName = $data['class_name'];
+            $commandInstance = DependencyBuilder::resolve($commandName);
+            if (!$commandInstance) {
+                try {
+                    $class = new ReflectionClass($commandName);
+                    $commandInstance = $class->newInstanceWithoutConstructor();
+                } catch (\ReflectionException $e) {
+                    // Class not found through reflection... continue
+                    $commandInstance = null;
+                }
+            }
+        }
+        if (!$commandInstance && isset($data['command'])) {
+            $commandName = $data['command'];
+            $commandInstance = DependencyBuilder::resolve($commandName);
+            if (!$commandInstance) {
+                if (strpos($commandName, '\\') === false) {
+                    // Not a fully qualified name ... try adding well-known namespaces
+                    $commandName = 'Project\\Domain\\Command\\' . $commandName;
+                    $commandInstance = DependencyBuilder::resolve($commandName);
+                }
+            }
+        }
+        if ($commandInstance) {
+            // $commandInstance->setCommandName($commandName);
+            $commandInstance->fromArray($data);
+            return $commandInstance;
+        }
+        throw new EventException('[GenericCommand][buildFromArray] Command has not a valid class name nor command name: ' . serialize($data), 104);
+        /*
         if (isset($data['command'])) {
             $commandName = $data['command'];
             if (strpos($commandName, '\\') === false && strpos($commandName, 'Project\\Domain\\Command\\') === false) {
@@ -131,17 +203,7 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
                 // Generate a new instance of the real command class based on its name
                 $class = new \ReflectionClass($commandName);
                 $commandInstance = $class->newInstanceWithoutConstructor();
-                // Set common attributes
                 $commandInstance->setCommandName($commandName);
-                if (isset($data['binding_key'])) {
-                    $commandInstance->setBindingKey($data['binding_key']);
-                }
-                if (isset($data['queue_name'])) {
-                    $commandInstance->setQueueName($data['queue_name']);
-                }
-                if (isset($data['header'])) {
-                    $commandInstance->setHeader($data['header']);
-                }
                 // Delegate class to fill other command custom attributes
                 $commandInstance->fromArray($data);
                 // Return the new command instance
@@ -151,18 +213,20 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
                 throw new CommandException('Command ' . $commandName . ' not found', 103);
             }
         }
+        */
     }
 
+    /*
     public function getSerializedPayload(): string
     {
         $json = json_encode($this->toArray());
         return $json;
     }
+    */
 
     public function getSerializedCommand(): string
     {
-        $json = json_encode($this->toArray());
-        return $json;
+        return json_encode($this->toArray());
     }
 
     public static function buildFromSerializedCommand(string $command_serialized): ?CommandInterface

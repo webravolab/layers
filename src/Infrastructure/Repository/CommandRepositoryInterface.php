@@ -15,6 +15,8 @@ interface CommandRepositoryInterface {
 
     public function append(CommandInterface $command);
 
+    public function getByGuid(string $guid): ?CommandInterface;
+
     // TODO
     // Implements other methods to retrieve or filter commands
 
