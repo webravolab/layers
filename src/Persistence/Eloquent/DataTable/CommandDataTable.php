@@ -6,9 +6,9 @@ use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
-use Webravo\Persistence\Eloquent\Hydrators\CommandHydrator;
+use Webravo\Persistence\Hydrators\CommandHydrator;
 use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
-use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
+use Webravo\Persistence\Hydrators\JobHydrator;
 
 use DateTime;
 

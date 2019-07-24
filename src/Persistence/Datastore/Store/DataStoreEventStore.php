@@ -8,7 +8,7 @@ use Webravo\Infrastructure\Repository\EventStoreInterface;
 use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Common\Entity\EventEntity;
-use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
+use Webravo\Persistence\Hydrators\EventHydrator;
 
 /**
  * The "Event Store" is a simply event bucket sink to log all events

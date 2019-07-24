@@ -1,5 +1,5 @@
 <?php
-namespace Webravo\Persistence\Eloquent\Hydrators;
+namespace Webravo\Persistence\Hydrators;
 
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\CommandDataTable;

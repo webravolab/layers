@@ -9,7 +9,7 @@ use Webravo\Infrastructure\Repository\CommandStoreInterface;
 use Webravo\Common\Entity\CommandEntity;
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Persistence\Datastore\DataTable\CommandDataStoreTable;
-use Webravo\Persistence\Eloquent\Hydrators\CommandHydrator;
+use Webravo\Persistence\Hydrators\CommandHydrator;
 
 /**
  * The "Command Store" is a simply command bucket sink to log all commands

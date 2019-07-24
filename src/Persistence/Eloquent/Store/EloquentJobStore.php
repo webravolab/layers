@@ -7,7 +7,7 @@ use Webravo\Infrastructure\Service\GuidServiceInterface;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Persistence\Eloquent\DataTable\JobDataTable;
-use Webravo\Persistence\Eloquent\Hydrators\JobHydrator;
+use Webravo\Persistence\Hydrators\JobHydrator;
 
 use DB;
 use Datetime;

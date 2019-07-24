@@ -6,7 +6,7 @@ use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Command\GenericCommand;
 use Webravo\Infrastructure\Repository\CommandStoreInterface;
 use Webravo\Persistence\Eloquent\DataTable\CommandDataTable;
-use Webravo\Persistence\Eloquent\Hydrators\CommandHydrator;
+use Webravo\Persistence\Hydrators\CommandHydrator;
 
 class EloquentCommandStore implements CommandStoreInterface {
 
