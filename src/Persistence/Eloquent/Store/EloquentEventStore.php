@@ -21,7 +21,7 @@ use Webravo\Persistence\Hydrators\EventHydrator;
 
 class EloquentEventStore implements EventRepositoryInterface {
 
-    public function Append(EventInterface $domainEvent)
+    public function append(EventInterface $domainEvent)
     {
         /*
         $hydrator = new EventHydrator();
@@ -36,10 +36,9 @@ class EloquentEventStore implements EventRepositoryInterface {
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);
         $eventDataTable->persistEntity($e_event);
-   }
+    }
 
-
-    public function getByGuid($guid): ?EventInterface
+    public function getByGuid(string $guid): ?EventInterface
     {
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataTable($hydrator);

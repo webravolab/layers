@@ -16,15 +16,15 @@ interface JobQueueInterface {
 
     public function getQueuedJobsNumber($channel): int;
 
-    public function Append($payload, $channel = null, $bindingKey = null, array $header = []);
+    public function append($payload, $channel = null, $bindingKey = null, array $header = []);
 
-    public function AllQueuedJobs($channel): array;
+    public function allQueuedJobs($channel): array;
 
     public function nextQueuedJob($channel): ?JobDataTable;
 
-    public function AcknowledgeJobByGuid($guid);
+    public function acknowledgeJobByGuid($guid);
 
-    public function NotAcknowledgeJobByGuid($guid);
+    public function notAcknowledgeJobByGuid($guid);
 
     public function deleteQueue(string $queueName, bool $purge = false);
 

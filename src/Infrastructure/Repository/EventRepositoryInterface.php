@@ -13,7 +13,9 @@ use Webravo\Application\Event\EventInterface;
  */
 interface EventRepositoryInterface {
 
-    public function Append(EventInterface $domainEvent);
+    public function append(EventInterface $domainEvent);
+
+    public function getByGuid(string $guid): ?EventInterface;
 
     // public function AllEvents();
 

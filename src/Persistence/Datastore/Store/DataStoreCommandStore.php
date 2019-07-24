@@ -25,7 +25,7 @@ class DataStoreCommandStore implements CommandRepositoryInterface {
         $this->dataStoreService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\DataStoreServiceInterface');
     }
 
-    public function Append(CommandInterface $domainCommand)
+    public function append(CommandInterface $domainCommand)
     {
         $a_values = $domainCommand->toArray();
         $serialized_command = $domainCommand->getSerializedCommand();

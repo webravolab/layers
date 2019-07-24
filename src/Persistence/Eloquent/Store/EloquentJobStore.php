@@ -86,7 +86,7 @@ class EloquentJobStore implements JobQueueInterface {
             ]);
     }
 
-    public function Append($payload, $channel = null, $bindingKey = null, array $header = [])
+    public function append($payload, $channel = null, $bindingKey = null, array $header = [])
     {
         $hydrator = new JobHydrator();
 
@@ -122,7 +122,7 @@ class EloquentJobStore implements JobQueueInterface {
                 }
             }
             else {
-                throw new \Exception('[EloquentJobStore][Append] Invalid Channel/Queue: ' . $channel);
+                throw new \Exception('[EloquentJobStore][append] Invalid Channel/Queue: ' . $channel);
             }
         }
         else {
@@ -195,7 +195,7 @@ class EloquentJobStore implements JobQueueInterface {
         return $n_jobs;
     }
 
-    public function AllQueuedJobs($channel): array
+    public function allQueuedJobs($channel): array
     {
         $c_jobs = $this->jobsModel::where('channel',$channel)
             ->where('status','QUEUED')
@@ -256,14 +256,14 @@ class EloquentJobStore implements JobQueueInterface {
         return $job;
     }
 
-    public function AcknowledgeJobByGuid($guid)
+    public function acknowledgeJobByGuid($guid)
     {
         $this->jobsModel::where('guid',$guid)
             ->first()
             ->update(['status' => 'ACK']);
     }
 
-    public function NotAcknowledgeJobByGuid($guid)
+    public function notAcknowledgeJobByGuid($guid)
     {
         $this->jobsModel::where('guid',$guid)
             ->first()

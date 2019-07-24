@@ -18,7 +18,7 @@ class CommandBucketBusMiddleware implements CommandBusMiddlewareInterface {
     public function dispatch(CommandInterface $command): ?CommandResponse {
 
         if (!is_null($this->commandStore)) {
-            $this->commandStore->Append($command);
+            $this->commandStore->append($command);
         }
         if (!is_null($this->next)) {
             return $this->next->dispatch($command);

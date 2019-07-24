@@ -13,7 +13,7 @@ use Webravo\Application\Command\CommandInterface;
  */
 interface CommandRepositoryInterface {
 
-    public function Append(CommandInterface $command);
+    public function append(CommandInterface $command);
 
     // TODO
     // Implements other methods to retrieve or filter commands

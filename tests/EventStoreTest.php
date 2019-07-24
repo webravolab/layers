@@ -28,7 +28,7 @@ class EventStoreTest extends TestCase
 
         $guid = $event->getGuid();
 
-        $eventStore->Append($event);
+        $eventStore->append($event);
 
         $retrieved_event = $eventStore->getByGuid($guid);
 
@@ -60,7 +60,7 @@ class EventStoreTest extends TestCase
         $guid = $event->getGuid();
         $class_name = $event->getClassName();
 
-        $eventStore->Append($event);
+        $eventStore->append($event);
 
         $retrieved_event = $eventStore->getByGuid($guid, $event->getType());
 

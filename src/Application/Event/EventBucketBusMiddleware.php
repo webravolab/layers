@@ -31,7 +31,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
     {
         if (!is_null($this->eventStore)) {
             // Persist event in the Event Store
-            $this->eventStore->Append($event);
+            $this->eventStore->append($event);
         }
         if (!is_null($this->next)) {
             // Dispatch to the next middleware on stack

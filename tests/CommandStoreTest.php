@@ -27,7 +27,7 @@ class CommandStoreTest extends TestCase
 
         $guid = $command->getGuid();
 
-        $commandStore->Append($command);
+        $commandStore->append($command);
 
         $retrieved_command = $commandStore->getByGuid($guid);
 
@@ -58,7 +58,7 @@ class CommandStoreTest extends TestCase
 
         $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
-        $commandStore->Append($command);
+        $commandStore->append($command);
 
         $guid = $command->getGuid();
 

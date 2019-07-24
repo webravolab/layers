@@ -74,10 +74,10 @@ class DataStoreTest extends TestCase
 
         $faker = Factory::create();
 
-        // Massive insert of 100 records
+        // Massive insert of 10 records
         $start_time = microtime(true);
 
-        for($x=0; $x<100; $x++) {
+        for($x=0; $x<10; $x++) {
             $name = $faker->name();
             $fk = $faker->numberBetween(1000,100000);
             $created_at = $faker->dateTimeThisYear();

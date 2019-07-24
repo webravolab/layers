@@ -111,11 +111,11 @@ class NullQueueService implements QueueServiceInterface {
             $this->defaultQueue = $queueName;
             $this->createQueue($queueName);
             // DUMMY
-            // $this->queueStore->Append($message, $this->defaultQueue, $bindingKey, $header);
+            // $this->queueStore->append($message, $this->defaultQueue, $bindingKey, $header);
         }
         else {
             // DUMMY
-            // $this->queueStore->Append($message, $this->channelName, $bindingKey, $header);
+            // $this->queueStore->append($message, $this->channelName, $bindingKey, $header);
         }
         return null;    // TODO
     }
@@ -164,7 +164,7 @@ class NullQueueService implements QueueServiceInterface {
     {
         // DUMMY
         // $guid = $message->getGuid();
-        // $this->queueStore->AcknowledgeJobByGuid($guid);
+        // $this->queueStore->acknowledgeJobByGuid($guid);
     }
 
     public function messageNotAcknowledge($message)

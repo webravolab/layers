@@ -24,7 +24,7 @@ class DataStoreEventStore implements EventRepositoryInterface {
         $this->dataStoreService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\DataStoreServiceInterface');
     }
 
-    public function Append(EventInterface $domainEvent)
+    public function append(EventInterface $domainEvent)
     {
         $a_values = $domainEvent->toArray();
         $serialized_event = $domainEvent->getSerializedEvent();
@@ -42,7 +42,7 @@ class DataStoreEventStore implements EventRepositoryInterface {
         throw new \Exception('Unimplemented');
     }
 
-    public function getByGuid($guid): ?EventInterface
+    public function getByGuid(string $guid): ?EventInterface
     {
         $hydrator = new EventHydrator();
         $eventDataTable = new EventDataStoreTable($this->dataStoreService, $hydrator);

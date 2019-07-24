@@ -10,7 +10,7 @@ use Webravo\Persistence\Hydrators\CommandHydrator;
 
 class EloquentCommandStore implements CommandRepositoryInterface {
 
-    public function Append(CommandInterface $command)
+    public function append(CommandInterface $command)
     {
         $hydrator = new CommandHydrator();
         $commandDataTable = new CommandDataTable($hydrator);
