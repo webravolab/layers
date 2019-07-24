@@ -10,7 +10,6 @@ use tests\TestProject\Domain\Events\TestEvent;
 class EventStoreTest extends TestCase
 {
 
-    /*
     public function testEloquentEventStore()
     {
         $eventStore = new EloquentEventStore();
@@ -34,9 +33,11 @@ class EventStoreTest extends TestCase
         $retrieved_event = $eventStore->getByGuid($guid);
 
         $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
+        $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
+        $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
+        $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
+        $this->assertEquals($event->getOccurredAt()->format(DATE_RFC3339_EXTENDED), $retrieved_event->getOccurredAt()->format(DATE_RFC3339_EXTENDED));
     }
-
-    */
 
     public function testDataStoreEventStore()
     {

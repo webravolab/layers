@@ -1,7 +1,7 @@
 <?php
 namespace Webravo\Persistence\Eloquent\DataTable;
 
-use Webravo\Common\Entity\DataStoreEventEntity;
+use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;

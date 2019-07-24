@@ -1,7 +1,7 @@
 <?php
 namespace Webravo\Persistence\Eloquent\Hydrators;
 
-use Webravo\Common\Entity\DataStoreEventEntity;
+use Webravo\Common\Entity\EventEntity;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 
@@ -71,11 +71,11 @@ class EventHydrator implements HydratorInterface {
     /**
      * Extract data from Event instance and return as raw data array
      * (handle serialization of event payload)
-     * @param DataStoreEventEntity $event
+     * @param EventEntity $event
      * @return array
      * @throws \Exception
      */
-    public function Extract(DataStoreEventEntity $eventEntity) {
+    public function Extract(EventEntity $eventEntity) {
         $data = [
             'guid' => $eventEntity->getGuid(),
             'event_type' => $eventEntity->getType(),

@@ -4,7 +4,7 @@ namespace Webravo\Persistence\Eloquent\Store;
 
 use Webravo\Application\Event\GenericEvent;
 use Webravo\Application\Event\EventInterface;
-use Webravo\Common\Entity\DataStoreEventEntity;
+use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Repository\EventStoreInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
 use Webravo\Persistence\Eloquent\Hydrators\EventHydrator;
@@ -30,7 +30,7 @@ class EloquentEventStore implements EventStoreInterface {
         */
         $a_values = $domainEvent->toArray();
         $serialized_event = $domainEvent->getSerializedEvent();
-        $e_event = DataStoreEventEntity::buildFromArray($a_values);
+        $e_event = EventEntity::buildFromArray($a_values);
         $e_event->setPayload($serialized_event);
         $entity_name = get_class($e_event);
         $hydrator = new EventHydrator();

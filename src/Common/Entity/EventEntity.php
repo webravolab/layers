@@ -5,7 +5,7 @@ use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Common\ValueObject\DateTimeObject;
 use DateTimeInterface;
 
-class DataStoreEventEntity extends AbstractEntity
+class EventEntity extends AbstractEntity
 {
 
     private $type;

@@ -2,7 +2,7 @@
 
 namespace Webravo\Persistence\Datastore\Store;
 
-use Webravo\Common\Entity\DataStoreEventEntity;
+use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Application\Command\GenericCommand;
 use Webravo\Infrastructure\Repository\CommandStoreInterface;
