@@ -23,11 +23,6 @@ class EloquentEventStore implements EventRepositoryInterface {
 
     public function append(EventInterface $domainEvent)
     {
-        /*
-        $hydrator = new EventHydrator();
-        $eventDataTable = new EventDataTable($hydrator);
-        $eventDataTable->persist($domainEvent);
-        */
         $a_values = $domainEvent->toArray();
         $serialized_event = $domainEvent->getSerializedEvent();
         $e_event = EventEntity::buildFromArray($a_values);

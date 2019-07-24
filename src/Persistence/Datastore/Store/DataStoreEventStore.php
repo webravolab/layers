@@ -36,12 +36,6 @@ class DataStoreEventStore implements EventRepositoryInterface {
         $eventDataTable->persistEntity($e_event);
    }
 
-    public function AllEvents()
-    {
-        // TODO: Implement AllEvents() method.
-        throw new \Exception('Unimplemented');
-    }
-
     public function getByGuid(string $guid): ?EventInterface
     {
         $hydrator = new EventHydrator();
@@ -51,4 +45,11 @@ class DataStoreEventStore implements EventRepositoryInterface {
         $event = GenericEvent::buildFromArray($a_encapsulated_event);
         return $event;
     }
+
+    public function AllEvents()
+    {
+        // TODO: Implement AllEvents() method.
+        throw new \Exception('Unimplemented');
+    }
+
 }
