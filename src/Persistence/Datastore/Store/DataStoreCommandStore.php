@@ -6,7 +6,7 @@ use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Application\Command\GenericCommand;
 use Webravo\Infrastructure\Repository\CommandStoreInterface;
-use Webravo\Common\Entity\DataStoreCommandEntity;
+use Webravo\Common\Entity\CommandEntity;
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Persistence\Datastore\DataTable\CommandDataStoreTable;
 use Webravo\Persistence\Eloquent\Hydrators\CommandHydrator;
@@ -29,7 +29,7 @@ class DataStoreCommandStore implements CommandStoreInterface {
     {
         $a_values = $domainCommand->toArray();
         $serialized_command = $domainCommand->getSerializedCommand();
-        $e_command = DataStoreCommandEntity::buildFromArray($a_values);
+        $e_command = CommandEntity::buildFromArray($a_values);
         $e_command->setPayload($serialized_command);
 
         $entity_name = get_class($e_command);

@@ -18,7 +18,7 @@ class CommandDataStoreTable extends AbstractGdsStore implements StoreInterface {
     protected $header;
     protected $created_at;
 
-    public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = 'DataStoreCommandEntity', $entity_classname = 'Webravo\Common\Entity\DataStoreCommandEntity') {
+    public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = 'CommandEntity', $entity_classname = 'Webravo\Common\Entity\CommandEntity') {
         // Inject in AbstractGdsStore the default Entity to manage Commands
         parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
     }

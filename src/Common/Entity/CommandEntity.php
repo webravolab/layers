@@ -4,7 +4,7 @@ namespace Webravo\Common\Entity;
 use Webravo\Common\Entity\AbstractEntity;
 use DateTime;
 
-class DataStoreCommandEntity extends AbstractEntity
+class CommandEntity extends AbstractEntity
 {
 
     private $command_name = null;
