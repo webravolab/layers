@@ -3,7 +3,6 @@
 namespace Webravo\Application\Command;
 
 use Webravo\Application\Command\CommandInterface;
-use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Exception\CommandException;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use Webravo\Common\Entity\AbstractEntity;
@@ -192,7 +191,7 @@ abstract class GenericCommand extends AbstractEntity implements CommandInterface
             $commandInstance->fromArray($data);
             return $commandInstance;
         }
-        throw new EventException('[GenericCommand][buildFromArray] Command has not a valid class name nor command name: ' . serialize($data), 104);
+        throw new CommandException('[GenericCommand][buildFromArray] Command has not a valid class name nor command name: ' . serialize($data), 104);
         /*
         if (isset($data['command'])) {
             $commandName = $data['command'];

@@ -2,12 +2,11 @@
 
 namespace tests\TestProject\Domain\Commands;
 
-use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Command\GenericCommand;
 use Webravo\Application\Exception\CommandException;
 
-class TestCommand extends GenericCommand implements CommandInterface {
-
+class TestCommand extends GenericCommand
+{
     protected $command_name = 'tests\Commands\TestCommand';
     protected $strParam1;
     protected $intParam2;
