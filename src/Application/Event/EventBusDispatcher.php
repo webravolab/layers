@@ -53,12 +53,17 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      */
     public function dispatch(EventInterface $event):void  {
         $event_class = get_class($event);
-        if (isset($this->handlers[$event_class])) {
-            $handlers = $this->handlers[$event_class];
-            foreach($handlers as $handler_class) {
-                $class = DependencyBuilder::resolve($handler_class);
-                call_user_func(array($class, 'handle'), $event);
+        if (!isset($this->handlers[$event_class])) {
+            $event_class = basename($event_class);
+            if (!isset($this->handlers[$event_class])) {
+                // Cannot find any handler
+                return;
             }
+        }
+        $handlers = $this->handlers[$event_class];
+        foreach($handlers as $handler_class) {
+            $class = DependencyBuilder::resolve($handler_class);
+            call_user_func(array($class, 'handle'), $event);
         }
     }
 }
