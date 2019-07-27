@@ -45,10 +45,27 @@ class RabbitMQTest extends TestCase
         $subscriberService2->createQueue('test-bind2');
         $subscriberService2->subscribeQueue('test-bind2', 'fanout-bind-exchange');
 
+        $subscriberService1->purgeQueue('test-bind1');
+        $subscriberService2->purgeQueue('test-bind2');
+
         $publisherService->publishMessage('Test bind 1 ' . $execution_id, '');
 
-        $message11 = $subscriberService1->getSingleMessage('test-bind1');
-        $message21 = $subscriberService2->getSingleMessage('test-bind2');
+        $waiting = 0;
+        while($waiting++ < 5) {
+            $message11 = $subscriberService1->getSingleMessage('test-bind1');
+            if (!is_null($message11)) {
+                break;
+            }
+            usleep(100000);
+        }
+        $waiting = 0;
+        while($waiting++ < 5) {
+            $message21 = $subscriberService2->getSingleMessage('test-bind2');
+            if (!is_null($message21)) {
+                break;
+            }
+            usleep(100000);
+        }
 
         $this->assertNotNull($message11, 'Message 11 must not be null');
         $this->assertNotNull($message21, 'Message 21 must not be null');
@@ -68,8 +85,22 @@ class RabbitMQTest extends TestCase
 
         $publisherService->publishMessage('Test bind 2 ' . $execution_id, '');
 
-        $message12 = $subscriberService1->getSingleMessage('test-bind1');
-        $message22 = $subscriberService2->getSingleMessage('test-bind2');
+        $waiting = 0;
+        while($waiting++ < 5) {
+            $message12 = $subscriberService1->getSingleMessage('test-bind1');
+            if (!is_null($message12)) {
+                break;
+            }
+            usleep(100000);
+        }
+        $waiting = 0;
+        while($waiting++ < 5) {
+            $message22 = $subscriberService2->getSingleMessage('test-bind2');
+            if (!is_null($message22)) {
+                break;
+            }
+            usleep(100000);
+        }
 
         if ($message12) {
             echo "(bind) Message 12 received: " . $message12->body . "\n";
@@ -93,11 +124,14 @@ class RabbitMQTest extends TestCase
         $publisherService = new RabbitMQService();
         $publisherService->createChannel('fanout', 'fanoutB-exchange');
 
+        $publisherService->purgeQueue('test-fanoutB');
+
         $publisherService->publishMessage('Test fanout2-1 ' . $execution_id, '');
 
         $subscriberService1 = new RabbitMQService();
         $subscriberService1->createQueue('test-fanoutB');
         $subscriberService1->subscribeQueue('test-fanoutB', 'fanoutB-exchange');
+
 
         $callback = function($message) use ($subscriberService1) {
             echo "(1) Message Fanout2 received: " . $message->body . "\n";
@@ -134,9 +168,22 @@ class RabbitMQTest extends TestCase
 
             $publisherService->publishMessage('Message ' . $msg . ' - ' . $execution_id, 'test-roundrobin');
 
-            $message1 = $subscriberService1->getSingleMessage('test-roundrobin');
-            $message2 = $subscriberService2->getSingleMessage('test-roundrobin');
-
+            $waiting = 0;
+            while($waiting++ < 5) {
+                $message1 = $subscriberService1->getSingleMessage('test-roundrobin');
+                if (!is_null($message1)) {
+                    break;
+                }
+                usleep(100000);
+            }
+            $waiting = 0;
+            while($waiting++ < 5) {
+                $message2 = $subscriberService2->getSingleMessage('test-roundrobin');
+                if (!is_null($message1)) {
+                    break;
+                }
+                usleep(100000);
+            }
             $this->assertNotNull($message1, 'Message 1 must not be null');
             $this->assertTrue((strpos($message1->body, 'Message ' . $msg)!==false), "Bad message $msg reveived " . $message1->body);
             $this->assertNull($message2, 'Message 2 is not null');
