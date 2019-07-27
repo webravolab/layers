@@ -212,9 +212,12 @@ class EventsQueueService implements EventsQueueServiceInterface
         if ($this->eventBusRemote) {
             $this->eventBusRemote->subscribe($handler);
         }
+        if ($this->eventBusLocal) {
+            $this->eventBusLocal->subscribe($handler);
+        }
     }
 
-    public function processQueueEvents()
+    public function processEventsQueue()
     {
         if ($this->eventQueueService) {
             while(($message = $this->eventQueueService->getSingleMessage($this->queueName)) !== null) {

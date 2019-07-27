@@ -43,11 +43,47 @@ class EventsQueueServiceTest extends TestCase
         $service->dispatchEvent($event);
 
         // Do nothing as no queue is not configured
-        $service->processQueueEvents();
+        $service->processEventsQueue();
 
         $handler->shouldHaveReceived('handle')->withArgs([$event]);
 
         // $loggerSpy->shouldHaveReceived('debug')->withArgs(['Fire event: ' . $event->getName()]);
+    }
+
+    public function testSimulateRemoteEventDispatch()
+    {
+        $service = new EventsQueueService([
+            'event_queue_service' => 'rabbitmq',
+            'event_store_service' => 'discard',
+            'event_queue' => 'test-event-bus02'
+        ]);
+
+        $event = new TestEvent();
+        $event->setPayload([ 'value' => 'test-' . date('H-i-s-u')]);
+        $event->setStrValue( 'test-' . date('H-i-s-u'));
+
+        $result = $service->dispatchEvent($event);
+
+        // Mock Command Handler
+        $handler = Mockery::spy(TestHandler::class);
+        app()->instance('tests\TestProject\Domain\Events\TestEventHandler', $handler);
+
+        // $handler->shouldReceive('handle')->withAnyArgs();
+
+        // Create a second instance of QueueService to simulate the event receiver process
+        $service2 = new EventsQueueService([
+            'event_queue_service' => 'rabbitmq',
+            'event_store_service' => 'discard',
+            'event_queue' => 'test-event-bus02'
+        ]);
+
+        // Need to register handler manually because cannot inject domain-events config
+        $service2->registerHandler(TestEventHandler::class);
+
+        $service2->processEventsQueue();
+
+        $handler->shouldHaveReceived('handle');
 
     }
+
 }

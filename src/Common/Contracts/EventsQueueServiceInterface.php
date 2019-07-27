@@ -9,6 +9,6 @@ interface EventsQueueServiceInterface {
 
     public function registerHandler($handler): void;
 
-    public function processQueueEvents();
+    public function processEventsQueue();
 
 }

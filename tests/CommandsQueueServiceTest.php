@@ -432,7 +432,7 @@ class CommandsQueueServiceTest extends TestCase
 
     }
 
-    public function testSimulateRemoteDispatch()
+    public function testSimulateRemoteCommandDispatch()
     {
         // putenv('COMMAND_QUEUE_SERVICE=rabbitmq');
         // putenv('COMMAND_STORE_SERVICE=discard');

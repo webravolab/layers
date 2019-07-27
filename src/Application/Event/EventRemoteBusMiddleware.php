@@ -18,11 +18,17 @@ class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
     public function __construct(?EventBusMiddlewareInterface $next,  ?QueueServiceInterface $queueService) {
         $this->next = $next;
         $this->queueService = $queueService;
+        if ($this->queueService && empty($this->queueService->getDefaultQueue())) {
+            $event_queue = Configuration::get('EVENT_QUEUE',null, 'event-bus');
+            $this->queueService->setDefaultQueue($event_queue);
+        }
+        /*
         if ($this->queueService) {
             $event_queue = Configuration::get('EVENT_QUEUE',null, 'event-bus');
             $this->queueService->createChannel('fanout', 'event-bus');
             $this->queueService->createQueue($event_queue, 'event-bus');
         }
+        */
     }
 
     public function subscribe($handler):void
@@ -37,8 +43,10 @@ class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
     {
         if (!is_null($this->queueService)) {
             // If remote event queue is available, dispatch to remote queue
-            $payload = $event->getSerializedPayload();
-            $this->queueService->publishMessage($payload);
+            $payload = $event->toArray();
+            $json_payload = json_encode($payload);
+            // $payload = $event->getSerializedPayload();
+            $this->queueService->publishMessage($json_payload);
         }
         if (!is_null($this->next)) {
             // Dispatch to the next middleware on stack
