@@ -10,8 +10,7 @@ use Webravo\Application\Command\CommandResponse;
 class TestHandler implements CommandHandlerInterface
 {
 
-
-    public function Handle(CommandInterface $command)
+    public function handle(CommandInterface $command)
     {
         if (!$command instanceof TestCommand) {
             throw new CommandException('TestCommandHandler can only handle TestCommand');
