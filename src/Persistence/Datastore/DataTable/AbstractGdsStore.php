@@ -2,7 +2,6 @@
 
 namespace Webravo\Persistence\DataStore\DataTable;
 
-use PHPUnit\Framework\ExpectationFailedException;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
 use Webravo\Common\Entity\AbstractEntity;
@@ -16,6 +15,7 @@ abstract class AbstractGdsStore implements StoreInterface {
     protected $gds_entity_name;
     protected $entity_name;
     protected $entity_classname;
+    protected $excluded_from_indexes = [];
 
     public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $entity_name = null, $entity_classname = null, $gds_entity_name = null) {
         $this->dataStoreService = $dataStoreService;
@@ -68,6 +68,10 @@ abstract class AbstractGdsStore implements StoreInterface {
         foreach($a_properties as $attribute => $value) {
             $dsObject[$attribute] = $value;
         }
+        if (count($this->excluded_from_indexes) > 0) {
+            // Set attributes excluded by index
+            $dsObject->setExcludeFromIndexes($this->excluded_from_indexes);
+        }
         $version = $this->dataStoreService->getConnection()->insert($dsObject);
     }
 
@@ -82,19 +86,6 @@ abstract class AbstractGdsStore implements StoreInterface {
             $entity_data = $entity->toArray();
         }
         $this->append($entity_data);
-        /*
-        $guid = $entity->getGuid();
-
-        // Create key based on guid
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
-
-        // Create an entity
-        $dsObject = $this->dataStoreService->getConnection()->entity($key);
-        foreach($entity_data as $attribute => $value) {
-            $dsObject[$attribute] = $value;
-        }
-        $version = $this->dataStoreService->getConnection()->insert($dsObject);
-        */
     }
 
     public function update(array $a_properties)
@@ -138,5 +129,14 @@ abstract class AbstractGdsStore implements StoreInterface {
         $key = $this->dataStoreService->getConnection()->key($this->gds_entity_name, $guid);
         // Delete entity
         $version = $this->dataStoreService->getConnection()->delete($key);
+    }
+
+    /**
+     * Set attributes names to exclude from entity indexing
+     * @param array $excluded_attributes
+     */
+    public function setExcludedFromIndex(array $excluded_attributes): void
+    {
+        $this->excluded_from_indexes = $excluded_attributes;
     }
 }

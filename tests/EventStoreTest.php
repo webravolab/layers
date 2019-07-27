@@ -20,7 +20,7 @@ class EventStoreTest extends TestCase
         $event->setFloatValue((float) Rand());
 
         $payload = [
-            'value' => 'this is a test value',
+            'value' => 'this is a test value ' . str_repeat('x', 1500),
             'number' => 175,
             'float' => 1.75,
         ];
@@ -51,7 +51,7 @@ class EventStoreTest extends TestCase
         $event->setIntValue((int) Rand(1,9999));
         $event->setFloatValue((float) Rand());
         $payload = [
-            'value' => 'this is a test value',
+            'value' => 'this is a test value ' . str_repeat('x', 1500),
             'number' => 175,
             'float' => 1.75,
         ];
@@ -102,7 +102,7 @@ class EventStoreTest extends TestCase
         $event = new TestEvent();
 
         $payload = [
-            'value' => 'this is a test value',
+            'value' => 'this is a test value ' . str_repeat('x', 1500),
             'number' => 175,
             'float' => 1.75,
         ];

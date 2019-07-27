@@ -11,7 +11,7 @@ class CommandStoreTest extends TestCase
     {
         $commandStore = new EloquentCommandStore();
 
-        $strParam1 = 'This is a command test';
+        $strParam1 = 'This is a command test ' . str_repeat('x', 1500);
         $intParam2 = (int)775;
         $floatParam3 = (float)12.58;
         $clsParam4 = [
@@ -26,7 +26,7 @@ class CommandStoreTest extends TestCase
         $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
         $command->setHeader([
-            'header1' => 'header value 1',
+            'header1' => 'header value 1 '. str_repeat('x', 1500),
             'header2' => 22,
             'header3' => (float) 22.22,
         ]);
@@ -51,7 +51,8 @@ class CommandStoreTest extends TestCase
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
         $commandStore = new DataStoreCommandStore();
-        $strParam1 = 'This is a command test';
+        $strParam1 = 'This is a command test ' . str_repeat('x', 1500);
+
         $intParam2 = (int)775;
         $floatParam3 = (float)12.58;
         $clsParam4 = [
@@ -66,7 +67,7 @@ class CommandStoreTest extends TestCase
         $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
 
         $command->setHeader([
-            'header1' => 'header value 1',
+            'header1' => 'header value 1 '. str_repeat('x', 1500),
             'header2' => 22,
             'header3' => (float) 22.22,
         ]);
