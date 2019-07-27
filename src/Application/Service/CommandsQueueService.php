@@ -84,7 +84,7 @@ class CommandsQueueService implements CommandsQueueServiceInterface
 
     public function __construct($options = [])
     {
-        $this->_environment = env('APP_ENV');
+        $this->_environment = Configuration::get('APP_ENV');
 
         // Get the configuration of services from environment
         $config = $options + [
