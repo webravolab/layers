@@ -203,6 +203,9 @@ class RabbitMQTest extends TestCase
         $subscriberService2->close();
     }
 
+    /**
+     * see https://www.rabbitmq.com/tutorials/tutorial-five-php.html
+     */
     public function testTopicRabbitMQService() {
 
         $execution_id = (new Datetime())->format('H:i:s');

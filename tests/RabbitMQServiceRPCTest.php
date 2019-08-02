@@ -4,6 +4,11 @@ use Webravo\Persistence\Service\RabbitMQService;
 
 class RabbitMQServiceRPCTest extends TestCase
 {
+
+    /**
+     * see https://www.rabbitmq.com/tutorials/tutorial-six-php.html
+     */
+
     public function testRabbitMQServiceRPC() {
 
         $execution_id = (new Datetime())->format('H:i:s');

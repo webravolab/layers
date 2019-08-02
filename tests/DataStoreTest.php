@@ -5,6 +5,7 @@ use tests\TestProject\Persistence\DataStore\TestDataStoreTable;
 use tests\TestProject\Persistence\Hydrator\TestHydrator;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Common\ValueObject\DateTimeObject;
+use Webravo\Persistence\Service\DataStoreService;
 use Faker\Factory;
 
 class DataStoreTest extends TestCase
@@ -15,7 +16,7 @@ class DataStoreTest extends TestCase
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
-        $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
+        $dataStoreClient = new DataStoreService();
 
         $faker = Factory::create();
         $name = $faker->name();
@@ -68,7 +69,7 @@ class DataStoreTest extends TestCase
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
-        $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
+        $dataStoreClient = new DataStoreService();
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
 
         $faker = Factory::create();
@@ -97,19 +98,93 @@ class DataStoreTest extends TestCase
         echo "$x entities saved in " . ($end_time - $start_time) . " seconds";
     }
 
-    // TODO
-    /*
     public function testDataStoreCursor()
     {
         $googleProjectId = Configuration::get('GOOGLE_PROJECT_ID');
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
 
+        $faker = Factory::create();
+
         $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
 
         $dtOne = new TestDataStoreTable($dataStoreClient, null);
 
-        self::assertTrue(false, 'Test incomplete...');
-   }
-   */
+        $cursor = '';
+        $test_entities = [];
+
+        $created_at = $faker->dateTimeThisYear();
+        $page_size = $faker->numberBetween(5,150);
+
+        while (true) {
+            $results = $dtOne->paginateByKey('created_at', '>', $created_at, 'asc', $page_size, $cursor);
+            $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
+            $cursor = $results['page_cursor'];
+            if (empty($cursor)) {
+                break;
+            }
+        }
+        $previous_entity = [];
+        foreach($test_entities as $idx => $entity) {
+            if ($idx > 0) {
+                self::assertTrue($previous_entity['created_at'] < $entity['created_at'], 'Bad Dates order');
+            }
+            $previous_entity = $entity;
+        }
+
+        self::assertTrue(count($test_entities) > 0, 'Entities not found...');
+
+
+        $cursor = '';
+        $test_entities = [];
+
+        $fk = $faker->numberBetween(1000,10000);
+        $page_size = $faker->numberBetween(5,20);
+
+        while (true) {
+            $results = $dtOne->paginateByKey('fk_id', '>=', $fk, 'desc', $page_size, $cursor);
+            $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
+            $cursor = $results['page_cursor'];
+            if (empty($cursor)) {
+                break;
+            }
+        }
+        $previous_entity = [];
+        foreach($test_entities as $idx => $entity) {
+            if ($idx > 0) {
+                self::assertTrue($previous_entity['fk_id'] >= $entity['fk_id'], 'Bad fk order');
+            }
+            $previous_entity = $entity;
+        }
+
+        self::assertTrue(count($test_entities) > 0, 'Entities not found...');
+    }
+
+    public function testDataStoreGetAll()
+    {
+        $googleProjectId = Configuration::get('GOOGLE_PROJECT_ID');
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+
+        $faker = Factory::create();
+
+        $dataStoreClient = new \Webravo\Persistence\Service\DataStoreService();
+
+        $dtOne = new TestDataStoreTable($dataStoreClient, null);
+
+        $attempt = 0;
+
+        $fk = $faker->numberBetween(1000,100000);
+
+        $results = $dtOne->paginateByKey('fk_id', '>', $fk, 'asc', 10);
+        self::assertTrue(count($results) > 0, 'Bad results...');
+        $entities = $results['entities'];
+        self::assertTrue(count($entities) > 0, 'Entities not found...');
+
+        $fk = $entities[0]['fk_id'];
+
+        $results = $dtOne->getAllByKey('fk_id', $fk);
+        self::assertEquals($results[0]['fk_id'], $fk);
+    }
+
+
 }
 
