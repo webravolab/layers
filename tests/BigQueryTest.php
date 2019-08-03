@@ -151,6 +151,117 @@ class BigQueryTest extends TestCase
         }
         $transaction_id = $faker->numberBetween(1000,100000);
         $client->insertRows($table, $a_data, $transaction_id);
+
+
+        $a_data = [
+            'guid' => $guid,
+            'name' => $name,
+            'fk_id' => $fk,
+            'created_at' => 'bad date'
+        ];
+
+        self::expectExceptionMessage('[BigQueryService][insertRow][test_table]: Invalid datetime string "bad date"');
+        $client->insertRow($table, $a_data);
+    }
+
+
+/*
+    public function testBigQueryTablePaginate()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $page_size = $faker->numberBetween(5,15);
+        $cursor = '';
+        $test_entities = [];
+
+        while (true) {
+            $results = $client->PaginateRows($table, $page_size, $cursor);
+            $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
+            $cursor = $results['page_cursor'];
+            if (empty($cursor)) {
+                break;
+            }
+        }
+
+        self::assertTrue(count($test_entities) > 0, "No rows found");
+
+    }
+*/
+
+    public function testBigQueryTableGetByKey()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $start = $faker->numberBetween(1,100);
+        $results = $client->PaginateRows($table, 10, $start);
+
+        self::assertTrue(count($results) > 0, "No rows found");
+
+        $fk = $results['entities'][9]['fk_id'];
+
+        $results = $client->getByKey($dataset_id, $table_id, 'fk_id', $fk);
+
+        self::assertTrue(count($results) > 0, "No rows found");
+
+        self::assertEquals($fk, $results[0]['fk_id'], "Error retrieving fk_id = $fk");
+    }
+
+
+    public function testBigQueryTablePaginateByKey()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $page_size = $faker->numberBetween(5,15);
+        $cursor = '';
+        $test_entities = [];
+
+        while (true) {
+            $results = $client->PaginateByKey($dataset_id, $table_id, 'name', '>', 'Grassi', 'desc', $page_size, $cursor);
+            $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
+            $cursor = $results['page_cursor'];
+            if (empty($cursor)) {
+                break;
+            }
+        }
+
+        self::assertTrue(count($test_entities) > 0, "No rows found");
+
     }
 
 }

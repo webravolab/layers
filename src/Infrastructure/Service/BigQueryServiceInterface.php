@@ -36,5 +36,11 @@ interface BigQueryServiceInterface
 
     public function insertRows($o_table, $a_rows, $transaction_id = null);
 
+    public function getByKey($dataset_id, $table_id, $key, $value): array;
+
+    public function PaginateRows($o_table, $pageSize, $cursor = ''): array;
+
+    public function paginateByKey($dataset_id, $table_id, $key, $comparison, $value, $order, $pageSize, $pageCursor = ''): array;
+
 }
 

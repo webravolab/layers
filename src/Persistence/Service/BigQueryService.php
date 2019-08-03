@@ -2,10 +2,10 @@
 
 namespace Webravo\Persistence\Service;
 
-use mysql_xdevapi\Exception;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Service\BigQueryServiceInterface;
 use Google\Cloud\BigQuery\BigQueryClient;
+use Exception;
 
 class BigQueryService implements BigQueryServiceInterface {
 
@@ -142,11 +142,10 @@ class BigQueryService implements BigQueryServiceInterface {
         if (!$response->isSuccessful()) {
             $table_id = $o_table->id();
             $row = $response->failedRows()[0];
-            $error = $row['errors'][0];
+            $error = $row['errors'][0]['message'];
             throw (new Exception("[BigQueryService][insertRow][$table_id]: $error"));
         }
     }
-
 
     public function insertRows($o_table, $a_rows, $transaction_id = null)
     {
@@ -157,9 +156,101 @@ class BigQueryService implements BigQueryServiceInterface {
         $response = $o_table->insertRows($a_rows, $options);
         if (!$response->isSuccessful()) {
             $table_id = $o_table->id();
-            $row = $response->failedRows()[0];
-            $error = $row['errors'][0];
-            throw (new Exception("[BigQueryService][insertRow][$table_id]: $error"));
+            $rows = $response->failedRows();
+            $error = '';
+            foreach($rows as $row) {
+                $error .= $row['errors'][0] . PHP_EOL;
+            }
+            throw (new Exception("[BigQueryService][insertRows][$table_id]: $error"));
         }
     }
+
+    public function getByKey($dataset_id, $table_id, $key, $value): array
+    {
+        $queryConfig = $this->bigQueryClient->query(
+            "SELECT * FROM `{$dataset_id}.{$table_id}` WHERE `$key` = @value"
+        )->parameters([
+            'value' => $value
+        ]);
+        $options = [
+            'resultLimit' => 0,
+        ];
+        $result = $this->bigQueryClient->runQuery($queryConfig, $options);
+        $a_rows = [];
+        $iterator = $result->getIterator();
+        foreach($iterator as $row) {
+            $a_row = [];
+            foreach ($row as $column => $value) {
+                $a_row[$column] = $value;
+            }
+            $a_rows[] = $a_row;
+        }
+        return $a_rows;
+    }
+
+    public function PaginateRows($o_table, $pageSize, $pageCursor = ''): array
+    {
+        $pageCursor =  empty($pageCursor) ? 0 : $pageCursor;
+        $options = [
+            'maxResults' => $pageSize,
+            'resultLimit' => 0,
+            'startIndex' => $pageCursor
+        ];
+        $rows = $o_table->rows($options);
+        $a_rows = [];
+        $numRows = 0;
+        foreach($rows as $row) {
+            $a_row = [];
+            foreach ($row as $column => $value) {
+                $a_row[$column] = $value;
+            }
+            $a_rows[] = $a_row;
+            if (++$numRows >= $pageSize) {
+                break;
+            }
+        }
+        $results = [
+            'entities' => $a_rows,
+            'page_cursor' => $numRows > 0 ? $pageCursor + $numRows : ''
+        ];
+        return $results;
+    }
+
+
+    public function paginateByKey($dataset_id, $table_id, $key, $comparison, $value, $order, $pageSize, $pageCursor = ''): array
+    {
+        $pageCursor =  empty($pageCursor) ? 0 : $pageCursor;
+        $order = $order == 'desc' ? 'DESC' : 'ASC';
+
+        $queryConfig = $this->bigQueryClient->query(
+            "SELECT * FROM `{$dataset_id}.{$table_id}` WHERE `$key` $comparison @value ORDER BY `$key` $order"
+        )->parameters([
+            'value' => $value
+        ]);
+        $options = [
+            'maxResults' => $pageSize,
+            'resultLimit' => 0,
+            'startIndex' => $pageCursor
+        ];
+        $result = $this->bigQueryClient->runQuery($queryConfig, $options);
+        $a_rows = [];
+        $numRows = 0;
+        $iterator = $result->getIterator();
+        foreach($iterator as $row) {
+            $a_row = [];
+            foreach ($row as $column => $value) {
+                $a_row[$column] = $value;
+            }
+            $a_rows[] = $a_row;
+            if (++$numRows >= $pageSize) {
+                break;
+            }
+        }
+        $results = [
+            'entities' => $a_rows,
+            'page_cursor' => $numRows > 0 ? $pageCursor + $numRows : ''
+        ];
+        return $results;
+    }
+
 }
