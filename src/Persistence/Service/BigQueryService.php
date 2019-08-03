@@ -91,8 +91,9 @@ class BigQueryService implements BigQueryServiceInterface {
         $dataset = $this->getDataset($dataset_id);
         if ($dataset) {
             $table = $dataset->createTable($table_id, ['schema' => $a_schema]);
+            return $table;
         }
-        return $table;
+        return null;
     }
 
     public function getTable($dataset_id, $table_id)

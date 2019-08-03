@@ -20,7 +20,7 @@ class BigQueryTest extends TestCase
 
         $a_datasets = $client->listDatasets();
 
-        $dataset_id = 'test_dataset';
+        $dataset_id = 'test_dummy_dataset';
 
         $dataset = $client->getDataset($dataset_id);
 
@@ -36,14 +36,16 @@ class BigQueryTest extends TestCase
 
         self::assertEquals($id, $retrieved_id, "Dataset Ids are different");
 
-
         $a_tables = $client->listTables($dataset_id);
 
         foreach($a_tables as $a_table) {
             $client->deleteTable($dataset_id,$a_table['tableId']);
+            echo "Table deleted" . PHP_EOL;
         }
 
         $client->deleteDataset($dataset_id);
+        echo "Dataset deleted" . PHP_EOL;
+
 
         $retrieved_dataset = $client->getDataset($dataset_id);
 
@@ -74,6 +76,7 @@ class BigQueryTest extends TestCase
 
         if (is_null($dataset)) {
             $dataset = $client->createDataset($dataset_id);
+            echo "Dataset created" . PHP_EOL;
         }
 
         $a_tables = $client->listTables($dataset_id);
@@ -114,10 +117,7 @@ class BigQueryTest extends TestCase
 
             self::assertEquals($table->id(), $table_id, "Table creation failed!");
         }
-        else {
-            $table = $client->getTable($dataset_id, $table_id);
-        }
-
+        $table = $client->getTable($dataset_id, $table_id);
 
         $guid =  $guid = (string) Uuid::generate();
         $name = $faker->name();
@@ -156,7 +156,6 @@ class BigQueryTest extends TestCase
         $transaction_id = $faker->numberBetween(1000,100000);
         $client->insertRows($table, $a_data, $transaction_id);
 
-
         $a_data = [
             'guid' => $guid,
             'name' => $name,
@@ -166,6 +165,37 @@ class BigQueryTest extends TestCase
 
         self::expectExceptionMessage('[BigQueryService][insertRow][test_table]: Invalid datetime string "bad date"');
         $client->insertRow($table, $a_data);
+    }
+
+
+    public function testBigQueryTableGetByKey()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $start = $faker->numberBetween(1,100);
+        $results = $client->PaginateRows($table, 10, $start);
+
+        self::assertTrue(count($results['entities']) > 0, "No rows found");
+
+        $fk = $results['entities'][9]['fk_id'];
+
+        $results = $client->getByKey($dataset_id, $table_id, 'fk_id', $fk);
+
+        self::assertTrue(count($results) > 0, "No rows found");
+
+        self::assertEquals($fk, $results[0]['fk_id'], "Error retrieving fk_id = $fk");
     }
 
 
@@ -201,37 +231,6 @@ class BigQueryTest extends TestCase
         self::assertTrue(count($test_entities) > 0, "No rows found");
 
     }
-
-    public function testBigQueryTableGetByKey()
-    {
-        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
-        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
-
-        $faker = Factory::create();
-
-        $client = new BigQueryService();
-
-        $dataset_id = 'test_dataset';
-        $table_id = 'test_table';
-        $dataset = $client->getDataset($dataset_id);
-        self::assertNotNull($dataset);
-        $table = $client->getTable($dataset_id, $table_id);
-        self::assertNotNull($table);
-
-        $start = $faker->numberBetween(1,100);
-        $results = $client->PaginateRows($table, 10, $start);
-
-        self::assertTrue(count($results) > 0, "No rows found");
-
-        $fk = $results['entities'][9]['fk_id'];
-
-        $results = $client->getByKey($dataset_id, $table_id, 'fk_id', $fk);
-
-        self::assertTrue(count($results) > 0, "No rows found");
-
-        self::assertEquals($fk, $results[0]['fk_id'], "Error retrieving fk_id = $fk");
-    }
-
 
     public function testBigQueryTablePaginateByKey()
     {
