@@ -61,26 +61,4 @@ class JobHydrator implements HydratorInterface {
     {
         // TODO: Implement mapDatastore() method.
     }
-
-    /**
-     * Extract data from Job instance and return as raw data array
-     * @param $event
-     * @return array
-     * @throws \Exception
-     */
-    /*
-    public function Extract($job) {
-        $data = [
-            'guid' => $job->getGuid(),
-            'name' => $job->getName(),
-            'channel' => $job->getChannel(),
-            'status' => $job->getStatus(),
-            'created_at' => $job->getCreatedAt(),
-            'delivered_at' => $job->getDeliveredAt(),
-            'payload' => $job->getPayload(),
-            'header' => $job->getRawHeader()
-        ];
-        return $data;
-    }
-    */
 }
