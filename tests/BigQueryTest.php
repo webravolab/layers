@@ -11,7 +11,6 @@ use Faker\Factory;
 
 class BigQueryTest extends TestCase
 {
-    /*
     public function testBigQueryDataset()
     {
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
@@ -38,6 +37,12 @@ class BigQueryTest extends TestCase
         self::assertEquals($id, $retrieved_id, "Dataset Ids are different");
 
 
+        $a_tables = $client->listTables($dataset_id);
+
+        foreach($a_tables as $a_table) {
+            $client->deleteTable($dataset_id,$a_table['tableId']);
+        }
+
         $client->deleteDataset($dataset_id);
 
         $retrieved_dataset = $client->getDataset($dataset_id);
@@ -51,7 +56,6 @@ class BigQueryTest extends TestCase
         self::assertNull($retrieved_dataset, "Dataset should not exists");
 
     }
-*/
 
     public function testBigQueryTable()
     {
@@ -132,7 +136,7 @@ class BigQueryTest extends TestCase
         $client->insertRow($table, $a_data);
 
         $a_data = [];
-        for ($x=0; $x<10; $x++) {
+        for ($x=0; $x<150; $x++) {
             $guid =  $guid = (string) Uuid::generate();
             $name = $faker->name();
             $fk = $faker->numberBetween(1000,100000);
@@ -165,7 +169,6 @@ class BigQueryTest extends TestCase
     }
 
 
-/*
     public function testBigQueryTablePaginate()
     {
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
@@ -198,7 +201,6 @@ class BigQueryTest extends TestCase
         self::assertTrue(count($test_entities) > 0, "No rows found");
 
     }
-*/
 
     public function testBigQueryTableGetByKey()
     {
