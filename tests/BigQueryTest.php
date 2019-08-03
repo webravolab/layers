@@ -3,6 +3,7 @@
 use tests\TestProject\Domain\Entity\TestEntity;
 use tests\TestProject\Persistence\DataStore\TestDataStoreTable;
 use tests\TestProject\Persistence\Hydrator\TestHydrator;
+use Webpatser\Uuid\Uuid;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Common\ValueObject\DateTimeObject;
 use Webravo\Persistence\Service\BigQueryService;
@@ -13,7 +14,6 @@ class BigQueryTest extends TestCase
     /*
     public function testBigQueryDataset()
     {
-
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
@@ -26,7 +26,8 @@ class BigQueryTest extends TestCase
         $dataset = $client->getDataset($dataset_id);
 
         if (is_null($dataset)) {
-            $dataset = $client->createDataset($dataset_id);
+            $options = [ 'location' => 'us'];
+            $dataset = $client->createDataset($dataset_id, $options);
         }
 
         $retrieved_dataset = $client->getDataset($dataset_id);
@@ -50,14 +51,15 @@ class BigQueryTest extends TestCase
         self::assertNull($retrieved_dataset, "Dataset should not exists");
 
     }
-
-    */
+*/
 
     public function testBigQueryTable()
     {
 
         $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
 
         $client = new BigQueryService();
 
@@ -73,40 +75,82 @@ class BigQueryTest extends TestCase
         $a_tables = $client->listTables($dataset_id);
 
         $exists = false;
-        foreach($a_tables as $table) {
-            if ($table['tableId'] == $table_id) {
-                $client->deleteTable($dataset_id, $table_id);
+        foreach($a_tables as $a_table) {
+            if ($a_table['tableId'] == $table_id) {
                 $exists = true;
             }
         }
 
-        $fields = [
-            [
-                'name' => 'guid',
-                'type' => 'string',
-                'mode' => 'required',
-            ],
-            [
-                'name' => 'name',
-                'type' => 'string',
-                'mode' => 'nullable',
-            ],
-            [
-                'name' => 'fk_id',
-                'type' => 'integer',
-                'mode' => 'nullable',
-            ],
-            [
-                'name' => 'created_at',
-                'type' => 'datetime',
-            ],
+        if (!$exists) {
+            $fields = [
+                [
+                    'name' => 'guid',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'name',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'fk_id',
+                    'type' => 'integer',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'created_at',
+                    'type' => 'datetime',
+                ],
 
+            ];
+            $schema = ['fields' => $fields];
+
+            $table = $client->createTable($dataset_id, $table_id, $schema);
+
+            self::assertEquals($table->id(), $table_id, "Table creation failed!");
+        }
+        else {
+            $table = $client->getTable($dataset_id, $table_id);
+        }
+
+
+        $guid =  $guid = (string) Uuid::generate();
+        $name = $faker->name();
+        $fk = $faker->numberBetween(1000,100000);
+        $created_at = $faker->dateTimeThisYear();
+        $created_at = $created_at->format('Y-m-d H:i:s') . '.' . $faker->numberBetween(100000,999999);
+        $created_at = new DateTime($created_at);
+
+        $a_data = [
+            'guid' => $guid,
+            'name' => $name,
+            'fk_id' => $fk,
+            'created_at' => $created_at
         ];
-        $schema = ['fields' => $fields];
 
-        $table = $client->createTable($dataset_id, $table_id, $schema);
+        $client->insertRow($table, $a_data);
 
-        self::assertEquals($table->id(),$table_id, "Table creation failed!");
+        $a_data = [];
+        for ($x=0; $x<10; $x++) {
+            $guid =  $guid = (string) Uuid::generate();
+            $name = $faker->name();
+            $fk = $faker->numberBetween(1000,100000);
+            $created_at = $faker->dateTimeThisYear();
+            $created_at = $created_at->format('Y-m-d H:i:s') . '.' . $faker->numberBetween(100000,999999);
+            $created_at = new DateTime($created_at);
+
+            $a_data[] = [
+                'data' => [
+                    'guid' => $guid,
+                    'name' => $name,
+                    'fk_id' => $fk,
+                    'created_at' => $created_at
+                ]
+            ];
+        }
+        $transaction_id = $faker->numberBetween(1000,100000);
+        $client->insertRows($table, $a_data, $transaction_id);
     }
 
 }

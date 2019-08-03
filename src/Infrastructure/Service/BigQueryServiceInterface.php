@@ -31,5 +31,10 @@ interface BigQueryServiceInterface
     public function deleteTable($dataset_id, $table_id);
 
     public function listTables($dataset_id): array;
+
+    public function insertRow($o_table, $a_row, $transaction_id = null);
+
+    public function insertRows($o_table, $a_rows, $transaction_id = null);
+
 }
 
