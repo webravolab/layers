@@ -21,6 +21,7 @@
     "google/apiclient": "~2.2",
     "google/cloud-logging": "~1.0",
     "google/cloud-datastore": "~1.0",
+    "google/cloud-bigquery": "dev-master",
     "php-amqplib/php-amqplib": ">=2.6.1"
   },
   "require-dev": {
