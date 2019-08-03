@@ -133,30 +133,46 @@ class BigQueryService implements BigQueryServiceInterface {
         return $a_tables;
     }
 
-    public function insertRow($o_table, $a_row, $transaction_id = null)
+    public function insertRow($dataset_id, $table_id, $a_row, $transaction_id = null)
     {
+        $dataset = $this->getDataset($dataset_id);
+        if (!$dataset) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
+        }
+        $table = $dataset->table($table_id);
+        if (!$table->exists()) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
+        }
         $options = [];
         if ($transaction_id) {
             $options['insertId'] = $transaction_id;
         }
-        $response = $o_table->insertRow($a_row, $options);
+        $response = $table->insertRow($a_row, $options);
         if (!$response->isSuccessful()) {
-            $table_id = $o_table->id();
+            $table_id = $table->id();
             $row = $response->failedRows()[0];
             $error = $row['errors'][0]['message'];
             throw (new Exception("[BigQueryService][insertRow][$table_id]: $error"));
         }
     }
 
-    public function insertRows($o_table, $a_rows, $transaction_id = null)
+    public function insertRows($dataset_id, $table_id, $a_rows, $transaction_id = null)
     {
+        $dataset = $this->getDataset($dataset_id);
+        if (!$dataset) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
+        }
+        $table = $dataset->table($table_id);
+        if (!$table->exists()) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
+        }
         $options = [];
         if ($transaction_id) {
             $options['insertId'] = $transaction_id;
         }
-        $response = $o_table->insertRows($a_rows, $options);
+        $response = $table->insertRows($a_rows, $options);
         if (!$response->isSuccessful()) {
-            $table_id = $o_table->id();
+            $table_id = $table->id();
             $rows = $response->failedRows();
             $error = '';
             foreach($rows as $row) {
@@ -189,15 +205,23 @@ class BigQueryService implements BigQueryServiceInterface {
         return $a_rows;
     }
 
-    public function PaginateRows($o_table, $pageSize, $pageCursor = ''): array
+    public function PaginateRows($dataset_id, $table_id, $pageSize, $pageCursor = ''): array
     {
+        $dataset = $this->getDataset($dataset_id);
+        if (!$dataset) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
+        }
+        $table = $dataset->table($table_id);
+        if (!$table->exists()) {
+            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
+        }
         $pageCursor =  empty($pageCursor) ? 0 : $pageCursor;
         $options = [
             'maxResults' => $pageSize,
             'resultLimit' => 0,
             'startIndex' => $pageCursor
         ];
-        $rows = $o_table->rows($options);
+        $rows = $table->rows($options);
         $a_rows = [];
         $numRows = 0;
         foreach($rows as $row) {

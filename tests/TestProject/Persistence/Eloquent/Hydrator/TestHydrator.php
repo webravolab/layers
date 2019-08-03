@@ -6,7 +6,33 @@ use DateTime;
 
 class TestHydrator implements HydratorInterface
 {
-    public function hydrateEloquent($eloquent_object):array
+    public function getSchema(): array {
+        return ['fields' =>
+            [
+                [
+                    'name' => 'guid',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'name',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'fk_id',
+                    'type' => 'integer',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'created_at',
+                    'type' => 'datetime',
+                ],
+            ]
+        ];
+    }
+
+    public function hydrateEloquent($eloquent_object): array
     {
         $data = [
             'id' => $eloquent_object->id,

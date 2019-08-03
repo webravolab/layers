@@ -1,11 +1,6 @@
 <?php
-
-use tests\TestProject\Domain\Entity\TestEntity;
-use tests\TestProject\Persistence\DataStore\TestDataStoreTable;
-use tests\TestProject\Persistence\Hydrator\TestHydrator;
 use Webpatser\Uuid\Uuid;
 use Webravo\Infrastructure\Library\Configuration;
-use Webravo\Common\ValueObject\DateTimeObject;
 use Webravo\Persistence\Service\BigQueryService;
 use Faker\Factory;
 
@@ -133,7 +128,7 @@ class BigQueryTest extends TestCase
             'created_at' => $created_at
         ];
 
-        $client->insertRow($table, $a_data);
+        $client->insertRow($dataset_id, $table_id, $a_data);
 
         $a_data = [];
         for ($x=0; $x<150; $x++) {
@@ -154,7 +149,7 @@ class BigQueryTest extends TestCase
             ];
         }
         $transaction_id = $faker->numberBetween(1000,100000);
-        $client->insertRows($table, $a_data, $transaction_id);
+        $client->insertRows($dataset_id, $table_id, $a_data, $transaction_id);
 
         $a_data = [
             'guid' => $guid,
@@ -164,7 +159,7 @@ class BigQueryTest extends TestCase
         ];
 
         self::expectExceptionMessage('[BigQueryService][insertRow][test_table]: Invalid datetime string "bad date"');
-        $client->insertRow($table, $a_data);
+        $client->insertRow($dataset_id, $table_id, $a_data);
     }
 
 
@@ -185,7 +180,7 @@ class BigQueryTest extends TestCase
         self::assertNotNull($table);
 
         $start = $faker->numberBetween(1,100);
-        $results = $client->PaginateRows($table, 10, $start);
+        $results = $client->PaginateRows($dataset_id, $table_id, 10, $start);
 
         self::assertTrue(count($results['entities']) > 0, "No rows found");
 
@@ -220,7 +215,7 @@ class BigQueryTest extends TestCase
         $test_entities = [];
 
         while (true) {
-            $results = $client->PaginateRows($table, $page_size, $cursor);
+            $results = $client->PaginateRows($dataset_id, $table_id, $page_size, $cursor);
             $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
             $cursor = $results['page_cursor'];
             if (empty($cursor)) {
