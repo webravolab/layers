@@ -41,8 +41,13 @@ abstract class AbstractBigQueryStore implements StoreInterface {
         }
         $table = $this->bigQueryService->getTable($this->bg_dataset_name, $this->bg_entity_name);
         if (!$table) {
-            $schema = $hydrator->getSchema();
-            $table = $this->bigQueryService->createTable($this->bg_dataset_name, $this->bg_entity_name, $schema);
+            if (method_exists($hydrator, "getSchema")) {
+                $schema = $hydrator->getSchema();
+                $table = $this->bigQueryService->createTable($this->bg_dataset_name, $this->bg_entity_name, $schema);
+            }
+            else {
+                throw new Exception('[AbstractBigQueryStore] table ' . $this->bg_entity_name . ' does not exists and cannot be created');
+            }
         }
     }
 
@@ -55,9 +60,9 @@ abstract class AbstractBigQueryStore implements StoreInterface {
 
     public function getObjectByGuid(string $guid)
     {
-        $a_results = $this->bigQueryService->getByKey($this->bg_dataset_name, $this->bg_entity_name, 'guid', $guid);
-        if (isset($a_results[0]['guid'])) {
-            return $a_results[0];
+        $a_row= $this->bigQueryService->getByKey($this->bg_dataset_name, $this->bg_entity_name, 'guid', $guid, true);
+        if (is_array($a_row)) {
+            return $a_row;
         }
         return null;
     }
@@ -100,8 +105,7 @@ abstract class AbstractBigQueryStore implements StoreInterface {
         }
         $guid = $a_properties['guid'];
 
-        // TODO
-        // throw new \Exception('[AbstractBigQueryStore][' . $this->entity_name . '][Update] Guid ' . $guid . ' does not exists');
+        $success = $this->bigQueryService->updateRow($this->bg_dataset_name, $this->bg_entity_name, $a_properties, 'guid');
     }
 
     public function delete(array $a_properties)
@@ -115,22 +119,32 @@ abstract class AbstractBigQueryStore implements StoreInterface {
 
     public function deleteByGuid(string $guid)
     {
-        // TODO
+        $success = $this->bigQueryService->deleteRow($this->bg_dataset_name, $this->bg_entity_name, $guid, 'guid');
     }
 
     public function getAllByKey($key, $value): array
     {
-        // TODO
+        $a_rows = $this->bigQueryService->getByKey($this->bg_dataset_name, $this->bg_entity_name, $key, $value);
         $entities = [];
+        foreach ($a_rows as $a_attributes) {
+            $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
+            $entities[] = $a_properties;
+        }
         return $entities;
     }
 
     public function paginateByKey($key, $comparison, $value, $order, $pageSize, $pageCursor = ''): array
     {
-        // TODO
         $entities = [];
+        $results = $this->bigQueryService->paginateByKey($this->bg_dataset_name, $this->bg_entity_name, $key, $comparison, $value, $order, $pageSize, $pageCursor);
+        if (is_array($results) && isset($results['entities'])) {
+            foreach ($results['entities'] as $a_attributes) {
+                $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
+                $entities[] = $a_properties;
+            }
+        }
         return array(
-            'page_cursor' => '',
+            'page_cursor' => $results['page_cursor'],
             'entities' => $entities
         );
     }

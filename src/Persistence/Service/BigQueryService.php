@@ -2,6 +2,7 @@
 
 namespace Webravo\Persistence\Service;
 
+use Google\Cloud\Core\Exception\BadRequestException;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Service\BigQueryServiceInterface;
 use Google\Cloud\BigQuery\BigQueryClient;
@@ -12,6 +13,9 @@ class BigQueryService implements BigQueryServiceInterface {
     protected $bigQueryClient = null;
     protected $location;
 
+    // Cache current dataset + table
+    private $_current_dataset = null;
+    private $_current_table = null;
 
     public function __construct()
     {
@@ -52,15 +56,21 @@ class BigQueryService implements BigQueryServiceInterface {
         ];
 
         $dataset = $this->bigQueryClient->createDataset($dataset_id, $options);
+        $this->_current_dataset = $dataset;
         return $dataset;
     }
 
     public function getDataset($dataset_id)
     {
+        if ($this->_current_dataset && $this->_current_dataset->id() == $dataset_id) {
+            return $this->_current_dataset;
+        }
         $dataset = $this->bigQueryClient->dataset($dataset_id);
         if ($dataset->exists()) {
+            $this->_current_dataset = $dataset;
             return $dataset;
         }
+        $this->_current_dataset = null;
         return null;
     }
 
@@ -68,7 +78,8 @@ class BigQueryService implements BigQueryServiceInterface {
     {
         $dataset = $this->getDataset($dataset_id);
         if ($dataset) {
-            $result = $dataset->delete();
+            $dataset->delete();
+            $this->_current_dataset = null;
         }
     }
 
@@ -91,6 +102,7 @@ class BigQueryService implements BigQueryServiceInterface {
         $dataset = $this->getDataset($dataset_id);
         if ($dataset) {
             $table = $dataset->createTable($table_id, ['schema' => $a_schema]);
+            $this->_current_table = $table;
             return $table;
         }
         return null;
@@ -98,24 +110,27 @@ class BigQueryService implements BigQueryServiceInterface {
 
     public function getTable($dataset_id, $table_id)
     {
+        if ($this->_current_dataset && $this->_current_table && $this->_current_dataset->id() == $dataset_id && $this->_current_table->id() == $table_id) {
+            return $this->_current_table;
+        }
         $dataset = $this->getDataset($dataset_id);
         if ($dataset) {
             $table = $dataset->table($table_id);
             if ($table->exists()) {
+                $this->_current_table = $table;
                 return $table;
             }
         }
+        $this->_current_table = null;
         return null;
     }
 
     public function deleteTable($dataset_id, $table_id)
     {
-        $dataset = $this->getDataset($dataset_id);
-        if ($dataset) {
-            $table = $dataset->table($table_id);
-            if ($table->exists()) {
-                $table->delete();
-            }
+        $table = $this->getTable($dataset_id, $table_id);
+        if ($table && $table->exists()) {
+            $table->delete();
+            $this->_current_table = null;
         }
     }
 
@@ -135,12 +150,8 @@ class BigQueryService implements BigQueryServiceInterface {
 
     public function insertRow($dataset_id, $table_id, $a_row, $transaction_id = null)
     {
-        $dataset = $this->getDataset($dataset_id);
-        if (!$dataset) {
-            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
-        }
-        $table = $dataset->table($table_id);
-        if (!$table->exists()) {
+        $table = $this->getTable($dataset_id, $table_id);
+        if (!$table || !$table->exists()) {
             throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
         }
         $options = [];
@@ -158,13 +169,9 @@ class BigQueryService implements BigQueryServiceInterface {
 
     public function insertRows($dataset_id, $table_id, $a_rows, $transaction_id = null)
     {
-        $dataset = $this->getDataset($dataset_id);
-        if (!$dataset) {
-            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
-        }
-        $table = $dataset->table($table_id);
-        if (!$table->exists()) {
-            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
+        $table = $this->getTable($dataset_id, $table_id);
+        if (!$table || !$table->exists()) {
+            throw (new Exception("[BigQueryService][insertRows] dataset $dataset_id : table $table_id does not exists"));
         }
         $options = [];
         if ($transaction_id) {
@@ -182,7 +189,71 @@ class BigQueryService implements BigQueryServiceInterface {
         }
     }
 
-    public function getByKey($dataset_id, $table_id, $key, $value): array
+    public function updateRow($dataset_id, $table_id, $a_row, $primary_key = 'guid'): bool
+    {
+        if (!isset($a_row[$primary_key])) {
+            throw (new Exception("[BigQueryService][updateRow][$table_id]: cannot find primary key field $primary_key"));
+        }
+        $pk_value = $a_row[$primary_key];
+        $a_original = $this->getByKey($dataset_id, $table_id, $primary_key, $pk_value, true);
+        if (is_array($a_original)) {
+            $query = "UPDATE `{$dataset_id}.{$table_id}` SET ";
+            $separator = '';
+            $parameters = [];
+            foreach($a_row as $key => $value) {
+                if (isset($a_original[$key]) && $a_original[$key] !== $value) {
+                    $query .= $separator . " `$key` = @$key";
+                    $separator = ', ';
+                    $parameters["$key"] = $value;
+                }
+            }
+            $parameters["pk"] = $pk_value;
+            $query .= " WHERE `$primary_key` = @pk";
+
+            $queryConfig = $this->bigQueryClient->query($query)
+                ->parameters($parameters);
+
+            $options = [
+                'resultLimit' => 0,
+            ];
+            try {
+                $result = $this->bigQueryClient->runQuery($queryConfig, $options);
+            }
+            catch (BadRequestException $e) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function deleteRow($dataset_id, $table_id, $primary_key_value, $primary_key = 'guid'): bool
+    {
+        $a_original = $this->getByKey($dataset_id, $table_id, $primary_key, $primary_key_value, true);
+        if (is_array($a_original)) {
+            $query = "DELETE FROM `{$dataset_id}.{$table_id}` ";
+            $parameters = [];
+            $parameters["pk"] = $primary_key_value;
+            $query .= " WHERE `$primary_key` = @pk";
+
+            $queryConfig = $this->bigQueryClient->query($query)
+                ->parameters($parameters);
+
+            $options = [
+                'resultLimit' => 0,
+            ];
+            try {
+                $result = $this->bigQueryClient->runQuery($queryConfig, $options);
+            }
+            catch (BadRequestException $e) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function getByKey($dataset_id, $table_id, $key, $value, $first_only = false): array
     {
         $queryConfig = $this->bigQueryClient->query(
             "SELECT * FROM `{$dataset_id}.{$table_id}` WHERE `$key` = @value"
@@ -200,20 +271,19 @@ class BigQueryService implements BigQueryServiceInterface {
             foreach ($row as $column => $value) {
                 $a_row[$column] = $value;
             }
+            if ($first_only) {
+                return $a_row;
+            }
             $a_rows[] = $a_row;
         }
         return $a_rows;
     }
 
-    public function PaginateRows($dataset_id, $table_id, $pageSize, $pageCursor = ''): array
+    public function paginateRows($dataset_id, $table_id, $pageSize, $pageCursor = ''): array
     {
-        $dataset = $this->getDataset($dataset_id);
-        if (!$dataset) {
-            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id does not exists"));
-        }
-        $table = $dataset->table($table_id);
-        if (!$table->exists()) {
-            throw (new Exception("[BigQueryService][insertRow] dataset $dataset_id : table $table_id does not exists"));
+        $table = $this->getTable($dataset_id, $table_id);
+        if (!$table || !$table->exists()) {
+            throw (new Exception("[BigQueryService][paginateRows] dataset $dataset_id : table $table_id does not exists"));
         }
         $pageCursor =  empty($pageCursor) ? 0 : $pageCursor;
         $options = [

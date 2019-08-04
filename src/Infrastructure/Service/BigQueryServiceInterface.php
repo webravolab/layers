@@ -36,11 +36,16 @@ interface BigQueryServiceInterface
 
     public function insertRows($dataset_id, $table_id, $a_rows, $transaction_id = null);
 
-    public function getByKey($dataset_id, $table_id, $key, $value): array;
+    public function updateRow($dataset_id, $table_id, $a_row, $primary_key = 'guid'): bool;
 
-    public function PaginateRows($dataset_id, $table_id, $pageSize, $cursor = ''): array;
+    public function deleteRow($dataset_id, $table_id, $primary_key_value, $primary_key = 'guid'): bool;
+
+    public function getByKey($dataset_id, $table_id, $key, $value, $first_only = false): array;
+
+    public function paginateRows($dataset_id, $table_id, $pageSize, $cursor = ''): array;
 
     public function paginateByKey($dataset_id, $table_id, $key, $comparison, $value, $order, $pageSize, $pageCursor = ''): array;
+
 
 }
 

@@ -26,8 +26,8 @@ class BigQueryTest extends TestCase
 
         $retrieved_dataset = $client->getDataset($dataset_id);
 
-        $id = $dataset->identity()['datasetId'];
-        $retrieved_id = $retrieved_dataset->identity()['datasetId'];
+        $id = $dataset->id();
+        $retrieved_id = $retrieved_dataset->id();
 
         self::assertEquals($id, $retrieved_id, "Dataset Ids are different");
 
@@ -114,7 +114,7 @@ class BigQueryTest extends TestCase
         }
         $table = $client->getTable($dataset_id, $table_id);
 
-        $guid =  $guid = (string) Uuid::generate();
+        $guid_single =  (string) Uuid::generate();
         $name = $faker->name();
         $fk = $faker->numberBetween(1000,100000);
         $created_at = $faker->dateTimeThisYear();
@@ -122,7 +122,7 @@ class BigQueryTest extends TestCase
         $created_at = new DateTime($created_at);
 
         $a_data = [
-            'guid' => $guid,
+            'guid' => $guid_single,
             'name' => $name,
             'fk_id' => $fk,
             'created_at' => $created_at
@@ -132,7 +132,7 @@ class BigQueryTest extends TestCase
 
         $a_data = [];
         for ($x=0; $x<150; $x++) {
-            $guid =  $guid = (string) Uuid::generate();
+            $guid =  (string) Uuid::generate();
             $name = $faker->name();
             $fk = $faker->numberBetween(1000,100000);
             $created_at = $faker->dateTimeThisYear();
@@ -151,6 +151,8 @@ class BigQueryTest extends TestCase
         $transaction_id = $faker->numberBetween(1000,100000);
         $client->insertRows($dataset_id, $table_id, $a_data, $transaction_id);
 
+        // Test failed insert
+        $guid =  (string) Uuid::generate();
         $a_data = [
             'guid' => $guid,
             'name' => $name,
@@ -180,7 +182,7 @@ class BigQueryTest extends TestCase
         self::assertNotNull($table);
 
         $start = $faker->numberBetween(1,100);
-        $results = $client->PaginateRows($dataset_id, $table_id, 10, $start);
+        $results = $client->paginateRows($dataset_id, $table_id, 10, $start);
 
         self::assertTrue(count($results['entities']) > 0, "No rows found");
 
@@ -193,6 +195,65 @@ class BigQueryTest extends TestCase
         self::assertEquals($fk, $results[0]['fk_id'], "Error retrieving fk_id = $fk");
     }
 
+    public function testBigQueryUpdate()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $results = $client->paginateRows($dataset_id, $table_id, 10, 0);
+
+        self::assertTrue(count($results['entities']) > 0, "No rows found");
+
+
+        $guid = $results['entities'][0]['guid'];
+
+        // Test Update
+        $a_data = [
+            'guid' => $guid,
+            'name' => 'Changed name',
+            'fk_id' => 9999,
+        ];
+
+        $success = $client->updateRow($dataset_id, $table_id, $a_data);
+
+        self::assertTrue($success, 'Update failed probably because updated record is into streaming buffer');
+
+    }
+
+    public function testBigQueryDelete()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+        $dataset = $client->getDataset($dataset_id);
+        self::assertNotNull($dataset);
+        $table = $client->getTable($dataset_id, $table_id);
+        self::assertNotNull($table);
+
+        $results = $client->paginateRows($dataset_id, $table_id, 10, 0);
+
+        self::assertTrue(count($results['entities']) > 0, "No rows found");
+
+        $guid = $results['entities'][0]['guid'];
+
+        $success = $client->deleteRow($dataset_id, $table_id, $guid, 'guid');
+
+        self::assertTrue($success, 'Delete failed probably because deleted record is into streaming buffer');
+
+    }
 
     public function testBigQueryTablePaginate()
     {
@@ -215,7 +276,7 @@ class BigQueryTest extends TestCase
         $test_entities = [];
 
         while (true) {
-            $results = $client->PaginateRows($dataset_id, $table_id, $page_size, $cursor);
+            $results = $client->paginateRows($dataset_id, $table_id, $page_size, $cursor);
             $test_entities = array_merge(array_values($test_entities), array_values($results['entities']));
             $cursor = $results['page_cursor'];
             if (empty($cursor)) {
