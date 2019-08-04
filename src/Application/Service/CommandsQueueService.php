@@ -17,6 +17,7 @@ use Webravo\Persistence\Service\StackDriverLoggerService;
 use Webravo\Persistence\Eloquent\Store\EloquentJobStore;
 use Webravo\Persistence\Eloquent\Store\EloquentCommandStore;
 use Webravo\Persistence\Datastore\Store\DataStoreCommandStore;
+use Webravo\Persistence\BigQuery\Store\BigQueryCommandStore;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 
@@ -115,6 +116,9 @@ class CommandsQueueService implements CommandsQueueServiceInterface
             case 'datastore':
                 $this->commandStoreRepository = DependencyBuilder::resolve('Webravo\Persistence\Datastore\Store\DataStoreCommandStore');
                 break;
+            case 'bigquery':
+                $this->commandStoreRepository = DependencyBuilder::resolve('Webravo\Persistence\BigQuery\Store\BigQueryCommandStore');
+                break;
             case 'db':
             case 'database':
                 $this->commandStoreRepository = DependencyBuilder::resolve('Webravo\Persistence\Eloquent\Store\EloquentCommandStore');
@@ -142,6 +146,7 @@ class CommandsQueueService implements CommandsQueueServiceInterface
                 // Create the command bus
                 switch($config['command_store_service']) {
                     case 'datastore':
+                    case 'bigquery':
                     case 'db':
                     case 'database':
                         // Create the command bus made of 4 layers
@@ -172,6 +177,7 @@ class CommandsQueueService implements CommandsQueueServiceInterface
                 // Create the command bus
                 switch($config['command_store_service']) {
                     case 'datastore':
+                    case 'bigquery':
                     case 'db':
                     case 'database':
                         // Create the command bus made of 4 layers
@@ -194,6 +200,7 @@ class CommandsQueueService implements CommandsQueueServiceInterface
                 // Don't use a remote command-bus
                 switch($config['command_store_service']) {
                     case 'datastore':
+                    case 'bigquery':
                     case 'db':
                     case 'database':
                         // Create the command bus made of 3 layers
@@ -215,6 +222,7 @@ class CommandsQueueService implements CommandsQueueServiceInterface
                 $this->commandQueueService = new NullQueueService();
                 switch($config['command_store_service']) {
                     case 'datastore':
+                    case 'bigquery':
                     case 'db':
                     case 'database':
                         // Create the command bus made of 2 layers

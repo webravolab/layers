@@ -196,6 +196,51 @@ class CommandsQueueServiceTest extends TestCase
 
     }
 
+    public function testQueue2DiscardAndStore2BigQueryCommandsQueueService()
+    {
+        // putenv('COMMAND_QUEUE_SERVICE=discard');
+        // putenv('COMMAND_STORE_SERVICE=datastore');
+
+        // Mock Logger
+        $loggerSpy = Mockery::spy('Psr\Log\LoggerInterface');
+
+        $store = Mockery::spy('Webravo\Persistence\BigQuery\Store\BigQueryCommandStore');
+
+        app()->instance('Psr\Log\LoggerInterface', $loggerSpy);
+        app()->instance('Webravo\Persistence\BigQuery\Store\BigQueryCommandStore', $store);
+
+        $service = new CommandsQueueService([
+            'command_queue_service' => 'discard',
+            'command_store_service' => 'bigquery',
+        ]);
+
+        /*
+        $payload = rand(1,999);
+
+        $command = new TestCommand($payload);
+        */
+
+        $strParam1 = 'This is a command test';
+        $intParam2 = (int)775;
+        $floatParam3 = (float)12.58;
+        $clsParam4 = new stdClass();
+        $clsParam4->value1 = 'this is value1';
+        $clsParam4->value2 = 222;
+        $arrParam5 = [
+            'aValue1' => 'array value 1',
+            'aValue2' => 2222,
+        ];
+
+        $command = new TestCommand($strParam1, $intParam2, $floatParam3, $clsParam4, $arrParam5);
+
+        $result = $service->dispatchCommand($command);
+
+        $loggerSpy->shouldHaveReceived('debug')->withArgs(['Fire command: ' . $command->getCommandName()]);
+
+        $store->shouldHaveReceived('append');
+
+    }
+
     public function testQueue2DbAndStore2DiscardCommandsQueueService()
     {
 
