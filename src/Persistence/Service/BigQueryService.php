@@ -280,6 +280,25 @@ class BigQueryService implements BigQueryServiceInterface {
         return $a_rows;
     }
 
+    public function getRawQuery($dataset_id, $table_id, $raw_query, $parameters = []): array
+    {
+        $queryConfig = $this->bigQueryClient->query($raw_query)->parameters($parameters);
+        $options = [
+            'resultLimit' => 0,
+        ];
+        $result = $this->bigQueryClient->runQuery($queryConfig, $options);
+        $a_rows = [];
+        $iterator = $result->getIterator();
+        foreach($iterator as $row) {
+            $a_row = [];
+            foreach ($row as $column => $value) {
+                $a_row[$column] = $value;
+            }
+            $a_rows[] = $a_row;
+        }
+        return $a_rows;
+    }
+
     public function paginateRows($dataset_id, $table_id, $pageSize, $pageCursor = ''): array
     {
         $table = $this->getTable($dataset_id, $table_id);

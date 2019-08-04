@@ -46,6 +46,7 @@ interface BigQueryServiceInterface
 
     public function paginateByKey($dataset_id, $table_id, $key, $comparison, $value, $order, $pageSize, $pageCursor = ''): array;
 
+    public function getRawQuery($dataset_id, $table_id, $raw_query, $parameters = []): array;
 
 }
 

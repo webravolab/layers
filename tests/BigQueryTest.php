@@ -54,6 +54,42 @@ class BigQueryTest extends TestCase
 
     }
 
+    public function testBigQueryRawQuery()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $faker = Factory::create();
+
+        $client = new BigQueryService();
+
+        $dataset_id = 'test_dataset';
+        $table_id = 'test_table';
+
+        $a_rows = $client->getRawQuery($dataset_id, $table_id, "
+        SELECT * FROM `{$dataset_id}.{$table_id}`
+        WHERE guid > '5' AND fk_id < 20000
+        ORDER BY created_at DESC 
+        LIMIT 10  
+        ");
+
+        self::assertEquals(count($a_rows), 10, 'Cannot retrieve 10 records by getRawQuery');
+
+        $a_rows = $client->getRawQuery($dataset_id, $table_id, "
+        SELECT guid FROM `{$dataset_id}.{$table_id}`
+        WHERE guid > @guid AND fk_id < @fk
+        ORDER BY created_at DESC 
+        LIMIT @limit  
+        ", [
+            'guid' => '5',
+            'fk' => 15000,
+            'limit' => 5,
+        ]);
+
+        self::assertEquals(count($a_rows), 5, 'Cannot retrieve 5 records by getRawQuery');
+
+    }
+
     public function testBigQueryTable()
     {
 
