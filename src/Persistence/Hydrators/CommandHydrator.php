@@ -1,6 +1,7 @@
 <?php
 namespace Webravo\Persistence\Hydrators;
 
+use DateTime;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\CommandDataTable;
 
@@ -72,9 +73,51 @@ class CommandHydrator implements HydratorInterface {
             'queue_name' => $a_values['queue_name'],
             'payload' => $a_values['payload'],
             'header' => json_encode($a_values['header']),
-            'created_at' => $a_values['created_at'],
+            // Must convert DateTimeImmutable to DateTime for BigQuery compatibility
+            'created_at' => new DateTime($a_values['created_at']->format(DATE_RFC3339_EXTENDED)),
+
         ];
         return $data;
+    }
+
+    public function getSchema(): array {
+        return ['fields' =>
+            [
+                [
+                    'name' => 'guid',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'command',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'binding_key',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'queue_name',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'header',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'created_at',
+                    'type' => 'datetime',
+                ],
+                [
+                    'name' => 'payload',
+                    'type' => 'string',
+                ],
+            ]
+        ];
     }
 
 }
