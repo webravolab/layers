@@ -9,6 +9,7 @@ use Webravo\Application\Event\EventHandlerInterface;
 use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Event\EventRemoteBusMiddleware;
 use Webravo\Application\Event\GenericEvent;
+use Webravo\Persistence\BigQuery\Store\BigQueryEventStore;
 use Webravo\Persistence\Service\NullLoggerService;
 use Webravo\Persistence\Service\NullQueueService;
 use Webravo\Persistence\Service\RabbitMQService;
@@ -113,6 +114,10 @@ class EventsQueueService implements EventsQueueServiceInterface
         switch($config['event_store_service']) {
             case 'datastore':
                 $this->eventStoreRepository = new DataStoreEventStore();
+                $this->eventBusStore = new EventBucketBusMiddleware(null, $this->eventStoreRepository);
+                break;
+            case 'bigquery':
+                $this->eventStoreRepository = new BigQueryEventStore();
                 $this->eventBusStore = new EventBucketBusMiddleware(null, $this->eventStoreRepository);
                 break;
             case 'db':

@@ -18,7 +18,7 @@ class EventBigQueryTable extends AbstractBigQueryStore implements StoreInterface
 
     public function __construct(BigQueryServiceInterface $bigQueryService, HydratorInterface $hydrator = null, $entity_name = 'EventEntity', $entity_classname = 'Webravo\Common\Entity\EventEntity') {
         // Inject in AbstractBigQueryStore the default Entity to manage Events
-        parent::__construct($bigQueryService, $hydrator, $entity_name, $entity_classname);
+        parent::__construct($bigQueryService, $hydrator, $entity_name, $entity_classname, 'events_table', 'events_dataset');
     }
 
     // All basic functions are implemented by AbstractBigQueryStore

@@ -4,6 +4,7 @@ namespace Webravo\Persistence\Hydrators;
 use Webravo\Common\Entity\EventEntity;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Persistence\Eloquent\DataTable\EventDataTable;
+use DateTime;
 
 class EventHydrator implements HydratorInterface {
 
@@ -62,7 +63,8 @@ class EventHydrator implements HydratorInterface {
     {
         $data = [
             'type' => $a_values['type'],
-            'occurred_at' => $a_values['occurred_at'],
+            // Must convert DateTimeImmutable to DateTime for BigQuery compatibility
+            'occurred_at' => new DateTime($a_values['occurred_at']->format(DATE_RFC3339_EXTENDED)),
             'class_name' => $a_values['class_name'] ?? '',
             'payload' => $a_values['payload'],
             'guid' => $a_values['guid'],
@@ -70,22 +72,33 @@ class EventHydrator implements HydratorInterface {
         return $data;
     }
 
-    /**
-     * Extract data from Event instance and return as raw data array
-     * (handle serialization of event payload)
-     * @param EventEntity $event
-     * @return array
-     * @throws \Exception
-     */
-    /*
-    public function Extract(EventEntity $eventEntity) {
-        $data = [
-            'guid' => $eventEntity->getGuid(),
-            'event_type' => $eventEntity->getType(),
-            'occurred_at' => $eventEntity->getOccurredAt(),
-            'payload' => $eventEntity->getSerializedPayload()
+    public function getSchema(): array {
+        return ['fields' =>
+            [
+                [
+                    'name' => 'guid',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'type',
+                    'type' => 'string',
+                    'mode' => 'required',
+                ],
+                [
+                    'name' => 'class_name',
+                    'type' => 'string',
+                    'mode' => 'nullable',
+                ],
+                [
+                    'name' => 'occurred_at',
+                    'type' => 'datetime',
+                ],
+                [
+                    'name' => 'payload',
+                    'type' => 'string',
+                ],
+            ]
         ];
-        return $data;
     }
-    */
 }

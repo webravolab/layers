@@ -162,7 +162,8 @@ class BigQueryService implements BigQueryServiceInterface {
         if (!$response->isSuccessful()) {
             $table_id = $table->id();
             $row = $response->failedRows()[0];
-            $error = $row['errors'][0]['message'];
+            $a_error = $row['errors'][0];
+            $error = $a_error['reason'] . ' - ' . $a_error['location'] . ' - ' . $a_error['message'];
             throw (new Exception("[BigQueryService][insertRow][$table_id]: $error"));
         }
     }

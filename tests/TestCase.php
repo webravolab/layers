@@ -96,6 +96,8 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         $app->singleton('Webravo\Infrastructure\Service\GuidServiceInterface', 'Webravo\Infrastructure\Service\GuidService');
 
         $app->singleton('Webravo\Infrastructure\Service\DataStoreServiceInterface', 'Webravo\Persistence\Service\DataStoreService');
+
+        $app->singleton('Webravo\Infrastructure\Service\BigQueryServiceInterface', 'Webravo\Persistence\Service\BigQueryService');
     }
 
     public function artisan($command, $parameters = [])
