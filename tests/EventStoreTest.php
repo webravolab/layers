@@ -5,10 +5,43 @@ use Webravo\Persistence\Eloquent\Store\EloquentEventStore;
 use Webravo\Application\Event\EventBusDispatcher;
 use Webravo\Application\Event\EventBucketBusMiddleware;
 use Webravo\Persistence\Datastore\Store\DataStoreEventStore;
+use Webravo\Persistence\BigQuery\Store\BigQueryEventStore;
 use tests\TestProject\Domain\Events\TestEvent;
 
 class EventStoreTest extends TestCase
 {
+
+    public function testBigQueryEventStore()
+    {
+        $googleConfigFile = Configuration::get('GOOGLE_APPLICATION_CREDENTIALS');
+        self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
+
+        $eventStore = new BigQueryEventStore();
+
+        $event = new TestEvent();
+        $event->setStrValue('this is a string');
+        $event->setIntValue((int) Rand(1,9999));
+        $event->setFloatValue((float) Rand());
+        $payload = [
+            'value' => 'this is a test value ' . str_repeat('x', 1500),
+            'number' => 175,
+            'float' => 1.75,
+        ];
+        $event->setPayload($payload);
+
+        $guid = $event->getGuid();
+        $class_name = $event->getClassName();
+
+        $eventStore->append($event);
+
+        $retrieved_event = $eventStore->getByGuid($guid, $event->getType());
+
+        $this->assertEquals($event->getPayload(), $retrieved_event->getPayload());
+        $this->assertEquals($event->getIntValue(), $retrieved_event->getIntValue());
+        $this->assertEquals($event->getFloatValue(), $retrieved_event->getFloatValue());
+        $this->assertEquals($event->getStrValue(), $retrieved_event->getStrValue());
+        $this->assertEquals($event->getOccurredAt()->format(DATE_RFC3339_EXTENDED), $retrieved_event->getOccurredAt()->format(DATE_RFC3339_EXTENDED));
+    }
 
     public function testEloquentEventStore()
     {

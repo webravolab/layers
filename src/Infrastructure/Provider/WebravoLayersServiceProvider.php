@@ -15,6 +15,7 @@ class WebravoLayersServiceProvider extends ServiceProvider {
         $this->app->bind('Webravo\Infrastructure\Service\QueueServiceInterface', 'Webravo\Persistence\Service\DBQueueService');
         $this->app->bind('Webravo\Infrastructure\Service\ConfigurationServiceInterface', 'Webravo\Persistence\Service\ConfigurationService');
         $this->app->bind('Webravo\Infrastructure\Service\DataStoreServiceInterface', 'Webravo\Persistence\Service\DataStoreService');
+        $this->app->bind('Webravo\Infrastructure\Service\BigQueryServiceInterface', 'Webravo\Persistence\Service\BigQueryService');
     }
 
 }
