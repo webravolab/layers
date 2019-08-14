@@ -17,6 +17,39 @@ use Webravo\Persistence\Service\StackDriverLoggerService;
 class EventsQueueServiceTest extends TestCase
 {
 
+    public function testQueue2SyncAndStore2DiscardEventQueueService()
+    {
+        $service = new EventsQueueService([
+            'event_queue_service' => 'sync',
+            'event_store_service' => 'discard'
+        ]);
+
+        // Mock Logger
+        $loggerSpy = Mockery::spy('Psr\Log\LoggerInterface');
+
+        app()->instance('Psr\Log\LoggerInterface', $loggerSpy);
+
+        // Do nothing if handler is already registered
+        $service->registerHandler(TestEventHandler::class);
+
+        // Mock Command Handler
+        $handler = Mockery::spy(TestEventHandler::class);
+
+        app()->instance('tests\TestProject\Domain\Events\TestEventHandler', $handler);
+
+        $event = new TestEvent();
+        $event->setPayload([ 'value' => 'test-' . date('H-i-s-u')]);
+
+        $service->dispatchEvent($event);
+
+        // Do nothing as no queue is not configured
+        $service->processEventsQueue();
+
+        $handler->shouldHaveReceived('handle')->withArgs([$event]);
+
+        // $loggerSpy->shouldHaveReceived('debug')->withArgs(['Fire event: ' . $event->getName()]);
+    }
+
     public function testQueue2SyncAndStore2DatastoreEventQueueService()
     {
         $service = new EventsQueueService([

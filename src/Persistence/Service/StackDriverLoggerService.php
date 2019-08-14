@@ -3,6 +3,7 @@
 namespace Webravo\Persistence\Service;
 
 use Symfony\Component\Debug\Exception\FatalThrowableError;
+use ErrorException;
 use Webravo\Infrastructure\Library\Configuration;
 
 use Psr\Log\LoggerInterface;
@@ -84,7 +85,7 @@ class StackDriverLoggerService extends AbstractProcessingHandler implements Logg
         if (isset($this->options['labels']['exception'])) {
             $e = $this->options['labels']['exception'];
             $a_stack = [];
-            if ($e instanceof FatalThrowableError) {
+            if ($e instanceof FatalThrowableError || $e instanceof ErrorException) {
                 $this->options['labels']['exception'] = $e->getMessage();
                 $this->logger->write($record['formatted'], $this->options);
                 $trace_message = $e->getFile() . ' - ' . $e->getLine() . ' - ' . $e->getTraceAsString();

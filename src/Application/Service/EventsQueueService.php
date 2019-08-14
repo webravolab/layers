@@ -207,7 +207,7 @@ class EventsQueueService implements EventsQueueServiceInterface
         if ($this->eventBusRemote) {
             $this->eventBusRemote->dispatch($event);
         }
-        if ($this->eventBusLocal) {
+        if ($this->eventBusLocal && $this->eventBusLocal !== $this->eventBusRemote) {
             $this->eventBusLocal->dispatch($event);
         }
     }
