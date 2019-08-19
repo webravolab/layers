@@ -203,6 +203,8 @@ class EventsQueueService implements EventsQueueServiceInterface
 
     public function dispatchEvent(EventInterface $event):void
     {
+        $this->LoggerService->debug('Dispatch event ' . $event->getType());
+
         // Dispatch to remote bus
         if ($this->eventBusRemote) {
             $this->eventBusRemote->dispatch($event);
