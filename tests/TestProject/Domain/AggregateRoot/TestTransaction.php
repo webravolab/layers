@@ -2,7 +2,7 @@
 
 namespace tests\TestProject\Domain\AggregateRoot;
 
-use Broadway\EventSourcing\EventSourcedAggregateRoot;
+use Webravo\Common\Domain\EventSourcedAggregateRoot;
 
 class TestTransaction extends EventSourcedAggregateRoot
 {
