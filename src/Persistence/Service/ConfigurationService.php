@@ -2,7 +2,7 @@
 namespace Webravo\Persistence\Service;
 
 use Webravo\Infrastructure\Service\ConfigurationServiceInterface;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ConfigurationService implements ConfigurationServiceInterface
 {
