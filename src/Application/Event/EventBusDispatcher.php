@@ -3,6 +3,7 @@ namespace Webravo\Application\Event;
 
 use Webravo\Application\Event\EventInterface;
 use Webravo\Application\Event\EventHandlerInterface;
+use Webravo\Application\Exception\EventException;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use ReflectionClass;
 
@@ -31,19 +32,24 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      * @throws \ReflectionException
      */
     public function subscribe($handler):void {
-        $reflect = new ReflectionClass($handler);
-        if($reflect->implementsInterface('Webravo\Application\Event\EventHandlerInterface')) {
-            // The event to listen is discovered through the function listenTo() inside the handler
-            $event_name = call_user_func(array($handler, 'listenTo'));
-            if (isset($this->handlers[$event_name])) {
-                foreach($this->handlers[$event_name] as $subscribed_handler) {
-                    if ($subscribed_handler === $handler) {
-                        // Already subscribed
-                        return;
-                    } 
+        try {
+            $reflect = new ReflectionClass($handler);
+            if ($reflect->implementsInterface('Webravo\Application\Event\EventHandlerInterface')) {
+                // The event to listen is discovered through the function listenTo() inside the handler
+                $event_name = call_user_func(array($handler, 'listenTo'));
+                if (isset($this->handlers[$event_name])) {
+                    foreach ($this->handlers[$event_name] as $subscribed_handler) {
+                        if ($subscribed_handler === $handler) {
+                            // Already subscribed
+                            return;
+                        }
+                    }
                 }
+                $this->handlers[$event_name][] = $handler;
             }
-            $this->handlers[$event_name][] = $handler;
+        }
+        catch (\Exception $e) {
+            throw new EventException('[EventBusDispatcher][subscribe] Cannot register handler ' . $handler);
         }
     }
 

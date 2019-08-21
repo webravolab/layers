@@ -1,6 +1,7 @@
 <?php
 namespace Webravo\Application\Service;
 
+use Webravo\Application\Exception\EventException;
 use Webravo\Common\Contracts\EventsQueueServiceInterface;
 use Webravo\Application\Event\EventBucketBusMiddleware;
 use Webravo\Application\Event\EventBusDispatcher;
@@ -196,7 +197,13 @@ class EventsQueueService implements EventsQueueServiceInterface
             $handlers = Configuration::getClass('domain-events');
             // Bind event handlers to local event-bus
             foreach ($handlers as $handler) {
-                $this->eventBusLocal->subscribe($handler);
+                try {
+                    $this->eventBusLocal->subscribe($handler);
+                }
+                catch (EventException $e) {
+                    // Ignore any handler that cannnot be registered correctly
+                    $this->loggerService->warning($e->getMessage());
+                }
             }
         }
     }
