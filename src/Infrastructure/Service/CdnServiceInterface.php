@@ -53,6 +53,43 @@ interface CdnServiceInterface
      */
     public function checkImageExists(string $url, string $bucket_name = null): bool;
 
+
+    /**
+     * @param string $source
+     * @param string $remote_file
+     * @param string|null $bucket_name
+     * @return mixed
+     */
+    public function uploadAssetToCdn(string $source, string $remote_file, ?int $ttl = null, ?bool $gzip = null, string $bucket_name = null);
+
+
+    /**
+     * Download an object from Cloud Storage and save it as a local file.
+     *
+     * @param string $url the name of your Google Cloud object.
+     * @param string $destination the local destination to save the encrypted object.
+     * @param string $bucketName the name of your Google Cloud bucket (empty for default bucket).
+     *
+     * @return bool
+     */
+    public function downloadAssetFromCdn(string $url, string $destination, string $bucket_name = null): bool;
+
+    /**
+     * @param string $url
+     * @param string|null $bucket_name
+     * @return bool
+     */
+    public function deleteAssetFromCdn(string $url, string $bucket_name = null): bool;
+
+    /**
+     * Check whether an object exists in the bucket
+     * @param string $url
+     * @param string|null $bucket_name
+     * @return bool
+     */
+    public function checkAssetExists(string $url, string $bucket_name = null): bool;
+
+
     /**
      * Check whether a bucket exists in current project
      * @param string $bucket_name

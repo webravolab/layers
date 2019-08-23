@@ -1,0 +1,3 @@
+Questo è un file di testo plain/text
+Test
+Test
