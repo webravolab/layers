@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false">
+    <testsuites>
+        <testsuite name="Webravolab Layers Test Suite">
+            <directory suffix=".php">./tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        <env name="DB_QUEUE_DRIVER" value="sync"/>
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="XXXXXXX_DB"/>
+        <env name="SETTINGS_DRIVER" value="array"/>
+        <env name="SETTINGS_DB_CONNECTION" value="testbench"/>
+        <env name="JOBS_QUEUE_ELOQUENT_MODEL" value="tests\TestProject\Persistence\Eloquent\Model\JobsQueueLayerTest"/>
+        <env name="JOBS_ELOQUENT_MODEL" value="tests\TestProject\Persistence\Eloquent\Model\JobsLayerTest"/>
+        <env name="EVENTS_ELOQUENT_MODEL" value="App\Events"/>
+        <env name="xEVENT_QUEUE_SERVICE" value="rabbitmq"/>
+        <env name="EVENT_QUEUE_SERVICE" value="discard"/>
+        <env name="EVENT_QUEUE" value="event-bus"/>
+        <env name="RABBITMQ_HOST" value="xx.xx.xx.xx"/>
+        <env name="RABBITMQ_PORT" value="5672"/>
+        <env name="RABBITMQ_USER" value="webravo-develop"/>
+        <env name="xRABBITMQ_USER" value="webravo-admin"/>
+        <env name="RABBITMQ_PASSWORD" value="xxxxxxxxxxxxx"/>
+        <env name="xRABBITMQ_PASSWORD" value="xxxxxxxxxxxxxx"/>
+        <env name="RABBITMQ_VIRTUAL_HOST" value="develop"/>
+        <env name="GOOGLE_PROJECT_ID" value="xxxxxxxx-123456"/>
+        <env name="GOOGLE_APPLICATION_CREDENTIALS" value="/var/www/google-credentials.json"/>
+    </php>
+</phpunit>
