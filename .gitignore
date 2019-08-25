@@ -1,6 +1,7 @@
 # Add any directories, files, or patterns you don't want to be tracked by version control
+.env
 composer.lock
-phpunit.xml
+phpunit.*
 /node_modules
 /public/hot
 /public/storage
@@ -13,11 +14,8 @@ phpunit.xml
 /.vscode
 /nbproject
 /.vagrant
-Homestead.json
-Homestead.yaml
 npm-debug.log
 yarn-error.log
-.env
 .phpunit.result.cache
 /app/screenshots
 /tests/google-credentials.json
