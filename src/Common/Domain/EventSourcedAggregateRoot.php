@@ -6,17 +6,9 @@ use Webravo\Application\Event\EventInterface;
 
 abstract class EventSourcedAggregateRoot implements AggregateRootInterface
 {
-    // use EventSourcedTrait;
 
-    /*
-    private $eventMap = [];
+    abstract function setAggregateId($aggregate_id);
 
-    public function apply(EventInterface $event)
-    {
-        $applier = $this->eventMap[get_class($event)] ?? null;
-        if ($applier) {
-            return $this->$applier($event);
-        }
-    }
-    */
+    abstract function getAggregateId();
+
 }

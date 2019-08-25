@@ -3,24 +3,25 @@
 namespace tests\TestProject\Domain\Commands;
 
 use tests\TestProject\Domain\AggregateRoot\TestTransaction;
-use tests\TestProject\Domain\Events\TestTransactionAddedEvent;
 use Webravo\Application\Command\CommandHandlerInterface;
 use Webravo\Application\Command\CommandInterface;
 use Webravo\Application\Exception\CommandException;
 use Webravo\Application\Command\CommandResponse;
-use tests\TestProject\Domain\Commands\TestTransactionCreateCommand;
+use \tests\TestProject\Domain\Commands\TestTransactionSetStatusCommand;
+use tests\TestProject\Domain\Events\TestTransactionChangedStatusEvent;
 
-class TestTransactionCreateHandler implements CommandHandlerInterface
+
+class TestTransactionSetStatusHandler implements CommandHandlerInterface
 {
 
     public function handle(CommandInterface $command)
     {
-        if (!$command instanceof TestTransactionCreateCommand) {
-            throw new CommandException('TestTransactionCreateHandler can only handle TestTransactionCreateCommand');
+        if (!$command instanceof TestTransactionSetStatusCommand) {
+            throw new CommandException('TestTransactionSetStatusHandler can only handle TestTransactionSetStatusCommand');
         }
-
+        $event = new TestTransactionChangedStatusEvent($command->getTransactionId(), $command->getStatus());
+        // TODO read transaction from reposiroty by its aggregate id
         $t = TestTransaction::newTransaction();
-        $event = new TestTransactionAddedEvent($command->getTransactionKey(), $t->getAggregateId());
         $t->recordAndApplyThat($event);
         $stream = $t->getEventStream();
         return CommandResponse::withValue('ok', $stream);

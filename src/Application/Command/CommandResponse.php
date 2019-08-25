@@ -13,9 +13,10 @@ class CommandResponse implements CommandResponseInterface {
         $this->value = $value;
     }
 
-    public static function withValue($value, array $events = []): CommandResponseInterface {
+    public static function withValue($value, iterable $events = []): CommandResponseInterface {
         $response = new self($value);
         $response->events = $events;
+        return $response;
     }
 
     public function addEvent(EventInterface $event): void {
@@ -26,7 +27,7 @@ class CommandResponse implements CommandResponseInterface {
         return (count($this->events) > 0);
     }
 
-    public function allEvents(): array {
+    public function allEvents(): iterable {
         return $this->events;
     }
 

@@ -5,13 +5,13 @@ use Webravo\Application\Event\EventInterface;
 
 interface CommandResponseInterface {
 
-    public static function withValue($value, array $events = []): CommandResponseInterface;
+    public static function withValue($value, iterable $events = []): CommandResponseInterface;
 
     public function addEvent(EventInterface $event): void;
 
     public function hasEvents(): bool;
 
-    public function allEvents(): array;
+    public function allEvents(): iterable;
 
     public function getValue();
 }

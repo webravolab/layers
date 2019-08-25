@@ -2,10 +2,11 @@
 
 namespace tests\TestProject\Domain\Events;
 
+use Webravo\Application\Event\AggregateDomainEvent;
 use Webravo\Application\Event\GenericEvent;
 use DateTime;
 
-class TestTransactionAddedEvent extends GenericEvent
+class TestTransactionAddedEvent extends AggregateDomainEvent
 {
     /**
      * The event name used at Domain level
@@ -13,13 +14,16 @@ class TestTransactionAddedEvent extends GenericEvent
      */
     private $type = 'TestTransactionAddedEvent';
 
+    private $aggregate_type = 'Transaction';
+
     // Event explicit properties
     private $transaction_key;
     private $intValue;
     private $floatValue;
 
-    public function __construct($transaction_key, ?DateTime $occurred_at = null) {
-        parent::__construct($this->type, $occurred_at);
+    public function __construct($transaction_key, $aggregate_id, ?DateTime $occurred_at = null) {
+        parent::__construct($this->type, $this->aggregate_type, $aggregate_id, $occurred_at);
+        $this->aggregate_id = $aggregate_id;
         $this->transaction_key = $transaction_key;
     }
 
