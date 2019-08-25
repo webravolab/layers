@@ -13,8 +13,9 @@ class CommandResponse implements CommandResponseInterface {
         $this->value = $value;
     }
 
-    public static function withValue($value): CommandResponseInterface {
-        return new self($value);
+    public static function withValue($value, array $events = []): CommandResponseInterface {
+        $response = new self($value);
+        $response->events = $events;
     }
 
     public function addEvent(EventInterface $event): void {

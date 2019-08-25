@@ -12,7 +12,6 @@ use ReflectionClass;
 
 abstract class GenericEvent implements EventInterface
 {
-
     /**
      * @var string
      */

@@ -5,7 +5,7 @@ use Webravo\Application\Event\EventInterface;
 
 interface CommandResponseInterface {
 
-    public static function withValue($value): CommandResponseInterface;
+    public static function withValue($value, array $events = []): CommandResponseInterface;
 
     public function addEvent(EventInterface $event): void;
 
