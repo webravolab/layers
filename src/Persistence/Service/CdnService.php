@@ -45,22 +45,8 @@ class CdnService implements CdnServiceInterface {
      */
     public function uploadImageToCdn(string $source, string $cdn_file, string $bucket_name = null)
     {
-        if (!$this->google_client) {
-            throw(new \Exception('[CdnService][uploadImageToCdn] Google Cloud Storage configuration missing'));
-        }
-
-        if (!file_exists($source)) {
-            throw(new \Exception('[CdnService][uploadImageToCdn] Invalid source file ' . $source));
-        }
-
         if (filesize($source) > 3000000) {
             throw(new \Exception('[CdnService][uploadImageToCdn] source file is > 3MB: ' . $source));
-        }
-
-        if (empty($bucket_name)) {
-            if (isset($this->google_config['bucket'])) {
-                $bucket_name = $this->google_config['bucket'];
-            }
         }
 
         if (isset($this->google_config['image_cache_ttl'])) {
@@ -78,55 +64,19 @@ class CdnService implements CdnServiceInterface {
         }
 
         // Check source file mime type
-        $source_mime_type = $this->getImageMimeType($source);
-        if (is_null($source_mime_type)) {
+        $source_mime_type = $this->getMimeType($source);
+        if (is_null($source_mime_type) || strpos($source_mime_type,'image') === false) {
             throw(new \Exception('[CdnService][uploadImageToCdn] source is not a valid image file: ' . $source));
         }
 
-        // Strip leading "/" from destination file
-        while(substr($cdn_file,0,1) == '/') {
-            $cdn_file = substr($cdn_file,1);
-        }
-
         // Check destination file mime type
-        $destination_mime_type = $this->getImageMimeType($cdn_file);
-        if (is_null($destination_mime_type)) {
+        $destination_mime_type = $this->getMimeType($cdn_file);
+        if (is_null($destination_mime_type) || strpos($destination_mime_type,'image') === false) {
             throw(new \Exception('[CdnService][uploadImageToCdn] destination is not a valid image file: ' . $cdn_file));
         }
-        
-        // Access storage service
-        $storage = new Google_Service_Storage($this->google_client);
 
-        // Access bucket
-        try {
-            $bucket = $storage->buckets->get($bucket_name);
-        }
-        catch (\Exception $e) {
-            throw(new \Exception('[CdnService][uploadImageToCdn] error or invalid bucket name: ' . $bucket_name));
-        }
+        return $this->uploadAssetToCdn($source, $cdn_file, $cache_ttl, $gzip_enabled, $bucket_name);
 
-        // Read file
-        $file = fopen($source, 'r');
-        $data = fread($file,3000000);
-        if ($gzip_enabled) {
-            // Gzip compress image
-            $data = gzcompress($data, 9, ZLIB_ENCODING_GZIP);
-        }
-        // Create new storage object
-        $object = new \Google_Service_Storage_StorageObject();
-        // Set destination name
-        $object->setName($cdn_file);
-        $object->setCacheControl('public, max-age=' . $cache_ttl);
-        if ($gzip_enabled) {
-            // Add "Content-Encoding:gzip" to image metadata
-            $object->setContentEncoding('gzip');
-        }
-        $result = $storage->objects->insert($bucket_name, $object, array(
-            'uploadType' => 'media',
-            'mimeType' => $destination_mime_type,
-            'data' => $data
-        ));
-        return $result->getMediaLink();
     }
 
     /**
@@ -137,58 +87,7 @@ class CdnService implements CdnServiceInterface {
      */
     public function deleteImageFromCdn(string $url, string $bucket_name = null): bool
     {
-        if (!$this->google_client) {
-            throw(new \Exception('[CdnService][deleteImageFromCdn] Google Cloud Storage configuration missing'));
-        }
-
-        if (empty($bucket_name)) {
-            if (isset($this->google_config['bucket'])) {
-                $bucket_name = $this->google_config['bucket'];
-            }
-        }
-
-        // Url format for images
-        // https://www.googleapis.com/download/storage/v1/b/<BUCKET>/o/<OBJECT>?generation=<GENERATION>&alt=media
-
-        // Extract object name from url
-        $url = urldecode($url);
-        $a_parts = parse_url($url);
-        if (!isset($a_parts['path'])) {
-            return false;
-        }
-        $path = $a_parts['path'];
-        // Check for standard Google Storage path .../b/<bucket>/o/<object>
-        $bucket_pos = strpos($path, '/b/'); // search bucket position
-        $object_pos = strpos($path, '/o/'); // search object position
-        if ($bucket_pos !== false && $object_pos !== false) {
-            $original_bucket_name = substr($path, $bucket_pos +3, $object_pos - $bucket_pos -3);
-            $object_name = substr($path, $object_pos +3);
-            if ($original_bucket_name != $bucket_name) {
-                // The image bucket does not match the given/default bucket
-                throw(new \Exception('[CdnService][deleteImageFromCdn] Bucket name of image does not match with url - given: ' . $bucket_name . ' - url: ' . $original_bucket_name));
-            }
-        }
-        else {
-            // No standard path: use default bucket and get path as object name
-            $object_name = $path;
-        }
-        try {
-            // Access storage service
-            $storage = new Google_Service_Storage($this->google_client);
-            $result = $storage->objects->delete($bucket_name, $object_name);
-            if ($result->getStatusCode() == 204) {
-                // No content - it's ok
-                return true;
-            }
-        }
-        catch (\Exception $e) {
-            if ($e->getCode() == 404) {
-                // Image not found ... delete is ok
-                return true;
-            }
-            throw(new \Exception('[CdnService][deleteImageFromCdn] Error deleting image ' . $object_name . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
-        }
-        return true;
+        return $this->deleteAssetFromCdn($url, $bucket_name);
     }
 
     /**
@@ -236,7 +135,7 @@ class CdnService implements CdnServiceInterface {
      */
     public function deleteScreenshotImage(string $url): bool
     {
-        return $this->deleteImageFromCdn($url);
+        return $this->deleteAssetFromCdn($url);
     }
 
     /**
@@ -289,8 +188,183 @@ class CdnService implements CdnServiceInterface {
      */
     public function checkImageExists(string $url, string $bucket_name = null): bool
     {
+        return $this->checkAssetExists($url, $bucket_name);
+    }
+
+    public function uploadAssetToCdn(string $source, string $remote_file, ?int $ttl = null, ?bool $gzip = true, string $bucket_name = null)
+    {
         if (!$this->google_client) {
-            throw(new \Exception('[CdnService][checkObjectExists] Google Cloud Storage configuration missing'));
+            throw(new \Exception('[CdnService][uploadAssetToCdn] Google Cloud Storage configuration missing'));
+        }
+
+        if (!file_exists($source)) {
+            throw(new \Exception('[CdnService][uploadAssetToCdn] Invalid source file ' . $source));
+        }
+
+        if (empty($bucket_name)) {
+            if (isset($this->google_config['bucket'])) {
+                $bucket_name = $this->google_config['bucket'];
+            }
+        }
+
+        if ($ttl) {
+            $cache_ttl = $ttl;
+        }
+        else {
+            if (isset($this->google_config['image_cache_ttl'])) {
+                $cache_ttl = $this->google_config['image_cache_ttl'];
+            } else {
+                $cache_ttl = 86400; // default cache: 1 day
+            }
+        }
+
+        if ($gzip) {
+            $gzip_enabled = $gzip;
+        }
+        else {
+            if (isset($this->google_config['gzip'])) {
+                $gzip_enabled = $this->google_config['gzip'];
+            } else {
+                $gzip_enabled = false;
+            }
+        }
+
+        // Strip leading "/" from destination file
+        while(substr($remote_file,0,1) == '/') {
+            $cdn_file = substr($remote_file,1);
+        }
+
+        // Access storage service
+        $storage = new Google_Service_Storage($this->google_client);
+
+        // Access bucket
+        try {
+            $bucket = $storage->buckets->get($bucket_name);
+        }
+        catch (\Exception $e) {
+            throw(new \Exception('[CdnService][uploadAssetToCdn] error or invalid bucket name: ' . $bucket_name));
+        }
+
+        // Read file
+        $file = fopen($source, 'r');
+        $data = fread($file,filesize($source));
+        if ($gzip_enabled) {
+            // Gzip compress image
+            $data = gzcompress($data, 9, ZLIB_ENCODING_GZIP);
+        }
+        // Create new storage object
+        $object = new \Google_Service_Storage_StorageObject();
+        // Set destination name
+        $object->setName($remote_file);
+        $object->setCacheControl('public, max-age=' . $cache_ttl);
+        if ($gzip_enabled) {
+            // Add "Content-Encoding:gzip" to metadata
+            $object->setContentEncoding('gzip');
+        }
+
+        $destination_mime_type = $this->getMimeType($remote_file);
+
+        $result = $storage->objects->insert($bucket_name, $object, array(
+            'uploadType' => 'media',
+            'mimeType' => $destination_mime_type,
+            'data' => $data
+        ));
+        return $result->getMediaLink();
+    }
+
+    public function downloadAssetFromCdn(string $url, string $destination, string $bucket_name = null): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][downloadAssetFromCdn] Google Cloud Storage configuration missing'));
+        }
+
+        if (empty($bucket_name)) {
+            if (isset($this->google_config['bucket'])) {
+                $bucket_name = $this->google_config['bucket'];
+            }
+        }
+
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            $object = $storage->objects->get( $bucket_name, $url);
+            $uri = $object->getMediaLink();
+            $http = $this->google_client->authorize();
+            $response = $http->get($uri);
+            if ($response->getStatusCode() != 200) {
+                throw(new \Exception('[CdnService][downloadAssetFromCdn] Download from ' . $url . ' failed ' . $response->getStatusCode()));
+            }
+            file_put_contents($destination, $response->getBody());
+            return true;
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                // Image not found ...
+                return false;
+            }
+            throw(new \Exception('[CdnService][downloadAssetFromCdn] Error downloading image ' . $url . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+    }
+
+    public function deleteAssetFromCdn(string $url, string $bucket_name = null): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][deleteAssetFromCdn] Google Cloud Storage configuration missing'));
+        }
+
+        if (empty($bucket_name)) {
+            if (isset($this->google_config['bucket'])) {
+                $bucket_name = $this->google_config['bucket'];
+            }
+        }
+
+        // Url format for assets
+        // https://www.googleapis.com/download/storage/v1/b/<BUCKET>/o/<OBJECT>?generation=<GENERATION>&alt=media
+
+        // Extract object name from url
+        $url = urldecode($url);
+        $a_parts = parse_url($url);
+        if (!isset($a_parts['path'])) {
+            return false;
+        }
+        $path = $a_parts['path'];
+        // Check for standard Google Storage path .../b/<bucket>/o/<object>
+        $bucket_pos = strpos($path, '/b/'); // search bucket position
+        $object_pos = strpos($path, '/o/'); // search object position
+        if ($bucket_pos !== false && $object_pos !== false) {
+            $original_bucket_name = substr($path, $bucket_pos +3, $object_pos - $bucket_pos -3);
+            $object_name = substr($path, $object_pos +3);
+            if ($original_bucket_name != $bucket_name) {
+                // The image bucket does not match the given/default bucket
+                throw(new \Exception('[CdnService][deleteAssetFromCdn] Bucket name of image does not match with url - given: ' . $bucket_name . ' - url: ' . $original_bucket_name));
+            }
+        }
+        else {
+            // No standard path: use default bucket and get path as object name
+            $object_name = $path;
+        }
+        try {
+            // Access storage service
+            $storage = new Google_Service_Storage($this->google_client);
+            $result = $storage->objects->delete($bucket_name, $object_name);
+            if ($result->getStatusCode() == 204) {
+                // No content - it's ok
+                return true;
+            }
+        }
+        catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                // Image not found ... delete is ok
+                return true;
+            }
+            throw(new \Exception('[CdnService][deleteAssetFromCdn] Error deleting image ' . $object_name . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+        }
+        return true;
+    }
+
+    public function checkAssetExists(string $url, string $bucket_name = null): bool
+    {
+        if (!$this->google_client) {
+            throw(new \Exception('[CdnService][checkAssetExists] Google Cloud Storage configuration missing'));
         }
 
         if (empty($bucket_name)) {
@@ -306,14 +380,12 @@ class CdnService implements CdnServiceInterface {
             return true;
         } catch (\Exception $e) {
             if ($e->getCode() == 404) {
-                // Image not found ...
+                // Object not found ...
                 return false;
             }
-            throw(new \Exception('[CdnService][checkObjectExists] Error checking image ' . $url . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
+            throw(new \Exception('[CdnService][checkAssetExists] Error checking object ' . $url . ' from bucket ' . $bucket_name . ' - ' . $e->getMessage()));
         }
-
     }
-
 
     /**
      * Check whether a bucket exists in current project
@@ -408,13 +480,24 @@ class CdnService implements CdnServiceInterface {
      * @param $file_name
      * @return string|null
      */
-    public function getImageMimeType($file_name): ?string
+    public function getMimeType($file_name): ?string
     {
-        $image_types = [
+        $mime_types = [
             'png' => 'image/png',
             'jpg' => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            'gif' => 'image/gif'
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'svg' => 'image/svg+xml',
+            'txt' => 'text/plain',
+            'csv' => 'text/csv',
+            'css' => 'text/css',
+            'vcard' => 'text/vcard',
+            'vtt' => 'text/vtt',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'js' => 'application/javascript',
+            'ttf' => 'application/x-font-ttf',
         ];
 
         try {
@@ -422,9 +505,10 @@ class CdnService implements CdnServiceInterface {
             $a_parts = pathinfo($file_name);
             if (isset($a_parts['extension'])) {
                 $extension = strtolower($a_parts['extension']);
-                if (array_key_exists($extension, $image_types)) {
-                    return $image_types[$extension];
+                if (array_key_exists($extension, $mime_types)) {
+                    return $mime_types[$extension];
                 }
+                return 'text/' . $extension;
             }
             return null;
         }

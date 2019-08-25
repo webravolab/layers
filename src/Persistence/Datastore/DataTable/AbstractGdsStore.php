@@ -46,7 +46,7 @@ abstract class AbstractGdsStore implements StoreInterface {
 
     public function getObjectByGuid(string $guid)
     {
-        $key = $this->dataStoreService->getConnection()->key($this->entity_name, $guid);
+        $key = $this->dataStoreService->getConnection()->key($this->gds_entity_name, $guid);
         $dsObject = $this->dataStoreService->getConnection()->lookup($key);
         return $dsObject;
     }

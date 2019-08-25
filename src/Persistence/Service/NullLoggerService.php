@@ -9,7 +9,8 @@ class NullLoggerService implements LoggerInterface
 {
     public function log($level, $message, array $context = array())
     {
-        echo "[$level]: $message\n";
+        // Don't send log messages to console to avoid any error with http response / ajax calls - 2019-08-23
+        // echo "[$level]: $message\n";
     }
 
     public function alert($message, array $context = array())
