@@ -27,6 +27,14 @@ class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
         }
     }
 
+    public function subscribeHandlerMapper(array $mapper): void
+    {
+        if (!is_null($this->next)) {
+            // Invoke next stack level subscriber
+            $this->next->subscribeHandlerMapper($mapper);
+        }
+    }
+
     public function dispatch(EventInterface $event):void
     {
 

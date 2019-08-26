@@ -12,6 +12,7 @@ use tests\TestProject\Domain\Commands\TestTransactionSetStatusCommand;
 use tests\TestProject\Domain\Repository\TestRepository;
 use tests\TestProject\Domain\Projection\TestTransactionByStatusProjection;
 use tests\TestProject\Persistence\Memory\Store\TestTransactionMemoryStore;
+use tests\TestProject\Domain\Repository\TestTransactionRepository;
 
 class EventSourceTest extends TestCase
 {
@@ -33,19 +34,20 @@ class EventSourceTest extends TestCase
         $store->deleteByGuid($guid);
 
 
-
         $command_queue = new CommandsQueueService([
             'command_queue_service' => 'sync',
             'command_store_service' => 'discard',
         ]);
 
-        $event_queue = new \Webravo\Application\Service\EventsQueueService([
+        $event_queue = new EventsQueueService([
             'event_queue_service' => 'sync',
             'event_store_service' => 'discard'
         ]);
 
-        $repository = new TestRepository();
+        $repository = new TestTransactionRepository($store);
         $projection = new TestTransactionByStatusProjection($repository);
+
+        $projection->subscribe($event_queue);
 
         $command = new TestTransactionCreateCommand("abcd");
 

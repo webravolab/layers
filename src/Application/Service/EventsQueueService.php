@@ -231,6 +231,16 @@ class EventsQueueService implements EventsQueueServiceInterface
         }
     }
 
+    public function registerMapper($mapper):void
+    {
+        if ($this->eventBusRemote) {
+            $this->eventBusRemote->subscribeHandlerMapper($mapper);
+        }
+        if ($this->eventBusLocal) {
+            $this->eventBusLocal->subscribeHandlerMapper($mapper);
+        }
+    }
+
     public function processEventsQueue()
     {
         if ($this->eventQueueService) {

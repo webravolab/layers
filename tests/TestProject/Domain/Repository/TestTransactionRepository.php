@@ -6,6 +6,8 @@ use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Common\Entity\EntityInterface;
 use Webravo\Infrastructure\Library\DependencyBuilder;
 use tests\TestProject\Infrastructure\Repository\TestStoreInterface;
+use Webravo\Common\Contracts\RepositoryInterface;
+use tests\TestProject\Infrastructure\Repository\TestTransactionStoreInterface;
 
 class TestTransactionRepository implements RepositoryInterface
 {
@@ -16,7 +18,7 @@ class TestTransactionRepository implements RepositoryInterface
 
     protected $store;
 
-    public function __construct(?TestStoreInterface $store)
+    public function __construct(?TestTransactionStoreInterface $store)
     {
         if (is_null($store)) {
             $this->store = DependencyBuilder::resolve('tests\TestProject\Infrastructure\Repository\TestStoreInterface');

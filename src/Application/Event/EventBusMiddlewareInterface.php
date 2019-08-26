@@ -17,6 +17,8 @@ interface EventBusMiddlewareInterface {
      */
     public function subscribe($handler): void;
 
+    public function subscribeHandlerMapper(array $mapper): void;
+
     /**
      * Dispatch an event to all registered handlers
      * @param EventInterface $event

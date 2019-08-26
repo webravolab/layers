@@ -16,6 +16,7 @@ use ReflectionClass;
 class EventBusDispatcher implements EventBusMiddlewareInterface
 {
     private $handlers = [];
+    private $mappers = [];
     private static $instance = null;
 
     public static function instance()
@@ -31,7 +32,8 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      * @param $handler
      * @throws \ReflectionException
      */
-    public function subscribe($handler):void {
+    public function subscribe($handler):void
+    {
         try {
             $reflect = new ReflectionClass($handler);
             if ($reflect->implementsInterface('Webravo\Application\Event\EventHandlerInterface')) {
@@ -51,6 +53,17 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
         catch (\Exception $e) {
             throw new EventException('[EventBusDispatcher][subscribe] Cannot register handler ' . $handler);
         }
+    }
+
+    public function subscribeHandlerMapper(array $mapper): void
+    {
+        try {
+            $here = 1;
+        }
+        catch (\Exception $e) {
+            throw new EventException('[EventBusDispatcher][subscribeHandlerMapper] Cannot register mapper:' .  $e->getMessage());
+        }
+
     }
 
     /**
