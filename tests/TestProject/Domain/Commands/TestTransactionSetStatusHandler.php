@@ -24,7 +24,6 @@ class TestTransactionSetStatusHandler implements CommandHandlerInterface
             $repository = DependencyBuilder::resolve('tests\TestProject\Domain\Repository\TestTransactionEventStreamRepositoryInterface');
         }
         $this->repository = $repository;
-
     }
 
     public function handle(CommandInterface $command)
@@ -33,18 +32,22 @@ class TestTransactionSetStatusHandler implements CommandHandlerInterface
             throw new CommandException('TestTransactionSetStatusHandler can only handle TestTransactionSetStatusCommand');
         }
         $event = new TestTransactionChangedStatusEvent($command->getTransactionId(), $command->getStatus());
-        // TODO read transaction from reposiroty by its aggregate id
-
+        // Reload event stream needed to rebuild the aggregate root
         $stream = $this->repository->getEventsByAggregateId($command->getTransactionId());
+        // Rebuild the aggregate from the event stream
         $t = TestTransaction::rebuildFromHistory($stream);
+        $current_version = 0;
+        // Add the new event(s)
         $t->recordAndApplyThat($event);
         $stream = $t->getEventStream();
         $this->repository->persist($stream);
         return CommandResponse::withValue('ok', $stream);
     }
 
+    /*
     public function listenTo()
     {
         return TestTransactionCreateCommand::class;
     }
+    */
 }

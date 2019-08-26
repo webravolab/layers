@@ -22,7 +22,6 @@ class TestTransactionCreateHandler implements CommandHandlerInterface
             $repository = DependencyBuilder::resolve('tests\TestProject\Domain\Repository\TestTransactionEventStreamRepositoryInterface');
         }
         $this->repository = $repository;
-
     }
 
     public function handle(CommandInterface $command)
@@ -38,8 +37,10 @@ class TestTransactionCreateHandler implements CommandHandlerInterface
         return CommandResponse::withValue('ok', $stream);
     }
 
+    /*
     public function listenTo()
     {
         return TestTransactionCreateCommand::class;
     }
+    */
 }

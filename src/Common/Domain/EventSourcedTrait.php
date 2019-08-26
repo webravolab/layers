@@ -54,4 +54,8 @@ trait EventSourcedTrait
         }
     }
 
+    public function getVersion()
+    {
+        return $this->version;
+    }
 }
