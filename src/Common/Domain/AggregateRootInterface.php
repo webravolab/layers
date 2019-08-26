@@ -2,7 +2,9 @@
 
 namespace Webravo\Common\Domain;
 
-interface AggregateRootInterface
+use Webravo\Common\Entity\EntityInterface;
+
+interface AggregateRootInterface extends EntityInterface
 {
     public function getAggregateRootId();
 }

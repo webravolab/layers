@@ -22,7 +22,7 @@ class TestTransaction extends EventSourcedAggregateRoot
         TestTransactionChangedStatusEvent::class => 'testApplyTransactionStatusChanged',
     ];
 
-    private function __construct($aggregate_id = null)
+    public function __construct($aggregate_id = null)
     {
         if ($aggregate_id) {
             $this->setAggregateId($aggregate_id);
@@ -107,5 +107,26 @@ class TestTransaction extends EventSourcedAggregateRoot
     private function testApplyTransactionStatusChanged(TestTransactionChangedStatusEvent $event)
     {
         $this->setStatus($event->getStatus());
+    }
+
+
+    //
+    // Serialization
+    //
+
+    public function toArray(): array
+    {
+         return [
+             'aggregate_id' => $this->getAggregateId(),
+             'transaction_key' => $this->getTransactionKey(),
+             'status' => $this->getStatus(),
+         ];
+    }
+
+    public function fromArray(array $a_values)
+    {
+        $this->setAggregateId($a_values['aggregate_id']);
+        $this->setTransactionKey($a_values['transaction_key']);
+        $this->setStatus($a_values['status']);
     }
 }
