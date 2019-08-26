@@ -231,7 +231,7 @@ class CdnService implements CdnServiceInterface {
 
         // Strip leading "/" from destination file
         while(substr($remote_file,0,1) == '/') {
-            $cdn_file = substr($remote_file,1);
+            $remote_file = substr($remote_file,1);
         }
 
         // Access storage service
