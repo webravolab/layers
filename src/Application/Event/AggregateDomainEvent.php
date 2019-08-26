@@ -46,6 +46,7 @@ abstract class AggregateDomainEvent extends GenericEvent
             'aggregate_type' => $this->getAggregateType(),
             'aggregate_id' => $this->getAggregateId(),
         ];
+        return $data;
     }
 
     public function fromArray(array $data)

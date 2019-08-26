@@ -55,10 +55,17 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
         }
     }
 
-    public function subscribeHandlerMapper(array $mapper): void
+    public function subscribeHandlerMapper(array $mapper, $handler_instance): void
     {
         try {
             $here = 1;
+            foreach($mapper as $event_name)
+            {
+                if (!isset($this->mappers[$event_name])) {
+                    $this->mappers[$event_name] = [];
+                }
+                $this->mappers[$event_name][] = $handler_instance;
+            }
         }
         catch (\Exception $e) {
             throw new EventException('[EventBusDispatcher][subscribeHandlerMapper] Cannot register mapper:' .  $e->getMessage());
@@ -70,7 +77,9 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      * Dispatch an event to all registered handlers
      * @param EventInterface $event
      */
-    public function dispatch(EventInterface $event):void  {
+    public function dispatch(EventInterface $event):void
+    {
+        $this->dispatchToMappers($event);
         $event_class = get_class($event);
         if (!isset($this->handlers[$event_class])) {
             $event_class = basename($event_class);
@@ -83,6 +92,16 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
         foreach($handlers as $handler_class) {
             $class = DependencyBuilder::resolve($handler_class);
             call_user_func(array($class, 'handle'), $event);
+        }
+    }
+
+    private function dispatchToMappers(EventInterface $event): void
+    {
+        $event_name = get_class($event);
+        if (isset($this->mappers[$event_name])) {
+            foreach($this->mappers[$event_name] as $handler_class) {
+                $handler_class->handle($event);
+            }
         }
     }
 }

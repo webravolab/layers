@@ -1,6 +1,7 @@
 <?php
 namespace tests\TestProject\Domain\Repository;
 
+use tests\TestProject\Domain\AggregateRoot\TestTransaction;
 use tests\TestProject\Domain\Entity\TestEntity;
 use Webravo\Common\Entity\AbstractEntity;
 use Webravo\Common\Entity\EntityInterface;
@@ -18,7 +19,7 @@ class TestTransactionRepository implements RepositoryInterface
 
     protected $store;
 
-    public function __construct(?TestTransactionStoreInterface $store)
+    public function __construct(TestTransactionStoreInterface $store = null)
     {
         if (is_null($store)) {
             $this->store = DependencyBuilder::resolve('tests\TestProject\Infrastructure\Repository\TestStoreInterface');
@@ -34,7 +35,7 @@ class TestTransactionRepository implements RepositoryInterface
         if (is_null($a_properties) || !is_array($a_properties)) {
             return null;
         }
-        $entity = TestEntity::buildFromArray($a_properties);
+        $entity = TestTransaction::buildFromArray($a_properties);
         return $entity;
     }
 

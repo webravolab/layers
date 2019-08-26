@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Webravo\Application\Event;
 use Iterator;
 
@@ -11,11 +10,30 @@ class EventStream implements Iterator
     private $_events = [];
     private $_position;
 
-    public function __construct($aggregate_type, $aggregate_id)
+   public function __construct($aggregate_type, $aggregate_id)
     {
         $this->_position = 0;
         $this->_aggregate_type = $aggregate_type;
         $this->_aggregate_id = $aggregate_id;
+    }
+
+    public static function createByRawEvents(array $a_events): ?EventStream
+    {
+        if (count($a_events) == 0) {
+            return null;
+        }
+        $stream = null;
+        foreach($a_events as $a_event) {
+            $event = AggregateDomainEvent::buildFromArray($a_event);
+            $version = $event->getVersion();
+            if (!$stream) {
+                $aggregate_type = $event->getAggregateType();
+                $aggregate_id = $event->getAggregateId();
+                $stream = new self($aggregate_type, $aggregate_id);
+            }
+            $stream->addEventWithVersion($event, $version);
+        }
+        return $stream;
     }
 
     public function getAggregateType()

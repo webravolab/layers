@@ -41,11 +41,12 @@ trait EventSourcedTrait
     public function replay(EventStream $events)
     {
         foreach ($events as $event) {
+            $this->version = $event->getVersion();
             $this->apply($event);
         }
     }
 
-    public function apply(EventInterface $event)
+    public function apply(AggregateDomainEvent $event)
     {
         $applier = $this->eventMap[get_class($event)] ?? null;
         if ($applier) {

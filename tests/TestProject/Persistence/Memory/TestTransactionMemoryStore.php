@@ -1,5 +1,5 @@
 <?php
-namespace tests\TestProject\Persistence\Memory\Store;
+namespace tests\TestProject\Persistence\Memory;
 
 use \InvalidArgumentException;
 use tests\TestProject\Infrastructure\Repository\TestTransactionStoreInterface;

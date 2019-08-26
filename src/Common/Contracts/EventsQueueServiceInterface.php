@@ -9,7 +9,7 @@ interface EventsQueueServiceInterface {
 
     public function registerHandler($handler): void;
 
-    public function registerMapper($mapper):void;
+    public function registerMapper($mapper, $class_name):void;
 
     public function processEventsQueue();
 
