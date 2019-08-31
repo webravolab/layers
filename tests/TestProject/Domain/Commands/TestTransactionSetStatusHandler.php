@@ -36,18 +36,13 @@ class TestTransactionSetStatusHandler implements CommandHandlerInterface
         $stream = $this->repository->getEventsByAggregateId($command->getTransactionId());
         // Rebuild the aggregate from the event stream
         $t = TestTransaction::rebuildFromHistory($stream);
-        $current_version = 0;
-        // Add the new event(s)
-        $t->recordAndApplyThat($event);
-        $stream = $t->getEventStream();
+        // $current_version = 0;
+        // Apply the new event(s)
+        $t->apply($event);
+        // Save the new events to the Changed stream and persist to repository
+        $stream = $t->getChangedStream();
         $this->repository->persist($stream);
+        // Return command status and Change stream for further dispatch
         return CommandResponse::withValue('ok', $stream);
     }
-
-    /*
-    public function listenTo()
-    {
-        return TestTransactionCreateCommand::class;
-    }
-    */
 }

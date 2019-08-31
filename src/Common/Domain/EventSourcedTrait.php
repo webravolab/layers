@@ -9,12 +9,16 @@ use Webravo\Application\Event\GenericEvent;
 trait EventSourcedTrait
 {
     protected $event_stream = null;
+    protected $changed_stream = null;
 
     protected $version = 0;
 
     public function setEventStream(EventStream $stream)
     {
+        // Set past event stream to rebuild the aggregate
         $this->event_stream = $stream;
+        // Init and empty changed stream to keep track of new events emitted
+        $this->initChangedStream(new EventStream($stream->getAggregateType(), $stream->getAggregateId()));
     }
 
     public function getEventStream()
@@ -22,11 +26,21 @@ trait EventSourcedTrait
         return $this->event_stream;
     }
 
-    public function recordAndApplyThat(AggregateDomainEvent $event)
+    public function initChangedStream(EventStream $stream)
+    {
+        $this->changed_stream = $stream;
+    }
+
+    public function getChangedStream()
+    {
+        return $this->changed_stream;
+    }
+
+    public function apply(AggregateDomainEvent $event)
     {
         $this->version++;
-        $this->event_stream->addEventWithVersion($event, $this->version);
-        $this->apply($event);
+        $this->changed_stream->addEventWithVersion($event, $this->version);
+        $this->mutate($event);
     }
 
 
@@ -42,15 +56,15 @@ trait EventSourcedTrait
     {
         foreach ($events as $event) {
             $this->version = $event->getVersion();
-            $this->apply($event);
+            $this->mutate($event);
         }
     }
 
-    public function apply(AggregateDomainEvent $event)
+    public function mutate(AggregateDomainEvent $event)
     {
-        $applier = $this->eventMap[get_class($event)] ?? null;
-        if ($applier) {
-            return $this->$applier($event);
+        $mutator = $this->eventMap[get_class($event)] ?? null;
+        if ($mutator) {
+            return $this->$mutator($event);
         }
     }
 

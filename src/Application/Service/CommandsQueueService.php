@@ -237,7 +237,14 @@ class CommandsQueueService implements CommandsQueueServiceInterface
                 break;
         }
     }
-    
+
+    public function registerMapper($mapper, $class_name):void
+    {
+        if ($this->commandBus) {
+            $this->commandBus->subscribeHandlerMapper($mapper, $class_name);
+        }
+    }
+
     public function dispatchCommand(CommandInterface $command)
     {
         if ($this->commandBus) {

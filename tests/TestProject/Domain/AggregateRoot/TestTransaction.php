@@ -18,8 +18,8 @@ class TestTransaction extends EventSourcedAggregateRoot
     private $status;
 
     private $eventMap = [
-        TestTransactionAddedEvent::class => 'testApplyTransactionAdded',
-        TestTransactionChangedStatusEvent::class => 'testApplyTransactionStatusChanged',
+        TestTransactionAddedEvent::class => 'testWhenTransactionAdded',
+        TestTransactionChangedStatusEvent::class => 'testWhenTransactionStatusChanged',
     ];
 
     public function __construct($aggregate_id = null)
@@ -96,15 +96,15 @@ class TestTransaction extends EventSourcedAggregateRoot
     }
 
     // ---------------------------
-    // Events Applier
+    // Mutators
     // ---------------------------
-    private function testApplyTransactionAdded(TestTransactionAddedEvent $event)
+    private function testWhenTransactionAdded(TestTransactionAddedEvent $event)
     {
         $this->setAggregateId($event->getAggregateId());
         $this->transaction_key = $event->getTransactionKey();
     }
 
-    private function testApplyTransactionStatusChanged(TestTransactionChangedStatusEvent $event)
+    private function testWhenTransactionStatusChanged(TestTransactionChangedStatusEvent $event)
     {
         $this->setStatus($event->getStatus());
     }

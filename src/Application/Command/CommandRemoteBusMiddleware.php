@@ -19,6 +19,14 @@ class CommandRemoteBusMiddleware implements CommandBusMiddlewareInterface {
         }
     }
 
+    public function subscribeHandlerMapper(array $mapper, $handler_instance): void
+    {
+        if (!is_null($this->next)) {
+            // Invoke next stack level subscriber
+            $this->next->subscribeHandlerMapper($mapper, $handler_instance);
+        }
+    }
+
     public function dispatch(CommandInterface $command): ?CommandResponse {
         if (!is_null($this->queueService)) {
             // Dispatch to the remote command queue

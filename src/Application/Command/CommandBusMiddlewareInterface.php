@@ -8,4 +8,6 @@ interface CommandBusMiddlewareInterface {
 
     public function dispatch(CommandInterface $command): ?CommandResponse;
 
+    public function subscribeHandlerMapper(array $mapper, $class_name): void;
+
 }

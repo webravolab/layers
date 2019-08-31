@@ -37,6 +37,21 @@ class TestTransactionEventStreamRepository implements TestTransactionEventStream
         return $stream;
     }
 
+    public function addStreamToAggregateId(EventStream $stream, $aggregate_type = null, $aggregate_id = null): void
+    {
+        // If aggregate_type ang aggregate_id are not given ... get them from the stream
+        if (!$aggregate_type) {
+            $aggregate_type = $stream->getAggregateType();
+        }
+        if (!$aggregate_id) {
+            $aggregate_id = $stream->getAggregateId();
+        }
+        foreach($stream as $event) {
+            $this->store->addEvent($aggregate_id, $event);
+        }
+    }
+
+
     public function persist(EventStream $stream): void {
         $this->store->persist($stream);
     }

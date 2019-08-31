@@ -19,6 +19,7 @@ class TestTransactionCreateCommand extends GenericCommand
     public function getTransactionKey() {
         return $this->transaction_key;
     }
+
     public function toArray(): array
     {
         //  Get all base data from GenericEvent

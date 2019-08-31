@@ -31,8 +31,8 @@ class TestTransactionCreateHandler implements CommandHandlerInterface
         }
         $t = TestTransaction::newTransaction();
         $event = new TestTransactionAddedEvent($command->getTransactionKey(), $t->getAggregateId());
-        $t->recordAndApplyThat($event);
-        $stream = $t->getEventStream();
+        $t->apply($event);
+        $stream = $t->getChangedStream();
         $this->repository->persist($stream);
         return CommandResponse::withValue('ok', $stream);
     }
