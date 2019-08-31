@@ -26,6 +26,29 @@ class AggregateDomainEventDataStoreTable extends AbstractGdsStore implements Sto
         $this->setExcludedFromIndex(['payload']);
     }
 
+    public function getEventsByAggregateId($aggregate_id): array
+    {
+        $query = $this->dataStoreService->getConnection()->query()
+            ->kind($this->gds_entity_name)
+            ->filter('aggregate_id', '=', $aggregate_id)
+            ->order('version');
+        $result = $this->dataStoreService->getConnection()->runQuery($query);
+        $entities = [];
+        foreach ($result as $entity) {
+            $nextPageCursor = $entity->cursor();
+            $a_attributes = $entity->get();
+            if ($this->hydrator) {
+                // Use hydrator if set
+                $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
+                $entities[] = $a_properties;
+            }
+            else {
+                // Return raw data
+                $entities[] = $a_attributes;
+            }
+        }
+        return $entities;
+    }
     // All basic functions are implemented by AbstractGdsStore
 
     // Getters & Setters

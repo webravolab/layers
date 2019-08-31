@@ -45,7 +45,7 @@ abstract class AggregateDomainEvent extends GenericEvent
     public function toArray(): array
     {
         $data = parent::toArray() + [
-            'version' => $this->getVersion(),
+            'version' => (int) $this->getVersion(),
             'aggregate_type' => $this->getAggregateType(),
             'aggregate_id' => $this->getAggregateId(),
         ];
@@ -57,7 +57,7 @@ abstract class AggregateDomainEvent extends GenericEvent
         // Get base properties
         parent::fromArray($data);
         if (isset($data['version'])) {
-            $this->version = $data['version'];
+            $this->version = (int) $data['version'];
         }
         if (isset($data['aggregate_type'])) {
             $this->aggregate_type = $data['aggregate_type'];

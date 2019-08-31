@@ -5,6 +5,7 @@ use tests\TestProject\Domain\AggregateRoot\TestTransaction;
 use tests\TestProject\Domain\Events\TestTransactionAddedEvent;
 use tests\TestProject\Domain\Events\TestTransactionChangedStatusEvent;
 use tests\TestProject\Domain\Repository\TestTransactionEventStreamRepositoryInterface;
+use Webravo\Infrastructure\Repository\EventStreamRepositoryInterface;
 use Webravo\Application\Command\CommandResponse;
 use Webravo\Application\Service\CommandsQueueService;
 use Webravo\Infrastructure\Library\DependencyBuilder;
@@ -20,7 +21,7 @@ class TestTransactionService
         'TestTransactionSetStatusCommand',      // whenTestTransactionSetStatusCommand()
     ];
 
-    public function __construct(CommandsQueueService $command_bus, TestTransactionEventStreamRepositoryInterface $repository = null)
+    public function __construct(CommandsQueueService $command_bus, EventStreamRepositoryInterface $repository = null)
     {
         if (!$repository) {
             $repository = DependencyBuilder::resolve('tests\TestProject\Domain\Repository\TestTransactionEventStreamRepositoryInterface');

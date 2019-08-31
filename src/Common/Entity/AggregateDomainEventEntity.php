@@ -13,7 +13,7 @@ class AggregateDomainEventEntity extends AbstractEntity
     private $occurred_at;
     private $payload;
 
-    public function setAggregateType($value)
+    public function setAggregateType($value): void
     {
         $this->aggregate_type = $value;
     }
@@ -23,7 +23,7 @@ class AggregateDomainEventEntity extends AbstractEntity
         return $this->aggregate_type;
     }
 
-    public function setAggregateId($value)
+    public function setAggregateId($value): void
     {
         $this->aggregate_id = $value;
     }
@@ -33,17 +33,17 @@ class AggregateDomainEventEntity extends AbstractEntity
         return $this->aggregate_id;
     }
 
-    public function setVersion($value)
+    public function setVersion(int $value): void
     {
         $this->version = $value;
     }
 
     public function getVersion()
     {
-        return $this->version;
+        return (int) $this->version;
     }
 
-    public function setOccurredAt($value)
+    public function setOccurredAt($value): void
     {
         $this->occurred_at = new DateTimeObject($value);
     }
@@ -56,7 +56,7 @@ class AggregateDomainEventEntity extends AbstractEntity
         return null;
     }
 
-    public function setPayload($value)
+    public function setPayload($value): void
     {
         $this->payload = $value;
     }
@@ -78,7 +78,7 @@ class AggregateDomainEventEntity extends AbstractEntity
         ];
     }
 
-    public function fromArray(array $a_values)
+    public function fromArray(array $a_values): void
     {
         if (isset($a_values['guid'])) { $this->setGuid($a_values['guid']); }
         if (isset($a_values['aggregate_type'])) { $this->setAggregateType($a_values['aggregate_type']); }

@@ -14,7 +14,7 @@ class TestTransactionAddedEvent extends AggregateDomainEvent
      */
     private $type = 'TestTransactionAddedEvent';
 
-    private $aggregate_type = 'Transaction';
+    private $aggregate_type = 'TestTransaction';
 
     // Event explicit properties
     private $transaction_key;

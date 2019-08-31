@@ -13,7 +13,7 @@ class TestTransactionChangedStatusEvent extends AggregateDomainEvent
      */
     private $type = 'TestTransactionChangedStatusEvent';
 
-    private $aggregate_type = 'Transaction';
+    private $aggregate_type = 'TestTransaction';
 
     // Event explicit properties
     private $status;

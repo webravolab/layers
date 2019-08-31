@@ -24,9 +24,8 @@ class DataStoreEventStreamStore implements EventStreamRepositoryInterface {
     public function getEventStreamByAggregateId($aggregate_type, $aggregate_id): ?EventStream
     {
         $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $aggregate_type);
-        $a_event = $eventDataTable->getAllByKey('aggregate_id', $aggregate_id);
+        $a_event = $eventDataTable->getEventsByAggregateId($aggregate_id);
         $stream = EventStream::createByRawEvents($a_event);
-        // TODO rebuild stream from raw events
         return $stream;
     }
 
@@ -44,8 +43,6 @@ class DataStoreEventStreamStore implements EventStreamRepositoryInterface {
             $serialized_event = $event->getSerializedEvent();
             $e_event =  AggregateDomainEventEntity::buildFromArray($a_values);
             $e_event->setPayload($serialized_event);
-            // $entity_name = get_class($e_event);
-            // $hydrator = new EventHydrator();
             $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $aggregate_type);
             $eventDataTable->persistEntity($e_event);
         }
@@ -57,26 +54,4 @@ class DataStoreEventStreamStore implements EventStreamRepositoryInterface {
         $this->addStreamToAggregateId($stream, $aggregate_type, $aggregate_id);
     }
 
-
-    public function append(EventInterface $domainEvent)
-    {
-        $a_values = $domainEvent->toArray();
-        $serialized_event = $domainEvent->getSerializedEvent();
-        $e_event = EventEntity::buildFromArray($a_values);
-        $e_event->setPayload($serialized_event);
-        $entity_name = get_class($e_event);
-        $hydrator = new EventHydrator();
-        $eventDataTable = new EventDataStoreTable($this->dataStoreService, $hydrator);
-        $eventDataTable->persistEntity($e_event);
-   }
-
-    public function getByGuid(string $guid): ?EventInterface
-    {
-        $hydrator = new EventHydrator();
-        $eventDataTable = new EventDataStoreTable($this->dataStoreService, $hydrator);
-        $a_event = $eventDataTable->getByGuid($guid);
-        $a_encapsulated_event = $a_event['payload'];
-        $event = GenericEvent::buildFromArray($a_encapsulated_event);
-        return $event;
-    }
 }

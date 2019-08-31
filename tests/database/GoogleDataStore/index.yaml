@@ -1,0 +1,9 @@
+indexes:
+
+- kind: EventSourceTestTransaction
+  ancestor: no
+  properties:
+  - name: aggregate_id
+    direction: asc
+  - name: version
+    direction: asc

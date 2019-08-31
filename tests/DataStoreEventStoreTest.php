@@ -8,6 +8,7 @@ use Webravo\Common\ValueObject\DateTimeObject;
 use Webravo\Persistence\Service\DataStoreService;
 use Faker\Factory;
 use Webravo\Application\Event\EventStream;
+use Webravo\Persistence\Datastore\Store\DataStoreEventStreamStore;
 
 class DataStoreEventStoreTest extends TestCase
 {
@@ -18,7 +19,7 @@ class DataStoreEventStoreTest extends TestCase
         self::assertTrue(file_exists($googleConfigFile), "Google Credential file $googleConfigFile does not exists");
 
         $dataStoreClient = new DataStoreService();
-        $event_store = new \Webravo\Persistence\Datastore\Store\DataStoreEventStreamStore();
+        $event_store = new DataStoreEventStreamStore();
 
         $faker = Factory::create();
         $aggregate_id = $faker->numberBetween(1000,100000);
@@ -37,8 +38,11 @@ class DataStoreEventStoreTest extends TestCase
 
         $event_store->addStreamToAggregateId( $event_stream, $aggregate_type, $aggregate_id);
 
-        $event_store->getEventStreamByAggregateId($aggregate_type, $aggregate_id);
+        $stream = $event_store->getEventStreamByAggregateId($aggregate_type, $aggregate_id);
 
+        foreach($stream as $idx => $event) {
+            $this->assertEquals($idx+1, $event->getVersion(), "Bad version read from stream $idx");
+        }
     }
 
 }
