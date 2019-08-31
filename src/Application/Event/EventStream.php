@@ -89,6 +89,22 @@ class EventStream implements Iterator
             }
         }
         return $new_stream;
+   }
 
-    }
+   public function allEventsSinceLastSnapshot(): EventStream
+   {
+       for ($pos = count($this->events)-1; $pos > 0; $pos--) {
+           if ($this->events[$pos] instanceof AggregateDomainSnapshotEvent) {
+               break;
+           }
+       }
+       if ($pos > 0) {
+           $new_stream = new EventStream($this->aggregate_type, $this->aggregate_id);
+           for (;$pos < count($this->events); $pos++) {
+               $new_stream->addEventWithVersion($this->events[$pos]);
+           }
+           return $new_stream;
+       }
+       return $this;
+   }
 }

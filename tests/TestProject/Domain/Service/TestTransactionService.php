@@ -26,7 +26,6 @@ class TestTransactionService
             $repository = DependencyBuilder::resolve('tests\TestProject\Domain\Repository\TestTransactionEventStreamRepositoryInterface');
         }
         $this->repository = $repository;
-
         $this->command_bus = $command_bus;
         $this->command_bus->registerMapper($this->command_map, $this);
     }
