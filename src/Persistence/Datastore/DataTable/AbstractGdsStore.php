@@ -152,8 +152,15 @@ abstract class AbstractGdsStore implements StoreInterface {
         foreach ($result as $entity) {
             $nextPageCursor = $entity->cursor();
             $a_attributes = $entity->get();
-            $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
-            $entities[] = $a_properties;
+            if ($this->hydrator) {
+                // Use hydrator if set
+                $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
+                $entities[] = $a_properties;
+            }
+            else {
+                // Return raw data
+                $entities[] = $a_attributes;
+            }
         }
         return $entities;
     }

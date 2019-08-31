@@ -1,0 +1,114 @@
+<?php
+namespace Webravo\Common\Entity;
+
+use Webravo\Common\Entity\AbstractEntity;
+use Webravo\Common\ValueObject\DateTimeObject;
+use DateTimeInterface;
+
+class AggregateDomainEventEntity extends AbstractEntity
+{
+    private $aggregate_type;
+    private $aggregate_id;
+    private $version;
+    private $occurred_at;
+    private $payload;
+
+    public function setAggregateType($value)
+    {
+        $this->aggregate_type = $value;
+    }
+
+    public function getAggregateType()
+    {
+        return $this->aggregate_type;
+    }
+
+    public function setAggregateId($value)
+    {
+        $this->aggregate_id = $value;
+    }
+
+    public function getAggregateId()
+    {
+        return $this->aggregate_id;
+    }
+
+    public function setVersion($value)
+    {
+        $this->version = $value;
+    }
+
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    public function setOccurredAt($value)
+    {
+        $this->occurred_at = new DateTimeObject($value);
+    }
+
+    public function getOccurredAt(): ?DateTimeInterface
+    {
+        if ($this->occurred_at instanceof DateTimeObject) {
+            return $this->occurred_at->getValue();
+        }
+        return null;
+    }
+
+    public function setPayload($value)
+    {
+        $this->payload = $value;
+    }
+
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'guid' => $this->getGuid(),
+            'aggregate_type' => $this->getAggregateType(),
+            'aggregate_id' => $this->getAggregateId(),
+            'version' => $this->getVersion(),
+            'occurred_at' => $this->getOccurredAt(),
+            'payload' => $this->getPayload(),
+        ];
+    }
+
+    public function fromArray(array $a_values)
+    {
+        if (isset($a_values['guid'])) { $this->setGuid($a_values['guid']); }
+        if (isset($a_values['aggregate_type'])) { $this->setAggregateType($a_values['aggregate_type']); }
+        if (isset($a_values['aggregate_id'])) { $this->setAggregateId($a_values['aggregate_id']); }
+        if (isset($a_values['version'])) { $this->setVersion($a_values['version']); }
+        if (isset($a_values['occurred_at'])) { $this->setOccurredAt($a_values['occurred_at']); }
+        if (isset($a_values['payload'])) {
+            if (is_string($a_values['payload'])) {
+                $payload = json_decode($a_values['payload'],true);
+                if ($payload !== null) {
+                    $this->setPayload($payload);
+                } else {
+                    $this->setPayload($a_values['payload']);
+                }
+            }
+            else {
+                $this->setPayload($a_values['payload']);
+            }
+        }
+        else {
+            $this->setPayload(null);
+        }
+    }
+
+    /**
+     * Custom function to return a Json serialized version of Payload
+     * @return string
+     */
+    public function getSerializedPayload(): string
+    {
+        return json_encode($this->getPayload());
+    }
+}

@@ -23,7 +23,6 @@ class TestTransactionAddedEvent extends AggregateDomainEvent
 
     public function __construct($transaction_key, $aggregate_id, ?DateTime $occurred_at = null) {
         parent::__construct($this->type, $this->aggregate_type, $aggregate_id, $occurred_at);
-        $this->aggregate_id = $aggregate_id;
         $this->transaction_key = $transaction_key;
     }
 

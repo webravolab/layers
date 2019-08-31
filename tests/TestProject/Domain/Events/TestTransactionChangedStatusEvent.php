@@ -20,7 +20,6 @@ class TestTransactionChangedStatusEvent extends AggregateDomainEvent
 
     public function __construct($aggregate_id, $status, ?DateTime $occurred_at = null) {
         parent::__construct($this->type, $this->aggregate_type, $aggregate_id, $occurred_at);
-        $this->aggregate_id = $aggregate_id;
         $this->status = $status;
     }
 
@@ -37,7 +36,6 @@ class TestTransactionChangedStatusEvent extends AggregateDomainEvent
     public function toArray(): array
     {
         $data = parent::toArray() + [
-                'payload' => $this->getPayload(),
                 'status' => $this->getStatus(),
             ];
         return $data;

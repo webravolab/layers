@@ -30,8 +30,9 @@ class TestTransactionEventStreamRepository implements TestTransactionEventStream
         }
     }
 
-    public function getEventStreamByAggregateId($aggregate_id): ?EventStream
+    public function getEventStreamByAggregateId($aggregate_type, $aggregate_id): ?EventStream
     {
+        // $aggregate_type ignored in this test
         $a_stream = $this->store->getEventsByAggregateId($aggregate_id);
         $stream = EventStream::createByRawEvents($a_stream);
         return $stream;

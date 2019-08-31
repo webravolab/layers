@@ -33,7 +33,7 @@ class TestTransactionSetStatusHandler implements CommandHandlerInterface
         }
         $event = new TestTransactionChangedStatusEvent($command->getTransactionId(), $command->getStatus());
         // Reload event stream needed to rebuild the aggregate root
-        $stream = $this->repository->getEventStreamByAggregateId($command->getTransactionId());
+        $stream = $this->repository->getEventStreamByAggregateId('TestTransaction',$command->getTransactionId());
         // Rebuild the aggregate from the event stream
         $t = TestTransaction::rebuildFromHistory($stream);
         // $current_version = 0;

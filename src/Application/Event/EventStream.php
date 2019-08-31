@@ -24,7 +24,8 @@ class EventStream implements Iterator
         }
         $stream = null;
         foreach($a_events as $a_event) {
-            $event = AggregateDomainEvent::buildFromArray($a_event);
+            $event = AggregateDomainEvent::buildFromSerializedEvent($a_event['payload']);
+            // $event = AggregateDomainEvent::buildFromArray($a_event);
             if (!$stream) {
                 $aggregate_type = $event->getAggregateType();
                 $aggregate_id = $event->getAggregateId();

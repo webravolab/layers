@@ -33,7 +33,7 @@ class TestTransactionService
 
     public function getTestTransactionById($aggregate_id)
     {
-        $stream = $this->repository->getEventStreamByAggregateId($aggregate_id);
+        $stream = $this->repository->getEventStreamByAggregateId('TestTransaction', $aggregate_id);
         // Rebuild the aggregate from the event stream
         $t = TestTransaction::rebuildFromHistory($stream);
         return $t;

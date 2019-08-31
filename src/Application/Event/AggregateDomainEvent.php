@@ -2,41 +2,44 @@
 namespace Webravo\Application\Event;
 
 use DateTime;
+use ReflectionClass;
+use Webravo\Application\Exception\EventException;
+use Webravo\Infrastructure\Library\DependencyBuilder;
 
 abstract class AggregateDomainEvent extends GenericEvent
 {
-    private $_aggregate_type;
+    private $aggregate_type;
 
-    private $_aggregate_id;
+    private $aggregate_id;
 
-    private $_version;
+    private $version;
 
     public function __construct($type, $aggregate_type, $aggregate_id, ?DateTime $occurred_at = null)
     {
         parent::__construct($type, $occurred_at);
-        $this->_aggregate_type = $aggregate_type;
-        $this->_aggregate_id = $aggregate_id;
+        $this->aggregate_type = $aggregate_type;
+        $this->aggregate_id = $aggregate_id;
     }
 
     public function withVersion($version)
     {
-        $this->_version = $version;
+        $this->version = $version;
         return $this;
     }
 
     public function getVersion(): string
     {
-        return $this->_version;
+        return $this->version;
     }
 
     public function getAggregateType()
     {
-        return $this->_aggregate_type;
+        return $this->aggregate_type;
     }
 
     public function getAggregateId()
     {
-        return $this->_aggregate_id;
+        return $this->aggregate_id;
     }
 
     public function toArray(): array
@@ -54,13 +57,49 @@ abstract class AggregateDomainEvent extends GenericEvent
         // Get base properties
         parent::fromArray($data);
         if (isset($data['version'])) {
-            $this->_version = $data['version'];
+            $this->version = $data['version'];
         }
         if (isset($data['aggregate_type'])) {
-            $this->_aggregate_type = $data['aggregate_type'];
+            $this->aggregate_type = $data['aggregate_type'];
         }
         if (isset($data['aggregate_id'])) {
-            $this->_aggregate_id = $data['aggregate_id'];
+            $this->aggregate_id = $data['aggregate_id'];
         }
     }
+
+    public static function buildFromArray(array $data): EventInterface
+    {
+        $eventInstance = null;
+        if (isset($data['class_name'])) {
+            $eventName = $data['class_name'];
+            $eventInstance = DependencyBuilder::resolve($eventName);
+            if (!$eventInstance) {
+                try {
+                    $class = new ReflectionClass($eventName);
+                    $eventInstance = $class->newInstanceWithoutConstructor();
+                } catch (\ReflectionException $e) {
+                    // Class not found through reflection... continue
+                    $eventInstance = null;
+                }
+            }
+        }
+        if (!$eventInstance && isset($data['type'])) {
+            $eventName = $data['type'];
+            $eventInstance = DependencyBuilder::resolve($eventName);
+            if (!$eventInstance) {
+                if (strpos($eventName, '\\') === false) {
+                    // Not a fully qualified name ... try adding well-known namespaces
+                    $eventName = 'Project\\Domain\\Event\\' . $eventName;
+                    $eventInstance = DependencyBuilder::resolve($eventName);
+                }
+            }
+        }
+        if ($eventInstance) {
+            // $eventInstance = $class->newInstance();
+            $eventInstance->fromArray($data);
+            return $eventInstance;
+        }
+        throw new EventException('[AggregateDomainEvent][buildFromArray] Event has not a valid class name nor type: ' . serialize($data), 104);
+    }
+
 }
