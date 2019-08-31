@@ -20,6 +20,6 @@ interface EventRepositoryInterface {
     // public function AllEvents();
 
     // TODO
-    // Implements other methods to retrieve or filter commands
+    // Implements other methods to retrieve or filter events
 
 }

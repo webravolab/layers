@@ -30,7 +30,7 @@ class TestTransactionEventStreamRepository implements TestTransactionEventStream
         }
     }
 
-    public function getEventsByAggregateId($aggregate_id): ?EventStream
+    public function getEventStreamByAggregateId($aggregate_id): ?EventStream
     {
         $a_stream = $this->store->getEventsByAggregateId($aggregate_id);
         $stream = EventStream::createByRawEvents($a_stream);
@@ -52,7 +52,7 @@ class TestTransactionEventStreamRepository implements TestTransactionEventStream
     }
 
 
-    public function persist(EventStream $stream): void {
+    public function persistStream(EventStream $stream): void {
         $this->store->persist($stream);
     }
 }

@@ -33,7 +33,7 @@ class TestTransactionService
 
     public function getTestTransactionById($aggregate_id)
     {
-        $stream = $this->repository->getEventsByAggregateId($aggregate_id);
+        $stream = $this->repository->getEventStreamByAggregateId($aggregate_id);
         // Rebuild the aggregate from the event stream
         $t = TestTransaction::rebuildFromHistory($stream);
         return $t;
@@ -51,7 +51,7 @@ class TestTransactionService
         $t->apply($event);
         $stream = $t->getChangedStream();
         // Aggregate just created ... persist the whole stream replacing any previous with the same aggregate_id
-        $this->repository->persist($stream);
+        $this->repository->persistStream($stream);
         return CommandResponse::withValue('ok', $stream);
     }
 

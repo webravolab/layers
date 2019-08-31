@@ -1,7 +1,7 @@
 <?php
 namespace tests\TestProject\Domain\Repository;
 
-use Webravo\Common\Contract\EventStreamRepositoryInterface;
+use Webravo\Infrastructure\Repository\EventStreamRepositoryInterface;
 
 interface TestTransactionEventStreamRepositoryInterface extends EventStreamRepositoryInterface
 {

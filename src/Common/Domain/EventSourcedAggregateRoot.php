@@ -8,10 +8,11 @@ use Webravo\Application\Event\AggregateDomainEvent;
 
 abstract class EventSourcedAggregateRoot extends AbstractEntity implements AggregateRootInterface
 {
-
     abstract function setAggregateId($aggregate_id);
 
     abstract function getAggregateId();
+
+    // All the following functions are implemented by EventSourcedTrait
 
     abstract function setEventStream(EventStream $stream);
 
