@@ -44,6 +44,5 @@ class DataStoreEventStoreTest extends TestCase
             $this->assertEquals($idx+1, $event->getVersion(), "Bad version read from stream $idx");
         }
     }
-
 }
 

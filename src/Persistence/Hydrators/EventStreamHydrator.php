@@ -15,9 +15,16 @@ class EventStreamHydrator implements HydratorInterface {
      */
     public function hydrateEloquent($object): array
     {
-        // TODO
-        return [];
-    }
+        $data = [
+            'id' => $object->id,
+            'guid' => $object->guid,
+            'event_type' => $object->event,
+            'aggregate_type' => $object->aggregate_type,
+            'aggregate_id' => $object->aggregate_id,
+            'occurred_at' => $object->occurred_at,
+            'payload' => json_decode($object->payload, true),
+        ];
+        return $data;    }
 
     /**
      * map (convert) from entity array to eloquent attributes array
@@ -26,8 +33,16 @@ class EventStreamHydrator implements HydratorInterface {
      */
     public function mapEloquent(array $a_values): array
     {
-        // TODO
-        return [];
+        $data = [
+            'aggregate_type' => $a_values['aggregate_type'],
+            'aggregate_id' => $a_values['aggregate_id'],
+            'event' => $a_values['event_type'],
+            'version' => $a_values['version'],
+            'payload' => $a_values['payload'],
+            'occurred_at' => $a_values['occurred_at'],
+            'guid' => $a_values['guid'],
+        ];
+        return $data;
     }
 
     public function hydrateDatastore($datastore_object): array

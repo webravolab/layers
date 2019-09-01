@@ -5,11 +5,12 @@ use Webravo\Common\Entity\EventEntity;
 use Webravo\Infrastructure\Library\Configuration;
 use Webravo\Common\Contracts\HydratorInterface;
 use Webravo\Common\Contracts\StoreInterface;
-use Webravo\Persistence\Hydrators\EventHydrator;
+use Webravo\Infrastructure\Library\DependencyBuilder;
+use Webravo\Persistence\Hydrators\EventStreamHydrator;
 use Webravo\Persistence\Eloquent\DataTable\AbstractEloquentStore;
 use Webravo\Common\Entity\AbstractEntity;
 
-class EventDataTable extends AbstractEloquentStore implements StoreInterface {
+class AggregateDomainEventDataTable extends AbstractEloquentStore implements StoreInterface {
 
     // Eloquent models names to use
     private $eventsModel;
@@ -18,28 +19,64 @@ class EventDataTable extends AbstractEloquentStore implements StoreInterface {
     protected $type;
     protected $occurred_at;
     protected $payload;
-    
-    public function __construct(HydratorInterface $hydrator)
-    {
+
+    public function __construct(HydratorInterface $hydrator, $aggregate_type) {
         parent::__construct($hydrator);
         // Inject Eloquent models names to use (overridable by configuration)
-        // TODO don't reload configuration if $this->eventsModel is already set
-        $eventsModel = Configuration::get('EVENTS_ELOQUENT_MODEL', null, 'App\Events');
-        $this->eventsModel = empty($eventsModel) ? null : $eventsModel;
-        if ($this->eventsModel) {
-            if (!class_exists($this->eventsModel)) {
+        $eventsModel = $aggregate_type;
+        // Try to locate the model
+        if (!class_exists($eventsModel)) {
+            // Try prepending a standard prefix
+            $prefix = Configuration::get('EVENTSOURCE_ELOQUENT_PREFIX', null, 'App\EventSource');
+            $eventsModel = $prefix . $aggregate_type;
+            if (!class_exists($eventsModel)) {
+                // No model with the name of the aggregate
                 $this->eventsModel = null;
-                throw(new \Exception('[EventDataTable] Invalid events model: ' . $this->eventsModel));
+                throw(new \Exception('[AggregateDomainEventDataTable] Invalid events model: ' . $eventsModel));
             }
+            $this->eventsModel = $eventsModel;
         }
     }
 
-    public static function buildFromArray(array $data): EventDataTable
+    public function getEventsByAggregateId($aggregate_id): array
     {
-        $event = new static(new EventHydrator());
+        $version = (int) 0;
+
+        // Check for last snapshots
+        $o_snapshot = $this->eventsModel::where('aggregate_id', '=', $aggregate_id)
+            ->where('event', '=', 'Snapshot')
+            ->orderBy('version','desc')
+            ->first();
+        if ($o_snapshot) {
+            $version = (int) $o_snapshot->version;
+        }
+        // Read events from the last snapshot ot from the beginning
+        $c_events = $this->eventsModel::where('aggregate_id', '=', $aggregate_id)
+            ->where('version', '>=', $version)
+            ->orderBy('version','asc')
+            ->get();
+        $entities = [];
+        foreach ($c_events as $entity) {
+            if ($this->hydrator) {
+                // Use hydrator if set
+                $a_properties = $this->hydrator->hydrateDatastore($entity);
+                $entities[] = $a_properties;
+            } else {
+                // Return raw data
+                $entities[] = $entity->attributesToArray();
+            }
+        }
+        return $entities;
+    }
+
+    public static function buildFromArray(array $data): AggregateDomainEventDataTable
+    {
+        $event = new static(new EventStreamHydrator());
         if (isset($data['id'])) { $event->id = $data['id']; }
         if (isset($data['guid'])) { $event->guid = $data['guid']; }
-        if (isset($data['type'])) { $event->type = $data['type']; }
+        if (isset($data['type'])) { $event->event_type = $data['type']; }
+        if (isset($data['aggregate_type'])) { $event->aggregate_type = $data['aggregate_type']; }
+        if (isset($data['aggregate_id'])) { $event->aggregate_id = $data['aggregate_id']; }
         if (isset($data['occurred_at'])) { $event->occurred_at = $data['occurred_at']; }
         if (isset($data['payload'])) { $event->payload = $data['payload'];}
         return $event;

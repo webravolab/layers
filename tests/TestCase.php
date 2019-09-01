@@ -36,6 +36,7 @@ abstract class TestCase extends Orchestra\Testbench\TestCase
         putenv('JOBS_QUEUE_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\JobsQueueLayerTest');
         putenv('EVENTS_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\EventsLayerTest');
         putenv('COMMAND_ELOQUENT_MODEL=tests\TestProject\Persistence\Eloquent\Model\CommandsLayerTest');
+        putenv('EVENTSOURCE_ELOQUENT_PREFIX=tests\TestProject\Persistence\Eloquent\Model\EventSource');
 
         $credentials_file = __DIR__ . '/google-credentials.json';
         if (file_exists($credentials_file)) {
