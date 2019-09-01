@@ -9,6 +9,7 @@ class AggregateDomainEventEntity extends AbstractEntity
 {
     private $aggregate_type;
     private $aggregate_id;
+    private $event_type;
     private $version;
     private $occurred_at;
     private $payload;
@@ -31,6 +32,16 @@ class AggregateDomainEventEntity extends AbstractEntity
     public function getAggregateId()
     {
         return $this->aggregate_id;
+    }
+
+    public function setEventType($value): void
+    {
+        $this->event_type = $value;
+    }
+
+    public function getEventType()
+    {
+        return $this->event_type;
     }
 
     public function setVersion(int $value): void
@@ -72,6 +83,7 @@ class AggregateDomainEventEntity extends AbstractEntity
             'guid' => $this->getGuid(),
             'aggregate_type' => $this->getAggregateType(),
             'aggregate_id' => $this->getAggregateId(),
+            'event_type' => $this->getEventType(),
             'version' => $this->getVersion(),
             'occurred_at' => $this->getOccurredAt(),
             'payload' => $this->getPayload(),
@@ -83,6 +95,7 @@ class AggregateDomainEventEntity extends AbstractEntity
         if (isset($a_values['guid'])) { $this->setGuid($a_values['guid']); }
         if (isset($a_values['aggregate_type'])) { $this->setAggregateType($a_values['aggregate_type']); }
         if (isset($a_values['aggregate_id'])) { $this->setAggregateId($a_values['aggregate_id']); }
+        if (isset($a_values['type'])) { $this->setEventType($a_values['type']); }
         if (isset($a_values['version'])) { $this->setVersion($a_values['version']); }
         if (isset($a_values['occurred_at'])) { $this->setOccurredAt($a_values['occurred_at']); }
         if (isset($a_values['payload'])) {

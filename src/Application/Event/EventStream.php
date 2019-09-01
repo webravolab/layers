@@ -24,14 +24,31 @@ class EventStream implements Iterator
         }
         $stream = null;
         foreach($a_events as $a_event) {
-            $event = AggregateDomainEvent::buildFromSerializedEvent($a_event['payload']);
-            // $event = AggregateDomainEvent::buildFromArray($a_event);
-            if (!$stream) {
-                $aggregate_type = $event->getAggregateType();
-                $aggregate_id = $event->getAggregateId();
-                $stream = new self($aggregate_type, $aggregate_id);
+            $event = null;
+            if (isset($a_event['payload']) && is_array($a_event['payload'])) {
+                // The payload is a plain array
+                $event = AggregateDomainEvent::buildFromArray($a_event['payload']);
             }
-            $stream->addEventWithVersion($event);
+            elseif (isset($a_event['payload']) && is_string($a_event['payload'])) {
+                // The payload is serialized
+                $event = AggregateDomainEvent::buildFromSerializedEvent($a_event['payload']);
+            }
+            elseif (isset($a_event['class_name'])) {
+                // The event is not serialized in payload but is plain (using memory EventSource store)
+                $event = AggregateDomainEvent::buildFromArray($a_event);
+            }
+            else {
+                // Skip bad event
+                continue;
+            }
+            if ($event) {
+                if (!$stream) {
+                    $aggregate_type = $event->getAggregateType();
+                    $aggregate_id = $event->getAggregateId();
+                    $stream = new self($aggregate_type, $aggregate_id);
+                }
+                $stream->addEventWithVersion($event);
+            }
         }
         return $stream;
     }
@@ -94,7 +111,7 @@ class EventStream implements Iterator
 
    public function allEventsSinceLastSnapshot(): EventStream
    {
-       for ($pos = count($this->events)-1; $pos > 0; $pos--) {
+       for ($pos = count($this->events)-1; $pos >= 0; $pos--) {
            if ($this->events[$pos] instanceof AggregateDomainSnapshotEvent) {
                break;
            }

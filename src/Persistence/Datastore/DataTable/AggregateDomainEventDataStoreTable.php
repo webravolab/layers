@@ -16,9 +16,8 @@ class AggregateDomainEventDataStoreTable extends AbstractGdsStore implements Sto
     protected $occurred_at;
     protected $payload;
 
-    public function __construct(DataStoreServiceInterface $dataStoreService, $aggregate_type) {
+    public function __construct(DataStoreServiceInterface $dataStoreService, HydratorInterface $hydrator = null, $aggregate_type) {
         // Inject in AbstractGdsStore the default Entity to manage Events
-        $hydrator = null;
         $entity_name = 'EventSource' . $aggregate_type;
         $entity_classname = null;
         parent::__construct($dataStoreService, $hydrator, $entity_name, $entity_classname);
@@ -28,9 +27,28 @@ class AggregateDomainEventDataStoreTable extends AbstractGdsStore implements Sto
 
     public function getEventsByAggregateId($aggregate_id): array
     {
+        $version = (int) 0;
+
+        // Check for last snapshots
         $query = $this->dataStoreService->getConnection()->query()
             ->kind($this->gds_entity_name)
             ->filter('aggregate_id', '=', $aggregate_id)
+            ->filter('event', '=', 'Snapshot')
+            ->order('version','desc')
+            ->limit(1);
+        $snapshots = $this->dataStoreService->getConnection()->runQuery($query);
+        foreach ($snapshots as $entity) {
+            $a_snapshot = $entity->get();
+            if (isset($a_snapshot['version'])) {
+                $version = (int) $a_snapshot['version'];
+            }
+            break;
+        }
+        // Read events from the last snapshot ot from the beginning
+        $query = $this->dataStoreService->getConnection()->query()
+            ->kind($this->gds_entity_name)
+            ->filter('aggregate_id', '=', $aggregate_id)
+            ->filter('version', '>=', $version)
             ->order('version');
         $result = $this->dataStoreService->getConnection()->runQuery($query);
         $entities = [];
@@ -41,14 +59,14 @@ class AggregateDomainEventDataStoreTable extends AbstractGdsStore implements Sto
                 // Use hydrator if set
                 $a_properties = $this->hydrator->hydrateDatastore($a_attributes);
                 $entities[] = $a_properties;
-            }
-            else {
+            } else {
                 // Return raw data
                 $entities[] = $a_attributes;
             }
         }
         return $entities;
     }
+
     // All basic functions are implemented by AbstractGdsStore
 
     // Getters & Setters

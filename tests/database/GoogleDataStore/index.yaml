@@ -7,3 +7,13 @@ indexes:
     direction: asc
   - name: version
     direction: asc
+
+- kind: EventSourceTestTransaction
+  ancestor: no
+  properties:
+    - name: aggregate_id
+      direction: asc
+    - name: event
+      direction: asc
+    - name: version
+      direction: desc

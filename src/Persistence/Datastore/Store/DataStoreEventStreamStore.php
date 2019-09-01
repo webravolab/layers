@@ -10,20 +10,22 @@ use Webravo\Infrastructure\Repository\EventStreamRepositoryInterface;
 use Webravo\Persistence\Datastore\DataTable\AggregateDomainEventDataStoreTable;
 use Webravo\Persistence\Datastore\DataTable\EventDataStoreTable;
 use Webravo\Application\Event\EventInterface;
-use Webravo\Persistence\Hydrators\EventHydrator;
+use Webravo\Persistence\Hydrators\EventStreamHydrator;
 
 class DataStoreEventStreamStore implements EventStreamRepositoryInterface {
 
     private $dataStoreService;
+    private $hydrator;
 
     public function __construct()
     {
         $this->dataStoreService = DependencyBuilder::resolve('Webravo\Infrastructure\Service\DataStoreServiceInterface');
+        $this->hydrator = new EventStreamHydrator();
     }
 
     public function getEventStreamByAggregateId($aggregate_type, $aggregate_id): ?EventStream
     {
-        $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $aggregate_type);
+        $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $this->hydrator, $aggregate_type);
         $a_event = $eventDataTable->getEventsByAggregateId($aggregate_id);
         $stream = EventStream::createByRawEvents($a_event);
         return $stream;
@@ -43,7 +45,7 @@ class DataStoreEventStreamStore implements EventStreamRepositoryInterface {
             $serialized_event = $event->getSerializedEvent();
             $e_event =  AggregateDomainEventEntity::buildFromArray($a_values);
             $e_event->setPayload($serialized_event);
-            $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $aggregate_type);
+            $eventDataTable = new AggregateDomainEventDataStoreTable($this->dataStoreService, $this->hydrator, $aggregate_type);
             $eventDataTable->persistEntity($e_event);
         }
     }
