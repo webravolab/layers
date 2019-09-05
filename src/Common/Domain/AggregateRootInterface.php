@@ -6,5 +6,7 @@ use Webravo\Common\Entity\EntityInterface;
 
 interface AggregateRootInterface extends EntityInterface
 {
-    public function getAggregateRootId();
+    public function setAggregateId($aggregate_id);
+
+    public function getAggregateId();
 }

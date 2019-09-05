@@ -58,23 +58,6 @@ class TestTransaction extends EventSourcedAggregateRoot
         return $e_transaction;
     }
 
-    /*
-    public static function rebuild(EventStream $eventStream)
-    {
-        $transaction = new static($eventStream->getAggregateId());
-    }
-    */
-
-
-    /**
-     * Return aggregate root ID
-     * @return string
-     */
-    public function getAggregateRootId(): string
-    {
-        return $this->transaction_id;
-    }
-
     public function setTransactionKey($transaction_key)
     {
         $this->transaction_key = $transaction_key;
