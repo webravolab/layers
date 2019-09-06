@@ -8,6 +8,7 @@ use Tests\Events\MyTestEvent;
 use Tests\Events\MyTestEventHandler;
 */
 use Webravo\Application\Service\EventsQueueService;
+use Webravo\Persistence\Service\RabbitMQService;
 use Webravo\Persistence\Service\StackDriverLoggerService;
 
 // use Log;
@@ -157,6 +158,60 @@ class EventsQueueServiceTest extends TestCase
 
         $handler->shouldHaveReceived('handle');
 
+    }
+
+    public function testTopicEventDispatch()
+    {
+
+        $publisherService = EventsQueueService::instance([
+            'event_queue_service' => 'rabbitmq',
+            'event_exchange_name' => 'test-topic-exchange',
+            'event_queue' => 'test-topic-queue',
+            'event_exchange_mode' => 'topic'
+        ]);
+
+        $receiverService1 = EventsQueueService::instance([
+            'event_queue_service' => 'rabbitmq',
+            'event_exchange_name' => 'test-topic-exchange',
+            'event_queue' => 'test-topic-front',
+            'event_exchange_mode' => 'topic',
+            'event_topic' => 'front.*'
+        ]);
+
+        $receiverService2 = EventsQueueService::instance([
+            'event_queue_service' => 'rabbitmq',
+            'event_exchange_name' => 'test-topic-exchange',
+            'event_queue' => 'test-topic-back',
+            'event_exchange_mode' => 'topic',
+            'event_topic' => 'back.*'
+        ]);
+
+        $event = new TestEvent();
+        $event->setPayload([ 'value' => 'test-ok-' . date('H-i-s-u')]);
+        $event->setStrValue( 'test-ok-' . date('H-i-s-u'));
+
+        $result = $publisherService->dispatchEvent($event, 'front.analytics');
+
+        $event2 = new TestEvent();
+        $event2->setPayload([ 'value' => 'test-bad-' . date('H-i-s-u')]);
+        $event2->setStrValue( 'test-bad' . date('H-i-s-u'));
+
+        $result = $publisherService->dispatchEvent($event2, 'back.ajax');
+
+        // Mock Command Handler
+        $handler = Mockery::spy(TestHandler::class);
+        app()->instance('tests\TestProject\Domain\Events\TestEventHandler', $handler);
+
+        // $handler->shouldReceive('handle')->withAnyArgs();
+
+        // Need to register handler manually because cannot inject domain-events config
+        $receiverService1->registerHandler(TestEventHandler::class);
+        $receiverService2->registerHandler(TestEventHandler::class);
+
+        $receiverService1->processEventsQueue();
+        $receiverService2->processEventsQueue();
+
+        $handler->shouldHaveReceived('handle');
     }
 
 }
