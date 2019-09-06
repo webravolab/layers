@@ -24,10 +24,10 @@ use Webravo\Infrastructure\Library\DependencyBuilder;
 class CommandsQueueService implements CommandsQueueServiceInterface
 {
     /**
-     * Singleton instance
+     * Singleton instances array (may be different by options)
      * @var self instance
      */
-    private static $instance = null;
+    private static $instance = [];
 
     /**
      * Instance of QueueServiceInterface to access the remote event bus queue
@@ -293,9 +293,10 @@ class CommandsQueueService implements CommandsQueueServiceInterface
 
     public static function instance($options = [])
     {
-        if (null === static::$instance) {
-            static::$instance = new static($options);
+        $hash_options = md5(serialize($options));
+        if (!is_array(static::$instance) || !isset(static::$instance[$hash_options])) {
+            static::$instance[$hash_options] = new static($options);
         }
-        return static::$instance;
+        return static::$instance[$hash_options];
     }
 }
