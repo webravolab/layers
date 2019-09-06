@@ -5,7 +5,7 @@ use Webravo\Application\Event\EventInterface;
 
 interface EventsQueueServiceInterface {
 
-    public function dispatchEvent(EventInterface $event): void;
+    public function dispatchEvent(EventInterface $event, $topic = null): void;
 
     public function registerHandler($handler): void;
 
