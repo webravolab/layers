@@ -28,7 +28,6 @@ class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
     }
 
     public function subscribeHandlerMapper(array $mapper, $handler_instance): void
-
     {
         if (!is_null($this->next)) {
             // Invoke next stack level subscriber
@@ -36,20 +35,14 @@ class EventLoggerBusMiddleware implements EventBusMiddlewareInterface {
         }
     }
 
-    public function dispatch(EventInterface $event):void
+    public function dispatch(EventInterface $event, $topic = null):void
     {
 
         if (!is_null($this->loggerService)) {
             $this->loggerService->debug('Fire event: ' . $event->getType());
         }
         if (!is_null($this->next)) {
-            $this->next->dispatch($event);
+            $this->next->dispatch($event, $topic);
         }
-
-        /*
-        if (!is_null($this->loggerService)) {
-            $this->loggerService->debug('After event: ' . $event->getType());
-        }
-        */
     }
 }

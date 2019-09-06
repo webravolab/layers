@@ -28,7 +28,6 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
     }
 
     public function subscribeHandlerMapper(array $mapper, $handler_instance): void
-
     {
         if (!is_null($this->next)) {
             // Invoke next stack level subscriber
@@ -36,7 +35,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
         }
     }
 
-    public function dispatch(EventInterface $event):void
+    public function dispatch(EventInterface $event, $topic = null):void
     {
         if (!is_null($this->eventStore)) {
             // Persist event in the Event Store
@@ -44,7 +43,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
         }
         if (!is_null($this->next)) {
             // Dispatch to the next middleware on stack
-            $this->next->dispatch($event);
+            $this->next->dispatch($event, $topic);
         }
     }
 }

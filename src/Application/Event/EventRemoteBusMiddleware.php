@@ -48,18 +48,17 @@ class EventRemoteBusMiddleware implements EventBusMiddlewareInterface {
         }
     }
 
-    public function dispatch(EventInterface $event):void
+    public function dispatch(EventInterface $event, $topic = null):void
     {
         if (!is_null($this->queueService)) {
             // If remote event queue is available, dispatch to remote queue
             $payload = $event->toArray();
             $json_payload = json_encode($payload);
-            // $payload = $event->getSerializedPayload();
-            $this->queueService->publishMessage($json_payload);
+            $this->queueService->publishMessage($json_payload, null, $topic);
         }
         if (!is_null($this->next)) {
             // Dispatch to the next middleware on stack
-            $this->next->dispatch($event);
+            $this->next->dispatch($event, $topic);
         }
     }
 }

@@ -58,7 +58,6 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
     public function subscribeHandlerMapper(array $mapper, $handler_instance): void
     {
         try {
-            $here = 1;
             foreach($mapper as $event_name)
             {
                 if (!isset($this->mappers[$event_name])) {
@@ -77,8 +76,7 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      * Dispatch an event to all registered handlers
      * @param EventInterface $event
      */
-    public function dispatch(EventInterface $event):void
-    {
+    public function dispatch(EventInterface $event, $topic = null):void  {
         $this->dispatchToMappers($event);
         $event_class = get_class($event);
         if (!isset($this->handlers[$event_class])) {
