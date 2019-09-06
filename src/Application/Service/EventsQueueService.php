@@ -67,10 +67,28 @@ class EventsQueueService implements EventsQueueServiceInterface
     protected $eventBusStore;
 
     /**
+     * The remote exchange name
+     * @var
+     */
+    protected $exchangeName;
+
+    /**
      * The remote queue name 
      * @var 
      */
     protected $queueName;
+
+    /**
+     * The remote exchange mode (fanaout/topic/direct)
+     * @var
+     */
+    protected $exchangeMode;
+
+    /**
+     * The subscribed topic
+     * @var
+     */
+    protected $topic;
 
     /**
      * Instance of Logger to use
@@ -92,10 +110,17 @@ class EventsQueueService implements EventsQueueServiceInterface
         $config = $options + [
             'event_queue_service' => Configuration::get('EVENT_QUEUE_SERVICE',null, 'discard'),
             'event_store_service' => Configuration::get('EVENT_STORE_SERVICE',null, 'discard'),
+            'event_exchange_name' => Configuration::get('EVENT_EXCHANGE_NAME',null, 'event-bus'),
             'event_queue' => Configuration::get('EVENT_QUEUE',null, 'event-bus'),
+            'event_exchange_mode' => Configuration::get('EVENT_EXCHANGE_MODE',null, 'fanout'),
+            'event_topic' => Configuration::get('EVENT_TOPIC',null, ''),
         ];
 
+
+        $this->exchangeName = $config['event_exchange_name'];
         $this->queueName = $config['event_queue'];
+        $this->exchangeMode = $config['event_exchange_mode'];
+        $this->topic = $config['event_topic'];
 
         if ($this->_environment == 'local' || $this->_environment == 'testing') {
             // <TEST> ONLY
@@ -142,10 +167,10 @@ class EventsQueueService implements EventsQueueServiceInterface
             case 'rabbitmq':
                 $this->eventQueueService = new RabbitMQService();
                 // Initialize the RabbitMQ event-bus
-                $this->eventQueueService->createChannel('fanout', $this->queueName);
+                $this->eventQueueService->createChannel($this->exchangeMode, $this->exchangeName);
                 $this->eventQueueService->createQueue($this->queueName);
-                $this->eventQueueService->subscribeQueue($this->queueName, $this->queueName);
-                // $this->EventQueueService->close();
+                $this->eventQueueService->subscribeQueue($this->queueName, $this->exchangeName, $this->topic);
+                // Create the remote and local busses
                 $this->eventBusRemote = new EventRemoteBusMiddleware($this->eventBusStore, $this->eventQueueService);
                 $this->eventBusLocal = EventBusDispatcher::instance();
                 break;
@@ -155,9 +180,9 @@ class EventsQueueService implements EventsQueueServiceInterface
                 $jobQueueService = DependencyBuilder::resolve('Webravo\Infrastructure\Repository\JobQueueInterface');
                 $this->eventQueueService = new DBQueueService($jobQueueService);
                 // Connect to the event-bus
-                $this->eventQueueService->createChannel('fanout', $this->queueName);
+                $this->eventQueueService->createChannel($this->exchangeMode, $this->exchangeName);
                 $this->eventQueueService->createQueue($this->queueName);
-                $this->eventQueueService->subscribeQueue($this->queueName, $this->queueName);
+                $this->eventQueueService->subscribeQueue($this->queueName, $this->exchangeName, $this->topic);
                 $this->eventQueueService->close();
                 // Create the remote and local busses
                 $this->eventBusRemote = new EventRemoteBusMiddleware($this->eventBusStore, $this->eventQueueService);
@@ -208,16 +233,16 @@ class EventsQueueService implements EventsQueueServiceInterface
         }
     }
 
-    public function dispatchEvent(EventInterface $event):void
+    public function dispatchEvent(EventInterface $event, $topic = null):void
     {
         $this->loggerService->debug('Dispatch event ' . $event->getType());
 
         // Dispatch to remote bus
         if ($this->eventBusRemote) {
-            $this->eventBusRemote->dispatch($event);
+            $this->eventBusRemote->dispatch($event, $topic);
         }
         if ($this->eventBusLocal && $this->eventBusLocal !== $this->eventBusRemote) {
-            $this->eventBusLocal->dispatch($event);
+            $this->eventBusLocal->dispatch($event, $topic);
         }
     }
 

@@ -27,7 +27,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
         }
     }
 
-    public function dispatch(EventInterface $event):void
+    public function dispatch(EventInterface $event, $topic = null):void
     {
         if (!is_null($this->eventStore)) {
             // Persist event in the Event Store
@@ -35,7 +35,7 @@ class EventBucketBusMiddleware implements EventBusMiddlewareInterface {
         }
         if (!is_null($this->next)) {
             // Dispatch to the next middleware on stack
-            $this->next->dispatch($event);
+            $this->next->dispatch($event, $topic);
         }
     }
 }

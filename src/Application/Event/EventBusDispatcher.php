@@ -57,7 +57,7 @@ class EventBusDispatcher implements EventBusMiddlewareInterface
      * Dispatch an event to all registered handlers
      * @param EventInterface $event
      */
-    public function dispatch(EventInterface $event):void  {
+    public function dispatch(EventInterface $event, $topic = null):void  {
         $event_class = get_class($event);
         if (!isset($this->handlers[$event_class])) {
             $event_class = basename($event_class);

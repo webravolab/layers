@@ -20,7 +20,8 @@ interface EventBusMiddlewareInterface {
     /**
      * Dispatch an event to all registered handlers
      * @param EventInterface $event
+     * @param string $topic          used by topic exchange queue
      */
-    public function dispatch(EventInterface $event): void;
+    public function dispatch(EventInterface $event, $topic = null): void;
 
 }
