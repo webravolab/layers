@@ -19,10 +19,17 @@ class EventsQueueServiceTest extends TestCase
 
     public function testQueue2SyncAndStore2DiscardEventQueueService()
     {
-        $service = new EventsQueueService([
+        $test = EventsQueueService::instance([
             'event_queue_service' => 'sync',
             'event_store_service' => 'discard'
         ]);
+
+        $service = EventsQueueService::instance([
+            'event_queue_service' => 'sync',
+            'event_store_service' => 'discard'
+        ]);
+
+        $this->assertEquals(serialize($test), serialize($service), "EventsQueueService instance does not work");
 
         // Mock Logger
         $loggerSpy = Mockery::spy('Psr\Log\LoggerInterface');
@@ -52,7 +59,7 @@ class EventsQueueServiceTest extends TestCase
 
     public function testQueue2SyncAndStore2DatastoreEventQueueService()
     {
-        $service = new EventsQueueService([
+        $service = EventsQueueService::instance([
             'event_queue_service' => 'sync',
             'event_store_service' => 'datastore'
         ]);
@@ -85,7 +92,7 @@ class EventsQueueServiceTest extends TestCase
 
     public function testQueue2SyncAndStore2BigQueryEventQueueService()
     {
-        $service = new EventsQueueService([
+        $service = EventsQueueService::instance([
             'event_queue_service' => 'sync',
             'event_store_service' => 'bigquery'
         ]);
@@ -118,7 +125,7 @@ class EventsQueueServiceTest extends TestCase
 
     public function testSimulateRemoteEventDispatch()
     {
-        $service = new EventsQueueService([
+        $service = EventsQueueService::instance([
             'event_queue_service' => 'rabbitmq',
             'event_store_service' => 'discard',
             'event_queue' => 'test-event-bus02'

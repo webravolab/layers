@@ -28,10 +28,18 @@ class CommandsQueueServiceTest extends TestCase
         //    })
         // );
 
-        $service = new CommandsQueueService([
+        $test = CommandsQueueService::instance([
             'command_queue_service' => 'discard',
             'command_store_service' => 'discard',
         ]);
+
+        $service = CommandsQueueService::instance([
+            'command_queue_service' => 'discard',
+            'command_store_service' => 'discard',
+        ]);
+
+
+        $this->assertEquals(serialize($test), serialize($service), "CommandQueueService instance does not work");
 
         /*
         $payload = rand(1,999);
