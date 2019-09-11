@@ -22,6 +22,19 @@ class ConfigServiceTest extends TestCase
         // Check settings config override
         self::assertNull(Configuration::get('TEST_OVERRIDE_BAD'));
 
+        // Check key cache
+        $value = Configuration::get('APP_ENV');
+        $value2 = Configuration::get('APP_ENV');
+        self::assertEquals($value, $value2, 'Cache does not work');
+
+        $value = Configuration::get('timezone', 'app');
+        $value2 = Configuration::get('timezone', 'app');
+        self::assertEquals($value, $value2, 'Cache does not work');
+
+        $value = Configuration::getClass('google');
+        $value2 = Configuration::getClass('google');
+        self::assertEquals($value, $value2, 'Cache does not work');
+
         // To let this test pass ... set SETTINGS_DB_CONNECTION environment variable
         $db_connection = $service->getKey('SETTINGS_DB_CONNECTION');
         if (!empty($db_connection)) {
@@ -51,6 +64,9 @@ class ConfigServiceTest extends TestCase
 
             self::assertEquals('1234', Configuration::get('TEST_OVERRIDE_GOOD', null,'1234'));
 
+            // Delete an key that does not exists must not throw an exception
+            $service->deleteKey('TEST_NOT_EXISTENT');
+
             $results = DB::connection($db_connection)->select("select * from settings");
 
             // Set a class
@@ -58,7 +74,9 @@ class ConfigServiceTest extends TestCase
             $service->setKey('MY-CLASS.ONE','111');
             $service->setKey('MY-CLASS-TWO','222');
 
-            $a_class = $service->getClass('MY-CLASS');
+            $a_class1 = $service->getClass('MY-CLASS');
+            $a_class2 = $service->getClass('MY-CLASS');
+            self::assertEquals($a_class1, $a_class2, 'Class settings + cache does not work');
 
 
 
