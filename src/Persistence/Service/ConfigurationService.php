@@ -8,6 +8,8 @@ class ConfigurationService implements ConfigurationServiceInterface
 {
     private $settings_db_connection = null;
 
+    private static $configuration_cache = [];
+
     public function __construct()
     {
         $this->settings_db_connection = env('SETTINGS_DB_CONNECTION', null);
@@ -15,29 +17,46 @@ class ConfigurationService implements ConfigurationServiceInterface
 
     public function getKey($key, $class = null, $default = null): ?string
     {
+        $cached_value = $this->getCachedKey($key, $class);
+        if (!is_null($cached_value)) {
+            return $cached_value;
+        }
         $override = $this->getSettingsOverride($key, $class);
         if (!is_null($override)) {
-            return $override;
+            $value = $override;
         }
-        /**
-         * Laravel specific config and ENV accessors
-         */
-        if (is_null($class)) {
-            return env($key, $default);
+        else {
+            /**
+             * Laravel specific config and ENV accessors
+             */
+            if (is_null($class)) {
+                $value = env($key, $default);
+            } else {
+                $value = config($class . '.' . $key, $default);
+            }
         }
-        return config($class.'.'.$key, $default);
+        $this->setCachedKey($key, $class, $value);
+        return $value;
     }
 
     public function getClass($class = null, $default = null): ?array
     {
+        $cached_value = $this->getCachedKey('', $class);
+        if (!is_null($cached_value)) {
+            return $cached_value;
+        }
         $override = $this->getClassOverride($class);
         if (!is_null($override)) {
-            return $override;
+            $value = $override;
         }
-        /**
-         * Laravel specific config and ENV accessors
-         */
-        return config($class, $default);
+        else {
+            /**
+             * Laravel specific config and ENV accessors
+             */
+            $value = config($class, $default);
+        }
+        $this->setCachedKey('', $class, $value);
+        return $value;
     }
 
     public function getPublicPath($filename = ''): string {
@@ -70,6 +89,8 @@ class ConfigurationService implements ConfigurationServiceInterface
                 $results = DB::connection($this->settings_db_connection)
                     ->insert("insert into settings(`key`, value) values (? , ?)", [$key, $value]);
             }
+            // Update cache
+            $this->setCachedKey($key, $class, $value);
         }
         catch (\Exception $e) {
             // Ignore any error
@@ -94,6 +115,8 @@ class ConfigurationService implements ConfigurationServiceInterface
             }
             $results = DB::connection($this->settings_db_connection)
                 ->delete("delete from settings where `key` = ?", [$key]);
+            // Remove from cache
+            $this->removeCachedKey($key, $class);
         }
         catch (\Exception $e) {
             // Ignore any error
@@ -153,5 +176,26 @@ class ConfigurationService implements ConfigurationServiceInterface
         return null;
     }
 
+    private function getCachedKey($key, $class)
+    {
+        $cache_key = (!empty($class) ? "$class." : '') . $key;
+        if (isset(self::$configuration_cache[$cache_key])) {
+            return self::$configuration_cache[$cache_key];
+        }
+        return null;
+    }
 
+    private function setCachedKey($key, $class, $value): void
+    {
+        $cache_key = (!empty($class) ? "$class." : '') . $key;
+        self::$configuration_cache[$cache_key] = $value;
+    }
+
+    private function removeCachedKey($key, $class): void
+    {
+        $cache_key = (!empty($class) ? "$class." : '') . $key;
+        if (isset(self::$configuration_cache[$cache_key])) {
+            unset(self::$configuration_cache[$cache_key]);
+        }
+    }
 }
