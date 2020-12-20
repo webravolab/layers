@@ -235,6 +235,44 @@ class EloquentJobStore implements JobQueueInterface {
         return $job;
     }
 
+    public function nextRandomQueuedJob($channel): ?JobDataTable
+    {
+        $guid = $this->guidService->Generate()->getValue();
+        $channel = $channel . '-' . $this->prefix;
+
+        try {
+            $result = Jobs::where('channel', $channel)
+                ->where('status', 'QUEUED')
+                ->where('delivered_token', null)
+                ->orderBy('rand()')
+                ->orderBy('id')
+                ->firstOrFail()
+                ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime(now())]);
+        }
+        catch (ModelNotFoundException $e) {
+            return null;
+        }
+
+        if ($result === false) {
+            return null;
+        }
+
+        $o_job = Jobs::where('channel',$channel)
+            ->where('status','DELIVERED')
+            ->where('delivered_token', $guid)
+            ->first();
+
+        if (!$o_job) {
+            return null;
+        }
+
+        $jobHydrator = new JobHydrator();
+
+        $job = $jobHydrator->Hydrate($o_job);
+
+        return $job;
+    }    
+
     public function AcknowledgeJobByGuid($guid)
     {
         $this->jobsModel::where('guid',$guid)
