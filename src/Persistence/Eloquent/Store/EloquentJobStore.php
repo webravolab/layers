@@ -244,7 +244,7 @@ class EloquentJobStore implements JobQueueInterface {
             $result = Jobs::where('channel', $channel)
                 ->where('status', 'QUEUED')
                 ->where('delivered_token', null)
-                ->orderByRaw('rand()')
+                ->orderBy(DB::raw('rand()'))
                 ->orderBy('id')
                 ->firstOrFail()
                 ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime(now())]);
