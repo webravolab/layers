@@ -254,7 +254,7 @@ class EloquentJobStore implements JobQueueInterface {
             return null;
         }
 
-        $o_job = Jobs::where('channel',$channel)
+        $o_job = $this->jobsModel::where('channel',$channel)
             ->where('status','DELIVERED')
             ->where('delivered_token', $guid)
             ->first();
