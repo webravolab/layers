@@ -146,7 +146,7 @@ class DBQueueService implements QueueServiceInterface {
             $this->defaultQueue = $queueName;
             $this->queues[$queueName] = true;
         }
-        $job = $this->queueStore->nextQueuedJob($this->defaultQueue);
+        $job = $this->queueStore->nextRandomQueuedJob($this->defaultQueue);
 
         if ($job) {
             return $job;
