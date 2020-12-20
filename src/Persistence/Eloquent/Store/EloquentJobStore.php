@@ -244,7 +244,7 @@ class EloquentJobStore implements JobQueueInterface {
             $affected = DB::update("update jobs
                 set status = 'DELIVERED', delivered_token = ?, delivered_at = CURRENT_TIMESTAMP()
                 WHERE status = 'QUEUED' and delivered_token is null
-                order by created_at limit 1", $guid);
+                order by created_at limit 1", [$guid]);
             /*
             $result = Jobs::where('channel', $channel)
                 ->where('status', 'QUEUED')
