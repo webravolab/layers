@@ -241,6 +241,11 @@ class EloquentJobStore implements JobQueueInterface {
         $channel = $channel . '-' . $this->prefix;
 
         try {
+            $affected = DB::update("update jobs
+                set status = 'DELIVERED', delivered_token = ?, delivered_at = CURRENT_TIMESTAMP()
+                WHERE status = 'QUEUED' and delivered_token is null
+                order by created_at limit 1", $guid);
+            /*
             $result = Jobs::where('channel', $channel)
                 ->where('status', 'QUEUED')
                 ->where('delivered_token', null)
@@ -248,12 +253,13 @@ class EloquentJobStore implements JobQueueInterface {
                 ->orderBy('id')
                 ->firstOrFail()
                 ->update(['status' => 'DELIVERED', 'delivered_token' => $guid, 'delivered_at' => new Datetime(now())]);
+            */
         }
         catch (ModelNotFoundException $e) {
             return null;
         }
 
-        if ($result === false) {
+        if ($affected === 0) {
             return null;
         }
 
@@ -271,7 +277,7 @@ class EloquentJobStore implements JobQueueInterface {
         $job = $jobHydrator->Hydrate($o_job);
 
         return $job;
-    }    
+    }
 
     public function AcknowledgeJobByGuid($guid)
     {
