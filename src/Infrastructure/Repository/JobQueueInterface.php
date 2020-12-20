@@ -22,6 +22,8 @@ interface JobQueueInterface {
 
     public function nextQueuedJob($channel): ?JobDataTable;
 
+    public function nextRandomQueuedJob($channel): ?JobDataTable;
+
     public function AcknowledgeJobByGuid($guid);
 
     public function NotAcknowledgeJobByGuid($guid);
